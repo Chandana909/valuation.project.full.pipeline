@@ -1,0 +1,327 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MSME Valuation — Bharat Forge Components</title><style>
+:root {
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2b3444;
+  --ink:#e6edf3; --muted:#9aa7b4; --accent:#4f9cf9; --good:#3fb950;
+  --warn:#d29922; --bad:#f85149; --dec:#a371f7;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; font-size:14px; }
+.wrap { max-width:1200px; margin:0 auto; padding:24px; }
+h1 { font-size:22px; margin:0 0 4px; }
+h2 { font-size:15px; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--muted); margin:28px 0 12px; border-bottom:1px solid var(--line);
+  padding-bottom:6px; }
+.sub { color:var(--muted); margin-bottom:6px; }
+.provenance { color:var(--muted); font-size:12px; margin-bottom:18px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 14px; }
+.status-ok { color:var(--good); } .status-bad { color:var(--bad); }
+.panels { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; }
+.k { color:var(--muted); font-size:12px; }
+.v { font-size:15px; margin:2px 0 10px; }
+.big { font-size:24px; font-weight:700; }
+.badge { display:inline-block; padding:6px 14px; border-radius:20px; font-weight:700; font-size:15px; }
+.badge.hi { background:rgba(63,185,80,.15); color:var(--good); border:1px solid var(--good); }
+.badge.med { background:rgba(210,153,34,.15); color:var(--warn); border:1px solid var(--warn); }
+.badge.lo { background:rgba(248,81,73,.15); color:var(--bad); border:1px solid var(--bad); }
+table { width:100%; border-collapse:collapse; margin-top:6px; }
+th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); font-size:13px;
+  vertical-align:top; }
+th { color:var(--muted); text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
+tr:hover td { background:var(--panel2); }
+.peer { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; }
+.peer-head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+.peer-name { font-weight:700; font-size:15px; }
+.tag { font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--line); color:var(--muted); }
+.tag.listed { color:var(--accent); border-color:var(--accent); }
+.score { font-weight:700; color:var(--accent); }
+.chip { display:inline-block; background:var(--panel2); border:1px solid var(--line);
+  border-radius:6px; padding:2px 8px; margin:3px 4px 0 0; font-size:12px; }
+.chip b { color:var(--muted); font-weight:600; }
+.mult { color:var(--good); }
+.because { color:var(--good); font-size:12px; margin-top:6px; }
+.diffs { color:var(--warn); font-size:12px; margin-top:2px; }
+.reason { color:var(--bad); }
+.note { color:var(--warn); }
+.mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; }
+.headline-range { font-size:18px; font-weight:700; }
+.lo-mid-hi span { margin-right:14px; }
+.lvl { font-weight:700; font-size:11px; padding:1px 7px; border-radius:5px; }
+.lv-info { color:var(--muted); border:1px solid var(--line); }
+.lv-warn { color:var(--warn); border:1px solid var(--warn); }
+.lv-dec  { color:var(--dec); border:1px solid var(--dec); }
+.lv-err  { color:var(--bad); border:1px solid var(--bad); }
+.dq-pass { color:var(--good); } .dq-warn { color:var(--warn); } .dq-fail { color:var(--bad); }
+</style></head><body><div class="wrap"><h1>MSME Comparable Valuation — Bharat Forge Components</h1><div class="provenance">dnb-msme-comparable-valuation v1.1.0 · status <span class="status-ok">ok</span> · run 2026-07-10T02:07:45+00:00 · source Dun &amp; Bradstreet (dnbhoovers) (dnbhoovers-2024) · units Thousand→Crore INR · touchless=True</div><div class="sub mono">DUNS INB00190000 · CIN U29100MH1986PLC000019 · Deterministic core, no LLM</div><div class="panels"><div class="card">
+  <div class="k">TARGET PROFILE</div>
+  <div class="v"><b>manufacturer</b> / finished_goods</div>
+  <div class="k">Industry</div>
+  <div class="v">NAICS 336390 · sub 336<br>
+     <span class="mono">Other Motor Vehicle Parts Manufacturing</span></div>
+  <div class="k">Customer / Export / Listing</div>
+  <div class="v">B2B ·
+     Domestic ·
+     Unlisted</div>
+  <div class="k">Financials (INR Cr)</div>
+  <div class="v">Rev 7,674.2 · EBITDA 1,267.3
+     (16.5%) · EBIT 991.5<br>
+     growth 8.5%</div>
+</div><div class="card">
+  <div class="k">HEADLINE — EV/EBITDA</div>
+  <div class="lo-mid-hi" style="margin:10px 0;">
+    <div><span class="k">Low</span> <span class="big">4,357.0</span></div>
+    <div><span class="k">Mid</span> <span class="big" style="color:var(--accent)">5,560.8</span></div>
+    <div><span class="k">High</span> <span class="big">6,955.4</span></div>
+  </div>
+  <div class="k">Equity value, INR Crore</div>
+  <div class="v" style="margin-top:8px;">Net debt 2,363.1 Cr ·
+     discount 20%</div>
+  <div class="k mono">revenue ≥ ₹500 Cr (lower illiquidity)</div>
+</div><div class="card">
+  <div class="k">CONFIDENCE</div>
+  <div style="margin:14px 0;"><span class="badge hi">
+     HIGH · 0.98</span></div>
+  <div class="k">Peers used</div>
+  <div class="v">15 of 53 ranked ·
+     5 rejected</div>
+  <div class="k">Methods computed</div>
+  <div class="v">3 of 3</div>
+  
+</div><div class="card">
+  <div class="k">DATA QUALITY</div>
+  <div style="margin:14px 0;"><span class="badge hi">
+     Grade A · 1.00</span></div>
+  <div class="k">Checks passed</div>
+  <div class="v">8 of 8</div>
+  <div style="max-height:120px;overflow:auto;"><div class="k"><span class="dq-pass">✓</span> revenue</div><div class="k"><span class="dq-pass">✓</span> ebitda</div><div class="k"><span class="dq-pass">✓</span> ebit</div><div class="k"><span class="dq-pass">✓</span> capital_employed</div><div class="k"><span class="dq-pass">✓</span> prior_revenue</div><div class="k"><span class="dq-pass">✓</span> ebitda_margin</div><div class="k"><span class="dq-pass">✓</span> naics</div><div class="k"><span class="dq-pass">✓</span> cin</div></div>
+</div></div><h2>Valuation Methods — Triangulation</h2><table><tr>
+      <th>Method</th><th>Target driver (Cr)</th><th>Peers</th><th>Multiples</th>
+      <th>Dropped</th><th>Range basis</th><th>Multiple Low / Median / High</th>
+      <th>EV mid (Cr)</th><th>Equity Low–Mid–High (Cr)</th></tr><tr style="background:rgba(79,156,249,.10)">
+      <td><b>EV/EBITDA</b> ★</td>
+      <td>1,267.3</td>
+      <td>15</td>
+      <td>15</td>
+      <td>0</td>
+      <td class="mono">P25/P75</td>
+      <td class="mono">6.16 / <b>7.35</b> / 8.73</td>
+      <td>9,314.0</td>
+      <td class="headline-range">4,357.0 – <span style="color:var(--accent)">5,560.8</span> – 6,955.4</td>
+    </tr><tr>
+      <td><b>EV/Revenue</b></td>
+      <td>7,674.2</td>
+      <td>15</td>
+      <td>15</td>
+      <td>0</td>
+      <td class="mono">P25/P75</td>
+      <td class="mono">0.97 / <b>1.11</b> / 1.23</td>
+      <td>8,513.7</td>
+      <td class="headline-range">4,064.7 – <span style="color:var(--accent)">4,920.5</span> – 5,644.4</td>
+    </tr><tr>
+      <td><b>EV/EBIT</b></td>
+      <td>991.5</td>
+      <td>15</td>
+      <td>15</td>
+      <td>0</td>
+      <td class="mono">P25/P75</td>
+      <td class="mono">8.90 / <b>10.57</b> / 12.58</td>
+      <td>10,482.0</td>
+      <td class="headline-range">5,165.9 – <span style="color:var(--accent)">6,495.1</span> – 8,088.6</td>
+    </tr></table><div class="k mono" style="margin-top:8px;">EV basis: EV = market EV where available (0 peers), else book capital-employed proxy (15 peers)</div><h2>Peer Set (15)</h2><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#1 Subros Auto Parts <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.973</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Aurangabad · Rev ₹6,964 Cr · margin 17.7%
+     · growth 4.5% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.18</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">8.6x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.5x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">10.8x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; comparable revenue scale; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ —</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#2 Minda Auto Parts <span class="tag">unlisted</span></div>
+    <div class="score">score 0.935</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Chennai · Rev ₹5,035 Cr · margin 15.8%
+     · growth -1.1% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.14</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">6.2x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.0x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">9.5x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹5035 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#3 Sona Steering Components <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.932</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Gurugram · Rev ₹9,799 Cr · margin 12.7%
+     · growth 25.3% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.16</span><span class="chip"><b>margin</b> 0.12</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">11.4x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.4x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">15.7x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; comparable revenue scale; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ —</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#4 JBM Auto Systems <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.929</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Aurangabad · Rev ₹5,163 Cr · margin 14.6%
+     · growth 23.8% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.14</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">8.0x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.2x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">11.7x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹5163 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#5 Endurance Auto Systems <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.929</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Gurugram · Rev ₹5,719 Cr · margin 13.1%
+     · growth -4.6% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.15</span><span class="chip"><b>margin</b> 0.12</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">9.8x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.3x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">13.0x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹5719 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#6 Gabriel Suspension Parts <span class="tag">unlisted</span></div>
+    <div class="score">score 0.908</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Pune · Rev ₹4,210 Cr · margin 18.7%
+     · growth 25.7% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.12</span><span class="chip"><b>margin</b> 0.13</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">6.0x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.1x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">7.5x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹4210 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#7 Lumax Auto Components <span class="tag">unlisted</span></div>
+    <div class="score">score 0.905</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Pantnagar · Rev ₹8,096 Cr · margin 14.6%
+     · growth 8.8% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.19</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.03</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">5.8x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">0.8x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">8.2x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; comparable revenue scale; similar EBITDA margin; same customer type (B2B)</div>
+  <div class="diffs">Δ —</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#8 Jamna Auto Components <span class="tag">unlisted</span></div>
+    <div class="score">score 0.905</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Gurugram · Rev ₹3,301 Cr · margin 16.1%
+     · growth 7.8% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.11</span><span class="chip"><b>margin</b> 0.15</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">7.1x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.1x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">10.2x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹3301 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#9 Wabco Brake Systems <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.901</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Manesar · Rev ₹3,560 Cr · margin 14.9%
+     · growth 2.9% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.11</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">9.9x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.5x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">15.9x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹3560 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#10 Amtek Auto Parts <span class="tag">unlisted</span></div>
+    <div class="score">score 0.897</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Gurugram · Rev ₹6,692 Cr · margin 15.3%
+     · growth 9.5% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.18</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.03</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">6.1x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">0.9x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">9.6x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; comparable revenue scale; similar EBITDA margin; same customer type (B2B)</div>
+  <div class="diffs">Δ —</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#11 Rane Auto Parts <span class="tag">unlisted</span></div>
+    <div class="score">score 0.893</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Pantnagar · Rev ₹2,489 Cr · margin 16.4%
+     · growth 19.9% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.09</span><span class="chip"><b>margin</b> 0.15</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">5.8x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">0.9x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">8.2x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹2489 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#12 Pricol Auto Systems <span class="tag">unlisted</span></div>
+    <div class="score">score 0.893</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Pune · Rev ₹6,987 Cr · margin 13.8%
+     · growth 19.8% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.18</span><span class="chip"><b>margin</b> 0.13</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.03</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">8.0x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.1x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">12.6x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; comparable revenue scale; similar EBITDA margin; same customer type (B2B)</div>
+  <div class="diffs">Δ —</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#13 Motherson Auto Systems <span class="tag">unlisted</span></div>
+    <div class="score">score 0.886</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Pantnagar · Rev ₹3,893 Cr · margin 12.1%
+     · growth 2.0% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.12</span><span class="chip"><b>margin</b> 0.12</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">8.8x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.1x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">12.6x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹3893 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#14 Munjal Auto Components <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.883</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Manesar · Rev ₹2,364 Cr · margin 15.3%
+     · growth 21.1% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.09</span><span class="chip"><b>margin</b> 0.14</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.10</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">6.3x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.0x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">7.9x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; similar EBITDA margin; same customer type (B2B); same export profile</div>
+  <div class="diffs">Δ revenue ₹2364 Cr vs ₹7674 Cr</div>
+</div><div class="peer">
+  <div class="peer-head">
+    <div class="peer-name">#15 Fiem Auto Systems <span class="tag listed">LISTED</span></div>
+    <div class="score">score 0.875</div>
+  </div>
+  <div style="color:var(--muted);font-size:12px;margin:4px 0;">
+     Pune · Rev ₹6,301 Cr · margin 13.5%
+     · growth -2.3% · EV basis book</div>
+  <div><span class="chip"><b>industry</b> 0.40</span><span class="chip"><b>scale</b> 0.17</span><span class="chip"><b>margin</b> 0.13</span><span class="chip"><b>customer</b> 0.15</span><span class="chip"><b>export</b> 0.03</span></div>
+  <div style="margin-top:6px;"><span class="chip"><b>EV/EBITDA</b> <span class="mult">7.3x</span></span><span class="chip"><b>EV/Revenue</b> <span class="mult">1.0x</span></span><span class="chip"><b>EV/EBIT</b> <span class="mult">10.6x</span></span></div>
+  <div class="because">✓ same NAICS subsector 336; comparable revenue scale; similar EBITDA margin; same customer type (B2B)</div>
+  <div class="diffs">Δ —</div>
+</div><h2>Rejected (5)</h2><table><tr><th>Entity</th><th>Operating model</th><th>Value chain</th><th>Major ind.</th><th>Reason</th></tr><tr><td>Metro Wholesale Distributors</td>
+      <td>distributor</td><td>finished_goods</td>
+      <td>F</td>
+      <td class="reason">operating_model mismatch (distributor vs manufacturer)</td></tr><tr><td>Prime Industrial Traders</td>
+      <td>distributor</td><td>finished_goods</td>
+      <td>F</td>
+      <td class="reason">operating_model mismatch (distributor vs manufacturer)</td></tr><tr><td>Sterling Steel Billets</td>
+      <td>manufacturer</td><td>raw_material</td>
+      <td>D</td>
+      <td class="reason">value_chain mismatch (raw_material vs finished_goods)</td></tr><tr><td>UrbanMart Retail Stores</td>
+      <td>retailer</td><td>finished_goods</td>
+      <td>G</td>
+      <td class="reason">operating_model mismatch (retailer vs manufacturer)</td></tr><tr><td>Insight Engineering Consulting</td>
+      <td>service</td><td>finished_goods</td>
+      <td>I</td>
+      <td class="reason">operating_model mismatch (service vs manufacturer)</td></tr></table><h2>Audit Trail (140 · DECISION 9, INFO 131)</h2><table><tr><th>#</th><th>Time</th><th>Stage</th><th>Level</th><th>Code</th><th>Detail</th></tr><tr><td>1</td><td class="mono">02:07:45.652</td><td class="mono">run</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">START</td><td>pipeline start for query &#x27;Bharat Forge Components&#x27;</td></tr><tr><td>2</td><td class="mono">02:07:45.652</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_SEARCH</td><td>search name=&#x27;Bharat Forge Components&#x27; country=IN</td></tr><tr><td>3</td><td class="mono">02:07:45.652</td><td class="mono">resolve</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">MATCH_CANDIDATES</td><td>7 candidates; selected highest confidence</td></tr><tr><td>4</td><td class="mono">02:07:45.652</td><td class="mono">resolve</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">TARGET_RESOLVED</td><td>&#x27;Bharat Forge Components&#x27; -&gt; Bharat Forge Components (DUNS INB00190000, confidence 10)</td></tr><tr><td>5</td><td class="mono">02:07:45.652</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00190000 found=True</td></tr><tr><td>6</td><td class="mono">02:07:45.652</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00190000 found=True</td></tr><tr><td>7</td><td class="mono">02:07:45.652</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_MANAGEMENT</td><td>duns=INB00190000 found=True</td></tr><tr><td>8</td><td class="mono">02:07:45.653</td><td class="mono">profile</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">TARGET_PROFILED</td><td>Bharat Forge Components: manufacturer/finished_goods/B2B (conf 0.95)</td></tr><tr><td>9</td><td class="mono">02:07:45.653</td><td class="mono">validate</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DATA_QUALITY_GRADE</td><td>data-quality grade A (score 1.0), valuable=True</td></tr><tr><td>10</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00010000 found=True</td></tr><tr><td>11</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00010000 found=True</td></tr><tr><td>12</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00020000 found=True</td></tr><tr><td>13</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00020000 found=True</td></tr><tr><td>14</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00030000 found=True</td></tr><tr><td>15</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00030000 found=True</td></tr><tr><td>16</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00040000 found=True</td></tr><tr><td>17</td><td class="mono">02:07:45.653</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00040000 found=True</td></tr><tr><td>18</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00050000 found=True</td></tr><tr><td>19</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00050000 found=True</td></tr><tr><td>20</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00060000 found=True</td></tr><tr><td>21</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00060000 found=True</td></tr><tr><td>22</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00070000 found=True</td></tr><tr><td>23</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00070000 found=True</td></tr><tr><td>24</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00080000 found=True</td></tr><tr><td>25</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00080000 found=True</td></tr><tr><td>26</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00090000 found=True</td></tr><tr><td>27</td><td class="mono">02:07:45.654</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00090000 found=True</td></tr><tr><td>28</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00100000 found=True</td></tr><tr><td>29</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00100000 found=True</td></tr><tr><td>30</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00110000 found=True</td></tr><tr><td>31</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00110000 found=True</td></tr><tr><td>32</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00120000 found=True</td></tr><tr><td>33</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00120000 found=True</td></tr><tr><td>34</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00130000 found=True</td></tr><tr><td>35</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00130000 found=True</td></tr><tr><td>36</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00140000 found=True</td></tr><tr><td>37</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00140000 found=True</td></tr><tr><td>38</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00150000 found=True</td></tr><tr><td>39</td><td class="mono">02:07:45.655</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00150000 found=True</td></tr><tr><td>40</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00160000 found=True</td></tr><tr><td>41</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00160000 found=True</td></tr><tr><td>42</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00170000 found=True</td></tr><tr><td>43</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00170000 found=True</td></tr><tr><td>44</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INA00180000 found=True</td></tr><tr><td>45</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INA00180000 found=True</td></tr><tr><td>46</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00200000 found=True</td></tr><tr><td>47</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00200000 found=True</td></tr><tr><td>48</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00210000 found=True</td></tr><tr><td>49</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00210000 found=True</td></tr><tr><td>50</td><td class="mono">02:07:45.656</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00220000 found=True</td></tr><tr><td>51</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00220000 found=True</td></tr><tr><td>52</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00230000 found=True</td></tr><tr><td>53</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00230000 found=True</td></tr><tr><td>54</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00240000 found=True</td></tr><tr><td>55</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00240000 found=True</td></tr><tr><td>56</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00250000 found=True</td></tr><tr><td>57</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00250000 found=True</td></tr><tr><td>58</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00260000 found=True</td></tr><tr><td>59</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00260000 found=True</td></tr><tr><td>60</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00270000 found=True</td></tr><tr><td>61</td><td class="mono">02:07:45.657</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00270000 found=True</td></tr><tr><td>62</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00280000 found=True</td></tr><tr><td>63</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00280000 found=True</td></tr><tr><td>64</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00290000 found=True</td></tr><tr><td>65</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00290000 found=True</td></tr><tr><td>66</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00300000 found=True</td></tr><tr><td>67</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00300000 found=True</td></tr><tr><td>68</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00310000 found=True</td></tr><tr><td>69</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00310000 found=True</td></tr><tr><td>70</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00320000 found=True</td></tr><tr><td>71</td><td class="mono">02:07:45.658</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00320000 found=True</td></tr><tr><td>72</td><td class="mono">02:07:45.659</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00330000 found=True</td></tr><tr><td>73</td><td class="mono">02:07:45.659</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00330000 found=True</td></tr><tr><td>74</td><td class="mono">02:07:45.659</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00340000 found=True</td></tr><tr><td>75</td><td class="mono">02:07:45.659</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00340000 found=True</td></tr><tr><td>76</td><td class="mono">02:07:45.659</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00350000 found=True</td></tr><tr><td>77</td><td class="mono">02:07:45.659</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00350000 found=True</td></tr><tr><td>78</td><td class="mono">02:07:45.661</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INB00360000 found=True</td></tr><tr><td>79</td><td class="mono">02:07:45.661</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INB00360000 found=True</td></tr><tr><td>80</td><td class="mono">02:07:45.661</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00370000 found=True</td></tr><tr><td>81</td><td class="mono">02:07:45.661</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00370000 found=True</td></tr><tr><td>82</td><td class="mono">02:07:45.661</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00380000 found=True</td></tr><tr><td>83</td><td class="mono">02:07:45.661</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00380000 found=True</td></tr><tr><td>84</td><td class="mono">02:07:45.662</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00390000 found=True</td></tr><tr><td>85</td><td class="mono">02:07:45.662</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00390000 found=True</td></tr><tr><td>86</td><td class="mono">02:07:45.662</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00400000 found=True</td></tr><tr><td>87</td><td class="mono">02:07:45.662</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00400000 found=True</td></tr><tr><td>88</td><td class="mono">02:07:45.662</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00410000 found=True</td></tr><tr><td>89</td><td class="mono">02:07:45.662</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00410000 found=True</td></tr><tr><td>90</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00420000 found=True</td></tr><tr><td>91</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00420000 found=True</td></tr><tr><td>92</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00430000 found=True</td></tr><tr><td>93</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00430000 found=True</td></tr><tr><td>94</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00440000 found=True</td></tr><tr><td>95</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00440000 found=True</td></tr><tr><td>96</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00450000 found=True</td></tr><tr><td>97</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00450000 found=True</td></tr><tr><td>98</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00460000 found=True</td></tr><tr><td>99</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00460000 found=True</td></tr><tr><td>100</td><td class="mono">02:07:45.663</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00470000 found=True</td></tr><tr><td>101</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00470000 found=True</td></tr><tr><td>102</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00480000 found=True</td></tr><tr><td>103</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00480000 found=True</td></tr><tr><td>104</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00490000 found=True</td></tr><tr><td>105</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00490000 found=True</td></tr><tr><td>106</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00500000 found=True</td></tr><tr><td>107</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00500000 found=True</td></tr><tr><td>108</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00510000 found=True</td></tr><tr><td>109</td><td class="mono">02:07:45.664</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00510000 found=True</td></tr><tr><td>110</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00520000 found=True</td></tr><tr><td>111</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00520000 found=True</td></tr><tr><td>112</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00530000 found=True</td></tr><tr><td>113</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00530000 found=True</td></tr><tr><td>114</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INC00540000 found=True</td></tr><tr><td>115</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INC00540000 found=True</td></tr><tr><td>116</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INW00550000 found=True</td></tr><tr><td>117</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INW00550000 found=True</td></tr><tr><td>118</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INW00560000 found=True</td></tr><tr><td>119</td><td class="mono">02:07:45.665</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INW00560000 found=True</td></tr><tr><td>120</td><td class="mono">02:07:45.666</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INW00570000 found=True</td></tr><tr><td>121</td><td class="mono">02:07:45.666</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INW00570000 found=True</td></tr><tr><td>122</td><td class="mono">02:07:45.666</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INW00580000 found=True</td></tr><tr><td>123</td><td class="mono">02:07:45.666</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INW00580000 found=True</td></tr><tr><td>124</td><td class="mono">02:07:45.666</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_INFORMATION</td><td>duns=INW00590000 found=True</td></tr><tr><td>125</td><td class="mono">02:07:45.666</td><td class="mono">dnb</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">DNB_COMPANY_FINANCIALS</td><td>duns=INW00590000 found=True</td></tr><tr><td>126</td><td class="mono">02:07:45.666</td><td class="mono">universe</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">UNIVERSE_LOADED</td><td>loaded 58 candidate companies from D&amp;B</td></tr><tr><td>127</td><td class="mono">02:07:45.667</td><td class="mono">discover</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">PEER_REJECTED</td><td>reject Metro Wholesale Distributors: operating_model mismatch (distributor vs manufacturer)</td></tr><tr><td>128</td><td class="mono">02:07:45.667</td><td class="mono">discover</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">PEER_REJECTED</td><td>reject Prime Industrial Traders: operating_model mismatch (distributor vs manufacturer)</td></tr><tr><td>129</td><td class="mono">02:07:45.667</td><td class="mono">discover</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">PEER_REJECTED</td><td>reject Sterling Steel Billets: value_chain mismatch (raw_material vs finished_goods)</td></tr><tr><td>130</td><td class="mono">02:07:45.667</td><td class="mono">discover</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">PEER_REJECTED</td><td>reject UrbanMart Retail Stores: operating_model mismatch (retailer vs manufacturer)</td></tr><tr><td>131</td><td class="mono">02:07:45.667</td><td class="mono">discover</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">PEER_REJECTED</td><td>reject Insight Engineering Consulting: operating_model mismatch (service vs manufacturer)</td></tr><tr><td>132</td><td class="mono">02:07:45.667</td><td class="mono">discover</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">PEERS_RANKED</td><td>53 peers passed the mismatch filter and were ranked; 5 rejected</td></tr><tr><td>133</td><td class="mono">02:07:45.667</td><td class="mono">value</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">DISCOUNT_APPLIED</td><td>illiquidity discount 20%: revenue ≥ ₹500 Cr (lower illiquidity)</td></tr><tr><td>134</td><td class="mono">02:07:45.668</td><td class="mono">value</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">METHOD_COMPUTED</td><td>EV/EBITDA: median 7.35x on 15 multiples (0 outliers dropped)</td></tr><tr><td>135</td><td class="mono">02:07:45.668</td><td class="mono">value</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">METHOD_COMPUTED</td><td>EV/Revenue: median 1.11x on 15 multiples (0 outliers dropped)</td></tr><tr><td>136</td><td class="mono">02:07:45.668</td><td class="mono">value</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">METHOD_COMPUTED</td><td>EV/EBIT: median 10.57x on 15 multiples (0 outliers dropped)</td></tr><tr><td>137</td><td class="mono">02:07:45.668</td><td class="mono">value</td><td><span class="lvl lv-dec">DECISION</span></td><td class="mono">HEADLINE_SELECTED</td><td>headline = EV/EBITDA (preferred method available)</td></tr><tr><td>138</td><td class="mono">02:07:45.668</td><td class="mono">value</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">VALUATION_DONE</td><td>headline EV/EBITDA; 3 methods computed</td></tr><tr><td>139</td><td class="mono">02:07:45.668</td><td class="mono">confidence</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">CONFIDENCE_SCORED</td><td>HIGH (0.982)</td></tr><tr><td>140</td><td class="mono">02:07:45.668</td><td class="mono">run</td><td><span class="lvl lv-info">INFO</span></td><td class="mono">COMPLETE</td><td>pipeline complete: status=ok</td></tr></table></div></body></html>

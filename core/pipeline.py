@@ -1,0 +1,751 @@
+"""
+core/pipeline.py — deterministic comparable-company discovery + multi-method
+valuation for Indian MSMEs, grounded on the Dun & Bradstreet response schema.
+
+NO LLM calls. NO network. NO non-stdlib imports. This module must NOT import from
+`mock_api` — the D&B client is injected by the orchestrator (run.py).
+
+Money: D&B returns INR in Thousand. Normalization converts every monetary field
+to INR Crore (÷10,000). All downstream math is in Crore.
+"""
+
+from dataclasses import dataclass, field, asdict
+from math import log1p
+from typing import Optional, List, Dict, Any
+
+
+# ---------------------------------------------------------------------------
+# Dataclasses
+# ---------------------------------------------------------------------------
+
+@dataclass
+class Company:
+    duns: str
+    name: str
+    cin: Optional[str]
+    # industry
+    naics: Optional[str]
+    naics_desc: Optional[str]
+    hoovers: Optional[str]
+    major_industry: Optional[str]          # code, e.g. "D"
+    major_industry_desc: Optional[str]
+    activities: str
+    is_exporter: bool
+    employees: Optional[int]
+    incorporated: Optional[str]
+    city: Optional[str]
+    listed: bool
+    # financials (INR Crore)
+    revenue_cr: Optional[float]
+    revenue_prior_cr: Optional[float]
+    revenue_growth: Optional[float]
+    ebitda_cr: Optional[float]
+    ebitda_margin: Optional[float]
+    depreciation_cr: Optional[float]
+    ebit_cr: Optional[float]
+    gross_profit_cr: Optional[float]
+    operating_profit_cr: Optional[float]
+    pat_cr: Optional[float]
+    net_income_cr: Optional[float]
+    cash_cr: float
+    debt_cr: float
+    capital_employed_cr: Optional[float]
+    net_worth_cr: Optional[float]
+    total_assets_cr: Optional[float]
+    working_capital_cr: Optional[float]
+    market_ev_cr: Optional[float] = None   # listed-market hook (None => book proxy)
+    directors: List[str] = field(default_factory=list)
+
+
+@dataclass
+class EconomicProfile:
+    operating_model: str      # manufacturer | distributor | retailer | service | unknown
+    value_chain: str          # finished_goods | raw_material
+    customer_type: str        # B2B | B2C | mixed
+    naics_subsector: Optional[str]   # first 3 digits of primary NAICS
+    major_industry: Optional[str]
+    confidence: float
+
+
+@dataclass
+class DataQuality:
+    score: float
+    grade: str                       # A | B | C | D
+    checks: List[Dict[str, Any]]     # {field, status, level, detail}
+    missing_fields: List[str]
+    valuable: bool                   # is there enough to attempt a valuation at all?
+
+
+@dataclass
+class Valuation:
+    headline_method: str
+    methods: List[Dict[str, Any]]
+    net_debt_cr: float
+    discount: float
+    discount_reason: str
+    equity_low_cr: Optional[float]
+    equity_mid_cr: Optional[float]
+    equity_high_cr: Optional[float]
+    peers_used: List[Dict[str, Any]]
+    ev_basis: str
+    notes: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Small numeric helpers (stdlib only)
+# ---------------------------------------------------------------------------
+
+def _to_cr(thousand):
+    """Convert an INR-Thousand value to INR Crore (÷10,000). Null-safe."""
+    if thousand is None:
+        return None
+    return round(thousand / 10000.0, 4)
+
+
+def _safe_div(a, b):
+    if a is None or b is None or b == 0:
+        return None
+    return a / b
+
+
+def _percentile(sorted_vals, p):
+    """Linear-interpolation percentile. `sorted_vals` must be sorted ascending."""
+    if not sorted_vals:
+        return None
+    if len(sorted_vals) == 1:
+        return sorted_vals[0]
+    k = (len(sorted_vals) - 1) * p
+    f = int(k)
+    c = min(f + 1, len(sorted_vals) - 1)
+    return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
+
+
+# ---------------------------------------------------------------------------
+# Normalization
+# ---------------------------------------------------------------------------
+
+def _split_industry_codes(codes):
+    """Split D&B industryCodes[] into (naics, naics_desc, hoovers, major, major_desc)."""
+    naics = naics_desc = hoovers = major = major_desc = None
+    for c in codes or []:
+        td = (c.get("typeDescription") or "")
+        if td == "North American Industry Classification System 2022":
+            if naics is None:  # first NAICS is primary
+                naics = c.get("code")
+                naics_desc = c.get("description")
+        elif td == "D&B Hoovers Industry Classification":
+            if hoovers is None:
+                hoovers = c.get("code")
+        elif td == "D&B Standard Major Industry Code":
+            if major is None:
+                major = c.get("code")
+                major_desc = c.get("description")
+    return naics, naics_desc, hoovers, major, major_desc
+
+
+def _cin_from_reg(reg_numbers):
+    for r in reg_numbers or []:
+        if (r.get("typeDescription") or "") == "CIN":
+            return r.get("registrationNumber")
+    return None
+
+
+def normalize_company(info_resp, fin_resp, mgmt_resp=None) -> Company:
+    """
+    Flatten company_information + company_financials into a Company (Crore).
+    All monetary fields are converted ÷10,000. Handles null fields gracefully.
+    """
+    org = (info_resp or {}).get("data", {}).get("organization", {}) or {}
+    duns = org.get("duns")
+    name = org.get("primaryName")
+    naics, naics_desc, hoovers, major, major_desc = _split_industry_codes(
+        org.get("industryCodes"))
+    activities = " ".join(
+        (a.get("description") or "") for a in (org.get("activities") or []))
+    is_exporter = bool(org.get("isExporter"))
+    emp_list = org.get("numberOfEmployees") or []
+    employees = emp_list[0].get("value") if emp_list else None
+    incorporated = org.get("incorporatedDate")
+    addr = org.get("primaryAddress") or {}
+    city = (addr.get("addressLocality") or {}).get("name")
+    cin = _cin_from_reg(org.get("registrationNumbers"))
+    listed = bool(cin and cin[:1].upper() == "L")
+
+    fin_org = (fin_resp or {}).get("data", {}).get("organization", {}) or {}
+    lff = fin_org.get("latestFiscalFinancials") or {}
+    ov = lff.get("overview") or {}
+
+    revenue_cr = _to_cr(ov.get("salesRevenue"))
+    ebitda_cr = _to_cr(ov.get("ebitda"))
+    depreciation_cr = _to_cr(ov.get("depreciation"))
+    gross_profit_cr = _to_cr(ov.get("grossProfit"))
+    operating_profit_cr = _to_cr(ov.get("operatingProfit"))
+    pat_cr = _to_cr(ov.get("profitAfterTax"))
+    net_income_cr = _to_cr(ov.get("netIncome"))
+    cash_cr = _to_cr(ov.get("cashAndLiquidAssets"))
+    debt_cr = _to_cr(ov.get("longTermDebt"))
+    capital_employed_cr = _to_cr(ov.get("capitalEmployed"))
+    net_worth_cr = _to_cr(ov.get("netWorth"))
+    total_assets_cr = _to_cr(ov.get("totalAssets"))
+    working_capital_cr = _to_cr(ov.get("workingCapital"))
+
+    # ebit = ebitda - depreciation (null-safe)
+    if ebitda_cr is not None and depreciation_cr is not None:
+        ebit_cr = round(ebitda_cr - depreciation_cr, 4)
+    else:
+        ebit_cr = None
+
+    # prior-year revenue from otherFinancials[1]
+    other = fin_org.get("otherFinancials") or []
+    revenue_prior_cr = None
+    if len(other) > 1:
+        revenue_prior_cr = _to_cr(other[1].get("salesRevenue"))
+
+    revenue_growth = None
+    if revenue_cr is not None and revenue_prior_cr not in (None, 0):
+        revenue_growth = round((revenue_cr - revenue_prior_cr) / revenue_prior_cr, 4)
+
+    ebitda_margin = None
+    if ebitda_cr is not None and revenue_cr not in (None, 0):
+        ebitda_margin = round(ebitda_cr / revenue_cr, 4)
+
+    directors = []
+    if mgmt_resp:
+        m_org = (mgmt_resp or {}).get("data", {}).get("organization", {}) or {}
+        directors = [p.get("fullName") for p in (m_org.get("currentPrincipals") or [])]
+
+    return Company(
+        duns=duns, name=name, cin=cin,
+        naics=naics, naics_desc=naics_desc, hoovers=hoovers,
+        major_industry=major, major_industry_desc=major_desc,
+        activities=activities, is_exporter=is_exporter, employees=employees,
+        incorporated=incorporated, city=city, listed=listed,
+        revenue_cr=revenue_cr, revenue_prior_cr=revenue_prior_cr,
+        revenue_growth=revenue_growth, ebitda_cr=ebitda_cr, ebitda_margin=ebitda_margin,
+        depreciation_cr=depreciation_cr, ebit_cr=ebit_cr,
+        gross_profit_cr=gross_profit_cr, operating_profit_cr=operating_profit_cr,
+        pat_cr=pat_cr, net_income_cr=net_income_cr,
+        cash_cr=(cash_cr if cash_cr is not None else 0.0),
+        debt_cr=(debt_cr if debt_cr is not None else 0.0),
+        capital_employed_cr=capital_employed_cr, net_worth_cr=net_worth_cr,
+        total_assets_cr=total_assets_cr, working_capital_cr=working_capital_cr,
+        market_ev_cr=None, directors=directors,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Economic-profile classifier (rule-based; LLM-swap seam)
+# ---------------------------------------------------------------------------
+
+# NOTE: This is the seam where a future LLM economic-profile classifier could
+# drop in. It must remain a pure function (company -> EconomicProfile) so the LLM
+# variant is a black-box swap. Until then it is DELIBERATELY rule-based — no LLM.
+
+_MFG_VERBS = ("manufactures", "manufacturer of", "produces", "producing",
+              "manufacturing of")
+_DISTRIBUTOR_KW = ("wholesale distributor", "distributor of", "sourced from manufacturers",
+                   "resold to", "wholesale trader", "wholesale of")
+_RETAIL_KW = ("retail store", "stores selling", "direct to consumer", "retail")
+_SERVICE_KW = ("consulting", "design services", "provides engineering consulting")
+_RAW_KW = ("raw material", "billets", "supplied to downstream")
+
+
+def build_profile(company: Company) -> EconomicProfile:
+    text = (company.activities or "").lower()
+
+    # COLLISION RULE (critical): a manufacturing VERB — not the bare noun
+    # "manufacturers" — triggers the manufacturer model. This stops distributor
+    # text like "sourced from manufacturers" from being read as a manufacturer.
+    has_mfg_verb = any(v in text for v in _MFG_VERBS)
+
+    major_is_mfg = (company.major_industry or "").upper() == "D"
+
+    # ---- operating model (priority order) -------------------------------
+    if any(k in text for k in _DISTRIBUTOR_KW) and not has_mfg_verb:
+        operating_model = "distributor"
+    elif any(k in text for k in _RETAIL_KW) and not has_mfg_verb:
+        operating_model = "retailer"
+    elif any(k in text for k in _SERVICE_KW) and not has_mfg_verb:
+        operating_model = "service"
+    elif has_mfg_verb or major_is_mfg:
+        operating_model = "manufacturer"
+    else:
+        operating_model = "unknown"
+
+    # ---- value chain (independent axis) ---------------------------------
+    if any(k in text for k in _RAW_KW):
+        value_chain = "raw_material"
+    else:
+        value_chain = "finished_goods"
+
+    # ---- customer type --------------------------------------------------
+    b2c_signals = ("consumer", "retail store", "stores selling", "direct to consumer")
+    b2b_signals = ("oem", "industrial", "process", "utility", "assemblers",
+                   "downstream", "infrastructure", "marine", "irrigation")
+    if any(s in text for s in b2c_signals):
+        customer_type = "B2C"
+    elif any(s in text for s in b2b_signals):
+        customer_type = "B2B"
+    else:
+        customer_type = "mixed"
+
+    naics_subsector = (company.naics or "")[:3] or None
+
+    # ---- confidence -----------------------------------------------------
+    conf = 0.5
+    if operating_model in ("manufacturer", "distributor", "retailer", "service"):
+        conf = 0.75
+    if has_mfg_verb and operating_model == "manufacturer":
+        conf = 0.90
+    if any(k in text for k in _DISTRIBUTOR_KW) and operating_model == "distributor":
+        conf = 0.90
+    if naics_subsector:
+        conf = min(1.0, conf + 0.05)
+
+    return EconomicProfile(
+        operating_model=operating_model,
+        value_chain=value_chain,
+        customer_type=customer_type,
+        naics_subsector=naics_subsector,
+        major_industry=company.major_industry,
+        confidence=round(conf, 3),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Data-quality validation gate
+# ---------------------------------------------------------------------------
+
+def validate_company(company: Company, audit=None) -> DataQuality:
+    """
+    Explicit data-quality gate run BEFORE valuation. Produces a graded score, a
+    per-field check list, and a `valuable` flag (is there enough to value at all?).
+    Every failing/at-risk check is logged to the audit trail.
+
+    Weights reflect materiality: revenue and a positive value driver matter most;
+    identity fields are informational.
+    """
+    checks = []
+    missing = []
+    penalty = 0.0
+
+    def add(field_name, ok, level, detail, weight=0.0):
+        nonlocal penalty
+        status = "pass" if ok else ("warn" if level == "WARN" else "fail")
+        checks.append({"field": field_name, "status": status,
+                       "level": level, "detail": detail})
+        if not ok:
+            if field_name not in ("prior_revenue",):
+                missing.append(field_name)
+            penalty += weight
+            if audit is not None:
+                audit.warn("validate", "DATA_QUALITY_" + status.upper(),
+                           f"{field_name}: {detail}",
+                           {"field": field_name, "level": level})
+
+    rev_ok = (company.revenue_cr or 0) > 0
+    add("revenue", rev_ok, "CRITICAL",
+        "sales revenue present and > 0" if rev_ok else "missing sales revenue", 0.50)
+
+    ebitda_ok = (company.ebitda_cr or 0) > 0
+    add("ebitda", ebitda_ok, "HIGH",
+        "EBITDA present and > 0" if ebitda_ok else "EBITDA missing/non-positive", 0.15)
+
+    ebit_ok = company.ebit_cr is not None
+    add("ebit", ebit_ok, "MEDIUM",
+        "EBIT computable" if ebit_ok else "EBIT not computable (depreciation missing)",
+        0.05)
+
+    ce_ok = (company.capital_employed_cr or 0) > 0
+    add("capital_employed", ce_ok, "HIGH",
+        "capital employed present (book EV proxy available)" if ce_ok
+        else "capital employed missing (book EV proxy unavailable)", 0.15)
+
+    prior_ok = company.revenue_prior_cr is not None
+    add("prior_revenue", prior_ok, "LOW",
+        "prior-year revenue present (growth computable)" if prior_ok
+        else "no prior-year revenue (growth unavailable)", 0.03)
+
+    margin_ok = company.ebitda_margin is None or (0.0 < company.ebitda_margin < 0.60)
+    add("ebitda_margin", margin_ok, "MEDIUM",
+        "EBITDA margin within plausible band" if margin_ok
+        else f"implausible EBITDA margin ({company.ebitda_margin})", 0.07)
+
+    naics_ok = bool(company.naics)
+    add("naics", naics_ok, "MEDIUM",
+        "NAICS industry code present" if naics_ok else "no NAICS code (industry match weakened)",
+        0.05)
+
+    cin_ok = bool(company.cin)
+    add("cin", cin_ok, "LOW",
+        "CIN present" if cin_ok else "no CIN on record", 0.01)
+
+    score = max(0.0, round(1.0 - penalty, 3))
+    if score >= 0.85:
+        grade = "A"
+    elif score >= 0.70:
+        grade = "B"
+    elif score >= 0.50:
+        grade = "C"
+    else:
+        grade = "D"
+
+    # "valuable" = at minimum revenue + a usable EV proxy exist.
+    valuable = rev_ok and (ce_ok or ebitda_ok)
+
+    if audit is not None:
+        audit.info("validate", "DATA_QUALITY_GRADE",
+                   f"data-quality grade {grade} (score {score}), valuable={valuable}",
+                   {"grade": grade, "score": score, "valuable": valuable,
+                    "missing": missing})
+
+    return DataQuality(score=score, grade=grade, checks=checks,
+                       missing_fields=missing, valuable=valuable)
+
+
+# ---------------------------------------------------------------------------
+# Discovery
+# ---------------------------------------------------------------------------
+
+def _similarity(target: Company, tprof: EconomicProfile,
+                peer: Company, pprof: EconomicProfile):
+    """Return (score, components dict, selected_because[], differences[])."""
+    comp = {}
+    because = []
+    diffs = []
+
+    # industry 0.40
+    if tprof.naics_subsector and pprof.naics_subsector and \
+            tprof.naics_subsector == pprof.naics_subsector:
+        ind = 1.0
+        because.append(f"same NAICS subsector {tprof.naics_subsector}")
+    elif target.hoovers and peer.hoovers and target.hoovers == peer.hoovers:
+        ind = 0.6
+        because.append("same D&B Hoovers industry")
+    else:
+        ind = 0.0
+        diffs.append(f"NAICS {peer.naics} vs {target.naics}")
+    comp["industry"] = round(ind * 0.40, 4)
+
+    # scale 0.20
+    rt = target.revenue_cr or 0.0
+    rp = peer.revenue_cr or 0.0
+    scale = 1.0 / (1.0 + abs(log1p(rt) - log1p(rp)))
+    comp["scale"] = round(scale * 0.20, 4)
+    if scale > 0.8:
+        because.append("comparable revenue scale")
+    else:
+        diffs.append(f"revenue ₹{rp:.0f} Cr vs ₹{rt:.0f} Cr")
+
+    # margin 0.15
+    mt = target.ebitda_margin
+    mp = peer.ebitda_margin
+    if mt is not None and mp is not None:
+        margin = max(0.0, 1.0 - 5.0 * abs(mt - mp))
+    else:
+        margin = 0.0
+    comp["margin"] = round(margin * 0.15, 4)
+    if margin > 0.7:
+        because.append("similar EBITDA margin")
+
+    # customer 0.15
+    cust = 1.0 if tprof.customer_type == pprof.customer_type else 0.0
+    comp["customer"] = round(cust * 0.15, 4)
+    if cust == 1.0:
+        because.append(f"same customer type ({tprof.customer_type})")
+    else:
+        diffs.append(f"customer {pprof.customer_type} vs {tprof.customer_type}")
+
+    # export 0.10
+    exp = 1.0 if target.is_exporter == peer.is_exporter else 0.3
+    comp["export"] = round(exp * 0.10, 4)
+    if target.is_exporter == peer.is_exporter:
+        because.append("same export profile")
+
+    score = round(sum(comp.values()), 4)
+    return score, comp, because, diffs
+
+
+def discover_peers(target: Company, tprofile: EconomicProfile, universe, audit=None):
+    """
+    Filter mismatches, then score survivors.
+    universe: list of (Company, EconomicProfile) tuples (target excluded upstream).
+    Returns (ranked, rejected). ranked is sorted descending by score.
+    """
+    ranked = []
+    rejected = []
+
+    for peer, pprof in universe:
+        if peer.duns == target.duns:
+            continue
+
+        # ---- mismatch filter (reject BEFORE scoring) --------------------
+        reason = None
+        if pprof.operating_model != tprofile.operating_model:
+            reason = (f"operating_model mismatch "
+                      f"({pprof.operating_model} vs {tprofile.operating_model})")
+        elif pprof.value_chain != tprofile.value_chain:
+            reason = (f"value_chain mismatch "
+                      f"({pprof.value_chain} vs {tprofile.value_chain})")
+        elif (peer.major_industry or "") != (target.major_industry or ""):
+            reason = (f"major_industry mismatch "
+                      f"({peer.major_industry} vs {target.major_industry})")
+
+        if reason:
+            rejected.append({
+                "duns": peer.duns, "name": peer.name, "reason": reason,
+                "operating_model": pprof.operating_model,
+                "value_chain": pprof.value_chain,
+                "major_industry": peer.major_industry,
+            })
+            if audit is not None:
+                audit.decision("discover", "PEER_REJECTED",
+                               f"reject {peer.name}: {reason}",
+                               {"duns": peer.duns, "reason": reason})
+            continue
+
+        score, comp, because, diffs = _similarity(target, tprofile, peer, pprof)
+        ranked.append({
+            "company": peer,
+            "profile": pprof,
+            "score": score,
+            "components": comp,
+            "selected_because": because,
+            "differences": diffs,
+        })
+
+    ranked.sort(key=lambda r: r["score"], reverse=True)
+    if audit is not None:
+        audit.info("discover", "PEERS_RANKED",
+                   f"{len(ranked)} peers passed the mismatch filter and were ranked; "
+                   f"{len(rejected)} rejected",
+                   {"ranked": len(ranked), "rejected": len(rejected)})
+    return ranked, rejected
+
+
+# ---------------------------------------------------------------------------
+# Valuation
+# ---------------------------------------------------------------------------
+
+def _ev_of(company: Company):
+    """EV = market_ev_cr if set else capital_employed_cr (book EV proxy)."""
+    if company.market_ev_cr is not None and company.market_ev_cr > 0:
+        return company.market_ev_cr, "market"
+    if company.capital_employed_cr is not None and company.capital_employed_cr > 0:
+        return company.capital_employed_cr, "book"
+    return None, None
+
+
+def _tukey_trim(values):
+    """Drop Tukey outliers (1.5*IQR). Return (kept, n_dropped). Skip if <4."""
+    if len(values) < 4:
+        return list(values), 0
+    s = sorted(values)
+    q1 = _percentile(s, 0.25)
+    q3 = _percentile(s, 0.75)
+    iqr = q3 - q1
+    lo = q1 - 1.5 * iqr
+    hi = q3 + 1.5 * iqr
+    kept = [v for v in s if lo <= v <= hi]
+    return kept, len(s) - len(kept)
+
+
+_METHOD_SPEC = [
+    ("EV/EBITDA", "ebitda_cr"),
+    ("EV/Revenue", "revenue_cr"),
+    ("EV/EBIT", "ebit_cr"),
+]
+
+
+def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation:
+    used = peers[:top_n]
+    notes = []
+    warnings = []
+    n_used = len(used)
+
+    # --- range basis: widen quantiles when the peer set is thin ----------
+    if n_used < 10:
+        low_q, high_q = 0.10, 0.90
+        range_basis = "P10/P90 (widened: fewer than 10 peers)"
+        if audit is not None:
+            audit.decision("value", "RANGE_WIDENED",
+                           f"only {n_used} peers: widening range to P10/P90",
+                           {"n_peers": n_used, "low_q": low_q, "high_q": high_q})
+    else:
+        low_q, high_q = 0.25, 0.75
+        range_basis = "P25/P75"
+
+    # net debt & discount
+    net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
+    rev = target.revenue_cr or 0.0
+    if rev < 100:
+        discount, dreason = 0.30, "revenue < ₹100 Cr (small-cap illiquidity)"
+    elif rev < 500:
+        discount, dreason = 0.25, "revenue ₹100-500 Cr (mid illiquidity)"
+    else:
+        discount, dreason = 0.20, "revenue ≥ ₹500 Cr (lower illiquidity)"
+    if audit is not None:
+        audit.decision("value", "DISCOUNT_APPLIED",
+                       f"illiquidity discount {discount:.0%}: {dreason}",
+                       {"discount": discount, "revenue_cr": rev})
+
+    # collect per-peer multiples
+    peer_multiples = {name: [] for name, _ in _METHOD_SPEC}
+    peers_used_out = []
+    n_market = 0
+    n_book = 0
+    for r in used:
+        p = r["company"]
+        ev, basis = _ev_of(p)
+        pm = {}
+        if ev is not None:
+            if basis == "market":
+                n_market += 1
+            else:
+                n_book += 1
+            for mname, driver in _METHOD_SPEC:
+                dv = getattr(p, driver)
+                if dv is not None and dv > 0:
+                    mult = ev / dv
+                    pm[mname] = round(mult, 4)
+                    peer_multiples[mname].append(mult)
+        peers_used_out.append({
+            "duns": p.duns, "name": p.name, "score": r["score"],
+            "listed": p.listed, "city": p.city,
+            "revenue_cr": p.revenue_cr, "ebitda_margin": p.ebitda_margin,
+            "revenue_growth": p.revenue_growth,
+            "ev_basis": basis, "ev_cr": ev,
+            "multiples": pm,
+            "components": r["components"],
+            "selected_because": r["selected_because"],
+            "differences": r["differences"],
+        })
+
+    ev_basis = (f"EV = market EV where available ({n_market} peers), else book "
+                f"capital-employed proxy ({n_book} peers)")
+
+    # compute each method
+    methods = []
+    target_drivers = {
+        "EV/EBITDA": target.ebitda_cr,
+        "EV/Revenue": target.revenue_cr,
+        "EV/EBIT": target.ebit_cr,
+    }
+
+    for mname, _driver in _METHOD_SPEC:
+        raw = peer_multiples[mname]
+        kept, dropped = _tukey_trim(raw)
+        tdriver = target_drivers[mname]
+        if tdriver is None or tdriver <= 0:
+            if len(kept) >= 3:
+                notes.append(f"{mname} skipped: target driver not positive")
+                if audit is not None:
+                    audit.warn("value", "METHOD_SKIPPED_DRIVER",
+                               f"{mname} skipped: target driver not positive",
+                               {"method": mname, "driver": tdriver})
+            continue
+        if len(kept) < 3:
+            notes.append(f"{mname} skipped: only {len(kept)} peer multiples after trimming")
+            if audit is not None:
+                audit.warn("value", "METHOD_SKIPPED_THIN",
+                           f"{mname} skipped: only {len(kept)} multiples after trimming",
+                           {"method": mname, "n_multiples": len(kept)})
+            continue
+        ks = sorted(kept)
+        median = _percentile(ks, 0.5)
+        p_low = _percentile(ks, low_q)
+        p_high = _percentile(ks, high_q)
+
+        def equity(mult):
+            ev_x = mult * tdriver
+            return round((ev_x - net_debt) * (1.0 - discount), 4), round(ev_x, 4)
+
+        eq_low, ev_low = equity(p_low)
+        eq_mid, ev_mid = equity(median)
+        eq_high, ev_high = equity(p_high)
+        methods.append({
+            "method": mname,
+            "target_driver": round(tdriver, 4),
+            "n_peers": len(raw),
+            "n_multiples": len(kept),
+            "n_outliers_dropped": dropped,
+            "range_basis": range_basis,
+            "multiple_p25": round(p_low, 4),
+            "multiple_median": round(median, 4),
+            "multiple_p75": round(p_high, 4),
+            "ev_low_cr": ev_low, "ev_mid_cr": ev_mid, "ev_high_cr": ev_high,
+            "equity_low_cr": eq_low, "equity_mid_cr": eq_mid, "equity_high_cr": eq_high,
+        })
+        if audit is not None:
+            audit.info("value", "METHOD_COMPUTED",
+                       f"{mname}: median {median:.2f}x on {len(kept)} multiples "
+                       f"({dropped} outliers dropped)",
+                       {"method": mname, "median": round(median, 4),
+                        "n_multiples": len(kept), "n_outliers_dropped": dropped})
+
+    # headline selection: EV/EBITDA -> EV/Revenue -> EV/EBIT
+    order = ["EV/EBITDA", "EV/Revenue", "EV/EBIT"]
+    computed = {m["method"]: m for m in methods}
+    headline_method = "none"
+    for cand in order:
+        if cand in computed:
+            headline_method = cand
+            break
+    if audit is not None and headline_method != "none":
+        if headline_method == order[0]:
+            audit.decision("value", "HEADLINE_SELECTED",
+                           f"headline = {headline_method} (preferred method available)",
+                           {"headline": headline_method})
+        else:
+            audit.decision("value", "FALLBACK_HEADLINE",
+                           f"headline fell back to {headline_method}: "
+                           f"preferred method(s) unavailable",
+                           {"headline": headline_method,
+                            "computed": list(computed.keys())})
+
+    # warnings
+    if (target.ebitda_cr or 0) <= 0:
+        warnings.append("target EBITDA ≤ 0: headline falls back past EV/EBITDA")
+    if len(used) < 10:
+        warnings.append(f"only {len(used)} peers used: ranges widened, treat with caution")
+    if headline_method == "none":
+        warnings.append("no method computable: valuation is 'none'")
+        if audit is not None:
+            audit.error("value", "NO_METHOD",
+                        "no valuation method computable; returning 'none'")
+        return Valuation(
+            headline_method="none", methods=methods, net_debt_cr=net_debt,
+            discount=discount, discount_reason=dreason,
+            equity_low_cr=None, equity_mid_cr=None, equity_high_cr=None,
+            peers_used=peers_used_out, ev_basis=ev_basis, notes=notes, warnings=warnings,
+        )
+
+    h = computed[headline_method]
+    return Valuation(
+        headline_method=headline_method, methods=methods, net_debt_cr=net_debt,
+        discount=discount, discount_reason=dreason,
+        equity_low_cr=h["equity_low_cr"], equity_mid_cr=h["equity_mid_cr"],
+        equity_high_cr=h["equity_high_cr"],
+        peers_used=peers_used_out, ev_basis=ev_basis, notes=notes, warnings=warnings,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Serialization helpers
+# ---------------------------------------------------------------------------
+
+def company_to_dict(c: Company) -> dict:
+    return asdict(c)
+
+
+def profile_to_dict(p: EconomicProfile) -> dict:
+    return asdict(p)
+
+
+def valuation_to_dict(v: Valuation) -> dict:
+    return asdict(v)
+
+
+def dataquality_to_dict(d: DataQuality) -> dict:
+    return asdict(d)
