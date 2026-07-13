@@ -220,12 +220,18 @@ the API envelope (×10,000). Ranges:
 
 `otherFinancials` is a 4-period declining sales history; `[0]` latest, `[1]` prior.
 
-**Listing & market EV.** ~40% of companies are listed (`rng.random()<0.40`),
-reflected in a CIN starting with `L`. For listed companies the mock also stamps a
-`market_ev_cr = capital_employed × [1.05,1.70]`. **IMPORTANT:** this market EV is
-*not* surfaced through the D&B schema (D&B `dnbhoovers` does not return market cap),
-so normalization leaves `Company.market_ev_cr = None`. It represents a *future
-market-data provider* hook. See §9.1 and §12.
+**Listing & market EV.** ~60% of companies are listed (`rng.random()<0.60`),
+reflected in a CIN starting with `L`. For listed companies the mock synthesizes a
+**realistic market enterprise value** via `_market_valuation`: it draws a
+sector-realistic EV/EBITDA multiple from `_CLUSTER_EV_EBITDA`
+(`A=12–18x`, `B=8–14x`, `C=14–22x`), then `market_ev = EBITDA × multiple` and
+`market_cap = market_ev − net_debt`. Both are emitted in the `company_financials`
+response under a `marketData` block (`marketCapitalization`, `enterpriseValue`, in
+Thousand) **only for listed companies**. This is what makes the derived multiples
+*true trading multiples*. Unlisted companies have no `marketData` (no observable
+market value). In production this market block comes from the D&B Hoovers
+public-company market module or a market feed (NSE/BSE); the schema/units mirror the
+financials. See §9.1 and §12.
 
 ### 5.3 `MockDnBClient` API
 
@@ -381,15 +387,27 @@ cluster-C pumps that share NAICS subsector `333`), each scoring ~0.86–0.98.
 `compute_valuation(target, peers, top_n=15, audit=None) -> Valuation`. Uses
 `used = peers[:top_n]`. All math in Crore.
 
-### 9.1 Enterprise Value basis (per peer) — `_ev_of`
+### 9.1 Enterprise Value basis — market-primary, book-fallback
 
-`EV = market_ev_cr if set(>0) else capital_employed_cr` (**book EV proxy**). Because
-D&B doesn't supply market EV, in practice **every peer uses the book proxy today**.
-The chosen basis per peer is recorded (`"market"` / `"book"`), and the result exposes
-an honest `ev_basis` string, e.g. *"EV = market EV where available (0 peers), else
-book capital-employed proxy (15 peers)"*. This is the **no-fake-precision** rule made
-visible. If a peer has neither market EV nor capital employed, it's skipped for
-multiples.
+Peer multiples are collected into **two pools**:
+- **`market_multiples`** — from **listed** comps priced off observed
+  `market_ev_cr` (= market cap + net debt). These are genuine **trading multiples**
+  and are the **primary** basis.
+- **`book_multiples`** — from any comp with `capital_employed_cr`, priced off book
+  capital employed. This is a documented **last-resort fallback**.
+
+**Per method**, if there are **≥ 3 listed comps** the market pool is used
+(`method_basis = "market"`); otherwise it falls back to the book pool
+(`method_basis = "book"`, logged as a `FALLBACK_BOOK_EV` DECISION). Each peer records
+which basis applied (`"market"` / `"book"` / `"none"`), and each computed method
+records its `ev_basis`. The result's `ev_basis` string discloses the split, e.g.
+*"Primary basis: market enterprise value … of 11 LISTED comparables. Book
+capital-employed proxy (4 unlisted comps) is used only as a per-method fallback when
+fewer than 3 listed comps exist for a metric."* A peer with neither market EV nor
+capital employed is skipped for multiples. This is the **no-fake-precision** rule made
+visible. **Why it matters:** book capital employed is *not* enterprise value —
+pricing off it produces meaningless ~7x book ratios; pricing off market EV recovers
+the real sector trading band (e.g. cluster A ≈ 12–18x EV/EBITDA).
 
 ### 9.2 Per-peer multiples (up to 3)
 
@@ -653,12 +671,14 @@ new dependency and it appears **only** inside the live client.
 - Confidence, data-quality gate, structured audit, provenance metadata, graceful
   degradation.
 
+**Implemented in 1.2.0 (was previously deferred):**
+- **Market enterprise value for listed comps.** `marketData` (market cap + EV) is now
+  emitted for listed companies and read in `normalize_company` → `market_cap_cr`,
+  `market_ev_cr`. Valuation prices multiples off market EV (primary) with a book
+  fallback. In production, point `marketData` at a real market feed — no code change
+  needed downstream.
+
 **Deferred / hooked but intentionally inactive:**
-- **`market_ev_cr` (market/listed EV).** Field exists and `_ev_of` will prefer it,
-  but D&B `dnbhoovers` does not return market cap, so it stays `None` today. Wire a
-  market-data provider here later; the EV basis will then report a market/book split
-  automatically. The mock generates a `market_ev_cr` for listed firms purely to model
-  what *would* arrive from that future source — it is not read through the D&B path.
 - **LLM economic classifier.** `build_profile` is the marked swap seam. Keep it a pure
   `Company -> EconomicProfile` function so an LLM variant is a black-box replacement.
 - **Directors / governance flag.** `company_management` is fetched for the target and
@@ -697,9 +717,14 @@ jinja; no second data provider; no network in the core path.
 - **Deterministic:** same input → same output (seeded universe, no randomness in the
   core). Timestamps in `meta.run_timestamp` and audit `ts` are the only wall-clock
   values.
-- **All peers currently use the book EV proxy** (capital employed), because D&B has no
-  market EV — this is disclosed everywhere and is the correct honest behavior, not a
-  bug.
+- **Multiples are market-based trading multiples** from listed comps (market cap + net
+  debt), recovering realistic sector bands (e.g. cluster A ≈ 12–18x EV/EBITDA). The
+  book capital-employed proxy is a per-method fallback only, used when <3 listed comps
+  exist for a metric and always disclosed. Earlier versions (≤1.1.0) priced off book
+  capital employed everywhere, which understated value — fixed in 1.2.0.
+- **DLOM, not a market discount:** the size-scaled discount is applied because the
+  *target* is a private MSME being priced off *listed* peers' liquid multiples. For a
+  genuinely listed target you would waive it.
 - **Triangulation band:** EV/EBITDA, EV/Revenue, EV/EBIT mids will differ; the
   acceptance suite bounds them to `max/min ≤ 2.5`. Large divergence in real data is a
   legitimate signal (margin/asset-intensity differences), surfaced rather than hidden.
@@ -711,4 +736,4 @@ jinja; no second data provider; no network in the core path.
 
 ---
 
-*End of PROJECT_CONTEXT.md — methodology version 1.1.0.*
+*End of PROJECT_CONTEXT.md — methodology version 1.2.0.*

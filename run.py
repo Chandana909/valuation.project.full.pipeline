@@ -43,7 +43,9 @@ RESULT_PATH = os.path.join(OUTPUT_DIR, "result.json")
 DASHBOARD_PATH = os.path.join(OUTPUT_DIR, "dashboard.html")
 
 # Provenance — versioned so every archived valuation is reproducible/traceable.
-METHODOLOGY_VERSION = "1.1.0"
+# 1.2.0: peer multiples now use market enterprise value from LISTED comps
+#        (market cap + net debt); book capital-employed is a per-method fallback only.
+METHODOLOGY_VERSION = "1.2.0"
 DNB_SCHEMA_VERSION = "dnbhoovers-2024"
 ENGINE_NAME = "dnb-msme-comparable-valuation"
 

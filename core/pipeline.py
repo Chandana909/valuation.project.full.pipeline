@@ -53,7 +53,9 @@ class Company:
     net_worth_cr: Optional[float]
     total_assets_cr: Optional[float]
     working_capital_cr: Optional[float]
-    market_ev_cr: Optional[float] = None   # listed-market hook (None => book proxy)
+    market_cap_cr: Optional[float] = None  # market capitalisation (listed only)
+    market_ev_cr: Optional[float] = None   # market enterprise value (listed only)
+    listing_status: str = "unlisted"       # "listed" | "unlisted"
     directors: List[str] = field(default_factory=list)
 
 
@@ -196,6 +198,14 @@ def normalize_company(info_resp, fin_resp, mgmt_resp=None) -> Company:
     else:
         ebit_cr = None
 
+    # market data (listed companies only) -> real enterprise value
+    market = fin_org.get("marketData") or {}
+    market_cap_cr = _to_cr(market.get("marketCapitalization"))
+    market_ev_cr = _to_cr(market.get("enterpriseValue"))
+    # trust CIN listing flag AND presence of market data
+    is_listed = bool(listed or market.get("isPubliclyTraded"))
+    listing_status = "listed" if is_listed else "unlisted"
+
     # prior-year revenue from otherFinancials[1]
     other = fin_org.get("otherFinancials") or []
     revenue_prior_cr = None
@@ -220,7 +230,7 @@ def normalize_company(info_resp, fin_resp, mgmt_resp=None) -> Company:
         naics=naics, naics_desc=naics_desc, hoovers=hoovers,
         major_industry=major, major_industry_desc=major_desc,
         activities=activities, is_exporter=is_exporter, employees=employees,
-        incorporated=incorporated, city=city, listed=listed,
+        incorporated=incorporated, city=city, listed=is_listed,
         revenue_cr=revenue_cr, revenue_prior_cr=revenue_prior_cr,
         revenue_growth=revenue_growth, ebitda_cr=ebitda_cr, ebitda_margin=ebitda_margin,
         depreciation_cr=depreciation_cr, ebit_cr=ebit_cr,
@@ -230,7 +240,8 @@ def normalize_company(info_resp, fin_resp, mgmt_resp=None) -> Company:
         debt_cr=(debt_cr if debt_cr is not None else 0.0),
         capital_employed_cr=capital_employed_cr, net_worth_cr=net_worth_cr,
         total_assets_cr=total_assets_cr, working_capital_cr=working_capital_cr,
-        market_ev_cr=None, directors=directors,
+        market_cap_cr=market_cap_cr, market_ev_cr=market_ev_cr,
+        listing_status=listing_status, directors=directors,
     )
 
 
@@ -576,54 +587,74 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
         low_q, high_q = 0.25, 0.75
         range_basis = "P25/P75"
 
-    # net debt & discount
+    # Net debt bridges enterprise value to equity value.
     net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
+    # DLOM — Discount for Lack of Marketability. Listed peers' multiples embed a
+    # liquidity premium a private MSME does not enjoy; the discount is size-scaled
+    # (smaller = less marketable = larger discount). Standard private-company practice.
     rev = target.revenue_cr or 0.0
     if rev < 100:
-        discount, dreason = 0.30, "revenue < ₹100 Cr (small-cap illiquidity)"
+        discount, dreason = 0.30, "DLOM 30% — micro/small private co. (revenue < ₹100 Cr)"
     elif rev < 500:
-        discount, dreason = 0.25, "revenue ₹100-500 Cr (mid illiquidity)"
+        discount, dreason = 0.25, "DLOM 25% — small-mid private co. (revenue ₹100–500 Cr)"
     else:
-        discount, dreason = 0.20, "revenue ≥ ₹500 Cr (lower illiquidity)"
+        discount, dreason = 0.20, "DLOM 20% — established private co. (revenue ≥ ₹500 Cr)"
     if audit is not None:
         audit.decision("value", "DISCOUNT_APPLIED",
-                       f"illiquidity discount {discount:.0%}: {dreason}",
+                       f"applied {dreason}",
                        {"discount": discount, "revenue_cr": rev})
 
-    # collect per-peer multiples
-    peer_multiples = {name: [] for name, _ in _METHOD_SPEC}
+    # Collect multiples in TWO pools:
+    #   market_multiples — from LISTED comps priced off observed market EV (primary)
+    #   book_multiples   — from ALL comps priced off book capital employed (fallback)
+    # A trading multiple is only meaningful off a market enterprise value, so the
+    # market pool is preferred; the book pool is a documented last resort used per
+    # method only when there are fewer than 3 listed comps for that metric.
+    market_multiples = {name: [] for name, _ in _METHOD_SPEC}
+    book_multiples = {name: [] for name, _ in _METHOD_SPEC}
     peers_used_out = []
     n_market = 0
     n_book = 0
     for r in used:
         p = r["company"]
-        ev, basis = _ev_of(p)
-        pm = {}
-        if ev is not None:
-            if basis == "market":
-                n_market += 1
-            else:
-                n_book += 1
-            for mname, driver in _METHOD_SPEC:
-                dv = getattr(p, driver)
-                if dv is not None and dv > 0:
-                    mult = ev / dv
-                    pm[mname] = round(mult, 4)
-                    peer_multiples[mname].append(mult)
+        mkt_ev = p.market_ev_cr if (p.market_ev_cr and p.market_ev_cr > 0) else None
+        book_ev = p.capital_employed_cr if (p.capital_employed_cr and
+                                            p.capital_employed_cr > 0) else None
+        peer_basis = "market" if mkt_ev else ("book" if book_ev else "none")
+        if peer_basis == "market":
+            n_market += 1
+        elif peer_basis == "book":
+            n_book += 1
+        pm = {}      # multiples shown for this peer (on its own best basis)
+        for mname, driver in _METHOD_SPEC:
+            dv = getattr(p, driver)
+            if dv is None or dv <= 0:
+                continue
+            if mkt_ev:
+                market_multiples[mname].append(mkt_ev / dv)
+                pm[mname] = round(mkt_ev / dv, 4)
+            if book_ev:
+                book_multiples[mname].append(book_ev / dv)
+                if not mkt_ev:
+                    pm[mname] = round(book_ev / dv, 4)
         peers_used_out.append({
             "duns": p.duns, "name": p.name, "score": r["score"],
             "listed": p.listed, "city": p.city,
             "revenue_cr": p.revenue_cr, "ebitda_margin": p.ebitda_margin,
             "revenue_growth": p.revenue_growth,
-            "ev_basis": basis, "ev_cr": ev,
+            "ev_basis": peer_basis,
+            "market_ev_cr": mkt_ev, "market_cap_cr": p.market_cap_cr,
+            "book_ev_cr": book_ev,
             "multiples": pm,
             "components": r["components"],
             "selected_because": r["selected_because"],
             "differences": r["differences"],
         })
 
-    ev_basis = (f"EV = market EV where available ({n_market} peers), else book "
-                f"capital-employed proxy ({n_book} peers)")
+    ev_basis = (f"Primary basis: market enterprise value (market cap + net debt) of "
+                f"{n_market} LISTED comparables. Book capital-employed proxy "
+                f"({n_book} unlisted comps) is used only as a per-method fallback when "
+                f"fewer than 3 listed comps exist for a metric.")
 
     # compute each method
     methods = []
@@ -634,7 +665,19 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
     }
 
     for mname, _driver in _METHOD_SPEC:
-        raw = peer_multiples[mname]
+        # market-primary, book-fallback selection of the peer multiple set
+        if len(market_multiples[mname]) >= 3:
+            raw = market_multiples[mname]
+            method_basis = "market"
+        else:
+            raw = book_multiples[mname]
+            method_basis = "book"
+            if audit is not None and raw:
+                audit.decision("value", "FALLBACK_BOOK_EV",
+                               f"{mname}: <3 listed comps; falling back to book "
+                               f"capital-employed multiples",
+                               {"method": mname,
+                                "n_market": len(market_multiples[mname])})
         kept, dropped = _tukey_trim(raw)
         tdriver = target_drivers[mname]
         if tdriver is None or tdriver <= 0:
@@ -667,6 +710,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
         methods.append({
             "method": mname,
             "target_driver": round(tdriver, 4),
+            "ev_basis": method_basis,
             "n_peers": len(raw),
             "n_multiples": len(kept),
             "n_outliers_dropped": dropped,
@@ -679,9 +723,10 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
         })
         if audit is not None:
             audit.info("value", "METHOD_COMPUTED",
-                       f"{mname}: median {median:.2f}x on {len(kept)} multiples "
-                       f"({dropped} outliers dropped)",
+                       f"{mname}: median {median:.2f}x on {len(kept)} {method_basis} "
+                       f"multiples ({dropped} outliers dropped)",
                        {"method": mname, "median": round(median, 4),
+                        "ev_basis": method_basis,
                         "n_multiples": len(kept), "n_outliers_dropped": dropped})
 
     # headline selection: EV/EBITDA -> EV/Revenue -> EV/EBIT

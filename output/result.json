@@ -1,62 +1,64 @@
 {
   "meta": {
     "engine": "dnb-msme-comparable-valuation",
-    "methodology_version": "1.1.0",
+    "methodology_version": "1.2.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-10T02:07:45+00:00",
+    "run_timestamp": "2026-07-13T13:42:40+00:00",
     "data_source": "Dun & Bradstreet (dnbhoovers)",
     "currency": "INR",
     "reporting_units": "Crore",
     "source_units": "Thousand",
     "human_in_the_loop": false,
-    "query": "Bharat Forge Components",
+    "query": "Woodward",
     "status": "ok"
   },
-  "query": "Bharat Forge Components",
+  "query": "Woodward",
   "target": {
-    "duns": "INB00190000",
-    "name": "Bharat Forge Components",
-    "cin": "U29100MH1986PLC000019",
-    "naics": "336390",
-    "naics_desc": "Other Motor Vehicle Parts Manufacturing",
-    "hoovers": "33999900",
+    "duns": "INA00010000",
+    "name": "Woodward India Controls",
+    "cin": "L29100MH1994PLC000001",
+    "naics": "333611",
+    "naics_desc": "Turbine and Turbine Generator Set Units Manufacturing",
+    "hoovers": "31111100",
     "major_industry": "D",
     "major_industry_desc": "Manufacturing",
-    "activities": "manufactures motor vehicle parts and auto components supplied to automotive OEMs and tier-1 assemblers",
+    "activities": "manufactures precision engine governors and turbine control systems for power generation, marine and industrial OEMs",
     "is_exporter": false,
-    "employees": 5541,
-    "incorporated": "1986-04-01",
-    "city": "Gurugram",
-    "listed": false,
-    "revenue_cr": 7674.23,
-    "revenue_prior_cr": 7072.28,
-    "revenue_growth": 0.0851,
-    "ebitda_cr": 1267.28,
-    "ebitda_margin": 0.1651,
-    "depreciation_cr": 275.83,
-    "ebit_cr": 991.45,
-    "gross_profit_cr": 2685.98,
-    "operating_profit_cr": 991.45,
-    "pat_cr": 541.95,
-    "net_income_cr": 541.95,
-    "cash_cr": 624.14,
-    "debt_cr": 2987.2,
-    "capital_employed_cr": 10034.25,
-    "net_worth_cr": 6020.55,
-    "total_assets_cr": 13044.53,
-    "working_capital_cr": 1534.85,
-    "market_ev_cr": null,
+    "employees": 5590,
+    "incorporated": "1994-04-01",
+    "city": "Hyderabad",
+    "listed": true,
+    "revenue_cr": 5874.35,
+    "revenue_prior_cr": 4630.82,
+    "revenue_growth": 0.2685,
+    "ebitda_cr": 785.01,
+    "ebitda_margin": 0.1336,
+    "depreciation_cr": 339.06,
+    "ebit_cr": 445.95,
+    "gross_profit_cr": 2056.02,
+    "operating_profit_cr": 445.94,
+    "pat_cr": 222.55,
+    "net_income_cr": 222.55,
+    "cash_cr": 327.45,
+    "debt_cr": 1657.83,
+    "capital_employed_cr": 6757.58,
+    "net_worth_cr": 4054.55,
+    "total_assets_cr": 8784.85,
+    "working_capital_cr": 1174.87,
+    "market_cap_cr": 10376.3,
+    "market_ev_cr": 11706.68,
+    "listing_status": "listed",
     "directors": [
-      "Director Bharat A",
-      "Director Bharat B",
-      "Director Bharat C"
+      "Director Woodward A",
+      "Director Woodward B",
+      "Director Woodward C"
     ]
   },
   "target_profile": {
     "operating_model": "manufacturer",
     "value_chain": "finished_goods",
     "customer_type": "B2B",
-    "naics_subsector": "336",
+    "naics_subsector": "333",
     "major_industry": "D",
     "confidence": 0.95
   },
@@ -118,387 +120,203 @@
   },
   "peers": [
     {
-      "duns": "INB00340000",
-      "name": "Subros Auto Parts",
-      "score": 0.9734,
+      "duns": "INA00040000",
+      "name": "Bharat Turbine Controls",
+      "score": 0.9661,
       "listed": true,
-      "city": "Aurangabad",
-      "revenue_cr": 6963.66,
-      "ebitda_margin": 0.1769,
-      "revenue_growth": 0.0453,
-      "ev_basis": "book",
-      "ev_cr": 10600.39,
-      "multiples": {
-        "EV/EBITDA": 8.6072,
-        "EV/Revenue": 1.5222,
-        "EV/EBIT": 10.8113
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1823,
-        "margin": 0.1411,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INB00310000",
-      "name": "Minda Auto Parts",
-      "score": 0.9351,
-      "listed": false,
       "city": "Chennai",
-      "revenue_cr": 5034.82,
-      "ebitda_margin": 0.1577,
-      "revenue_growth": -0.0107,
-      "ev_basis": "book",
-      "ev_cr": 4955.45,
+      "revenue_cr": 6739.01,
+      "ebitda_margin": 0.1205,
+      "revenue_growth": 0.1032,
+      "ev_basis": "market",
+      "market_ev_cr": 13731.96,
+      "market_cap_cr": 14115.39,
+      "book_ev_cr": 7137.53,
       "multiples": {
-        "EV/EBITDA": 6.24,
-        "EV/Revenue": 0.9842,
-        "EV/EBIT": 9.5477
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1407,
-        "margin": 0.1444,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹5035 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00250000",
-      "name": "Sona Steering Components",
-      "score": 0.9324,
-      "listed": true,
-      "city": "Gurugram",
-      "revenue_cr": 9799.43,
-      "ebitda_margin": 0.1274,
-      "revenue_growth": 0.2532,
-      "ev_basis": "book",
-      "ev_cr": 14189.8,
-      "multiples": {
-        "EV/EBITDA": 11.3702,
-        "EV/Revenue": 1.448,
-        "EV/EBIT": 15.6906
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1607,
-        "margin": 0.1217,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INB00300000",
-      "name": "JBM Auto Systems",
-      "score": 0.9291,
-      "listed": true,
-      "city": "Aurangabad",
-      "revenue_cr": 5162.69,
-      "ebitda_margin": 0.1463,
-      "revenue_growth": 0.2383,
-      "ev_basis": "book",
-      "ev_cr": 6017.98,
-      "multiples": {
-        "EV/EBITDA": 7.9697,
-        "EV/Revenue": 1.1657,
-        "EV/EBIT": 11.7348
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1432,
-        "margin": 0.1359,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹5163 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00270000",
-      "name": "Endurance Auto Systems",
-      "score": 0.929,
-      "listed": true,
-      "city": "Gurugram",
-      "revenue_cr": 5719.45,
-      "ebitda_margin": 0.131,
-      "revenue_growth": -0.0458,
-      "ev_basis": "book",
-      "ev_cr": 7371.86,
-      "multiples": {
-        "EV/EBITDA": 9.8408,
-        "EV/Revenue": 1.2889,
-        "EV/EBIT": 13.0027
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1546,
-        "margin": 0.1244,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹5719 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00280000",
-      "name": "Gabriel Suspension Parts",
-      "score": 0.9083,
-      "listed": false,
-      "city": "Pune",
-      "revenue_cr": 4210.16,
-      "ebitda_margin": 0.1873,
-      "revenue_growth": 0.2567,
-      "ev_basis": "book",
-      "ev_cr": 4717.9,
-      "multiples": {
-        "EV/EBITDA": 5.9821,
-        "EV/Revenue": 1.1206,
-        "EV/EBIT": 7.4855
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.125,
-        "margin": 0.1333,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹4210 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00320000",
-      "name": "Lumax Auto Components",
-      "score": 0.9053,
-      "listed": false,
-      "city": "Pantnagar",
-      "revenue_cr": 8095.52,
-      "ebitda_margin": 0.1457,
-      "revenue_growth": 0.0879,
-      "ev_basis": "book",
-      "ev_cr": 6792.52,
-      "multiples": {
-        "EV/EBITDA": 5.7582,
-        "EV/Revenue": 0.839,
-        "EV/EBIT": 8.2453
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1899,
-        "margin": 0.1354,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INB00350000",
-      "name": "Jamna Auto Components",
-      "score": 0.9053,
-      "listed": false,
-      "city": "Gurugram",
-      "revenue_cr": 3300.96,
-      "ebitda_margin": 0.1609,
-      "revenue_growth": 0.0775,
-      "ev_basis": "book",
-      "ev_cr": 3756.69,
-      "multiples": {
-        "EV/EBITDA": 7.0731,
-        "EV/Revenue": 1.1381,
-        "EV/EBIT": 10.2404
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1085,
-        "margin": 0.1468,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹3301 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00240000",
-      "name": "Wabco Brake Systems",
-      "score": 0.9008,
-      "listed": true,
-      "city": "Manesar",
-      "revenue_cr": 3559.94,
-      "ebitda_margin": 0.1487,
-      "revenue_growth": 0.0294,
-      "ev_basis": "book",
-      "ev_cr": 5215.04,
-      "multiples": {
-        "EV/EBITDA": 9.8544,
-        "EV/Revenue": 1.4649,
-        "EV/EBIT": 15.8705
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1131,
-        "margin": 0.1377,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹3560 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00260000",
-      "name": "Amtek Auto Parts",
-      "score": 0.8966,
-      "listed": false,
-      "city": "Gurugram",
-      "revenue_cr": 6691.61,
-      "ebitda_margin": 0.1527,
-      "revenue_growth": 0.0951,
-      "ev_basis": "book",
-      "ev_cr": 6216.1,
-      "multiples": {
-        "EV/EBITDA": 6.0844,
-        "EV/Revenue": 0.9289,
-        "EV/EBIT": 9.6411
+        "EV/EBITDA": 16.9163,
+        "EV/Revenue": 2.0377,
+        "EV/EBIT": 27.3867
       },
       "components": {
         "industry": 0.4,
         "scale": 0.1759,
-        "margin": 0.1407,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INB00200000",
-      "name": "Rane Auto Parts",
-      "score": 0.8933,
-      "listed": false,
-      "city": "Pantnagar",
-      "revenue_cr": 2488.78,
-      "ebitda_margin": 0.1641,
-      "revenue_growth": 0.199,
-      "ev_basis": "book",
-      "ev_cr": 2349.84,
-      "multiples": {
-        "EV/EBITDA": 5.7542,
-        "EV/Revenue": 0.9442,
-        "EV/EBIT": 8.2243
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.0941,
-        "margin": 0.1492,
+        "margin": 0.1402,
         "customer": 0.15,
         "export": 0.1
       },
       "selected_because": [
-        "same NAICS subsector 336",
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INC00480000",
+      "name": "Mather Platt Fluid",
+      "score": 0.9502,
+      "listed": true,
+      "city": "Ghaziabad",
+      "revenue_cr": 6545.91,
+      "ebitda_margin": 0.174,
+      "revenue_growth": 0.2228,
+      "ev_basis": "market",
+      "market_ev_cr": 16328.74,
+      "market_cap_cr": 15862.55,
+      "book_ev_cr": 8187.5,
+      "multiples": {
+        "EV/EBITDA": 14.3354,
+        "EV/Revenue": 2.4945,
+        "EV/EBIT": 20.0527
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1805,
+        "margin": 0.1197,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INA00060000",
+      "name": "Greaves Governor Systems",
+      "score": 0.9481,
+      "listed": true,
+      "city": "Hyderabad",
+      "revenue_cr": 5376.17,
+      "ebitda_margin": 0.1811,
+      "revenue_growth": 0.2647,
+      "ev_basis": "market",
+      "market_ev_cr": 12378.75,
+      "market_cap_cr": 11719.04,
+      "book_ev_cr": 6622.13,
+      "multiples": {
+        "EV/EBITDA": 12.7132,
+        "EV/Revenue": 2.3025,
+        "EV/EBIT": 15.4393
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1837,
+        "margin": 0.1144,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INC00460000",
+      "name": "Darling Pumps Machinery",
+      "score": 0.9472,
+      "listed": false,
+      "city": "Ahmedabad",
+      "revenue_cr": 8225.79,
+      "ebitda_margin": 0.1304,
+      "revenue_growth": 0.2534,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 8245.1,
+      "multiples": {
+        "EV/EBITDA": 7.6855,
+        "EV/Revenue": 1.0023,
+        "EV/EBIT": 11.1108
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1496,
+        "margin": 0.1476,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
         "similar EBITDA margin",
         "same customer type (B2B)",
         "same export profile"
       ],
       "differences": [
-        "revenue ₹2489 Cr vs ₹7674 Cr"
+        "revenue ₹8226 Cr vs ₹5874 Cr"
       ]
     },
     {
-      "duns": "INB00360000",
-      "name": "Pricol Auto Systems",
-      "score": 0.8927,
-      "listed": false,
+      "duns": "INA00170000",
+      "name": "Deccan Engine Controls",
+      "score": 0.943,
+      "listed": true,
       "city": "Pune",
-      "revenue_cr": 6987.39,
-      "ebitda_margin": 0.1382,
-      "revenue_growth": 0.1977,
-      "ev_basis": "book",
-      "ev_cr": 7751.69,
+      "revenue_cr": 7340.48,
+      "ebitda_margin": 0.1611,
+      "revenue_growth": 0.1694,
+      "ev_basis": "market",
+      "market_ev_cr": 19829.07,
+      "market_cap_cr": 19751.83,
+      "book_ev_cr": 8342.82,
       "multiples": {
-        "EV/EBITDA": 8.0245,
-        "EV/Revenue": 1.1094,
-        "EV/EBIT": 12.5584
+        "EV/EBITDA": 16.7666,
+        "EV/Revenue": 2.7013,
+        "EV/EBIT": 25.9478
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1829,
-        "margin": 0.1298,
+        "scale": 0.1636,
+        "margin": 0.1294,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INC00440000",
+      "name": "Texmo Pumps Machinery",
+      "score": 0.9224,
+      "listed": true,
+      "city": "Ghaziabad",
+      "revenue_cr": 5841.7,
+      "ebitda_margin": 0.1249,
+      "revenue_growth": 0.0856,
+      "ev_basis": "market",
+      "market_ev_cr": 15532.87,
+      "market_cap_cr": 14996.75,
+      "book_ev_cr": 6647.54,
+      "multiples": {
+        "EV/EBITDA": 21.284,
+        "EV/Revenue": 2.659,
+        "EV/EBIT": 30.0169
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1989,
+        "margin": 0.1435,
         "customer": 0.15,
         "export": 0.03
       },
       "selected_because": [
-        "same NAICS subsector 336",
+        "same NAICS subsector 333",
         "comparable revenue scale",
         "similar EBITDA margin",
         "same customer type (B2B)"
@@ -506,101 +324,306 @@
       "differences": []
     },
     {
-      "duns": "INB00220000",
-      "name": "Motherson Auto Systems",
-      "score": 0.8859,
-      "listed": false,
-      "city": "Pantnagar",
-      "revenue_cr": 3892.7,
-      "ebitda_margin": 0.1208,
-      "revenue_growth": 0.0203,
-      "ev_basis": "book",
-      "ev_cr": 4158.93,
+      "duns": "INC00450000",
+      "name": "Aqua Pump Industries",
+      "score": 0.918,
+      "listed": true,
+      "city": "Vadodara",
+      "revenue_cr": 7927.91,
+      "ebitda_margin": 0.1815,
+      "revenue_growth": 0.0929,
+      "ev_basis": "market",
+      "market_ev_cr": 25740.13,
+      "market_cap_cr": 24356.6,
+      "book_ev_cr": 11742.06,
       "multiples": {
-        "EV/EBITDA": 8.8433,
-        "EV/Revenue": 1.0684,
-        "EV/EBIT": 12.6043
+        "EV/EBITDA": 17.888,
+        "EV/Revenue": 3.2468,
+        "EV/EBIT": 22.3208
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1191,
-        "margin": 0.1168,
+        "scale": 0.1539,
+        "margin": 0.1141,
         "customer": 0.15,
         "export": 0.1
       },
       "selected_because": [
-        "same NAICS subsector 336",
+        "same NAICS subsector 333",
         "similar EBITDA margin",
         "same customer type (B2B)",
         "same export profile"
       ],
       "differences": [
-        "revenue ₹3893 Cr vs ₹7674 Cr"
+        "revenue ₹7928 Cr vs ₹5874 Cr"
       ]
     },
     {
-      "duns": "INB00290000",
-      "name": "Munjal Auto Components",
+      "duns": "INA00030000",
+      "name": "Cummins Governor Controls",
+      "score": 0.8943,
+      "listed": false,
+      "city": "Coimbatore",
+      "revenue_cr": 4757.0,
+      "ebitda_margin": 0.1348,
+      "revenue_growth": 0.1653,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 4977.72,
+      "multiples": {
+        "EV/EBITDA": 7.7613,
+        "EV/Revenue": 1.0464,
+        "EV/EBIT": 12.1568
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1652,
+        "margin": 0.1491,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INA00180000",
+      "name": "Elgi Governor Controls",
+      "score": 0.8873,
+      "listed": true,
+      "city": "Coimbatore",
+      "revenue_cr": 5987.79,
+      "ebitda_margin": 0.1854,
+      "revenue_growth": 0.0599,
+      "ev_basis": "market",
+      "market_ev_cr": 19907.88,
+      "market_cap_cr": 18924.75,
+      "book_ev_cr": 8849.1,
+      "multiples": {
+        "EV/EBITDA": 17.9299,
+        "EV/Revenue": 3.3247,
+        "EV/EBIT": 26.0765
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1962,
+        "margin": 0.1111,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INC00380000",
+      "name": "KSB Pumps India",
       "score": 0.8828,
       "listed": true,
-      "city": "Manesar",
-      "revenue_cr": 2363.76,
-      "ebitda_margin": 0.1529,
-      "revenue_growth": 0.2105,
-      "ev_basis": "book",
-      "ev_cr": 2259.16,
+      "city": "Coimbatore",
+      "revenue_cr": 5356.16,
+      "ebitda_margin": 0.174,
+      "revenue_growth": -0.0394,
+      "ev_basis": "market",
+      "market_ev_cr": 18082.2,
+      "market_cap_cr": 17902.46,
+      "book_ev_cr": 7076.61,
       "multiples": {
-        "EV/EBITDA": 6.2515,
-        "EV/Revenue": 0.9557,
-        "EV/EBIT": 7.9383
+        "EV/EBITDA": 19.3986,
+        "EV/Revenue": 3.376,
+        "EV/EBIT": 28.2782
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.0919,
-        "margin": 0.1409,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 336",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": [
-        "revenue ₹2364 Cr vs ₹7674 Cr"
-      ]
-    },
-    {
-      "duns": "INB00330000",
-      "name": "Fiem Auto Systems",
-      "score": 0.8746,
-      "listed": true,
-      "city": "Pune",
-      "revenue_cr": 6301.16,
-      "ebitda_margin": 0.1351,
-      "revenue_growth": -0.0228,
-      "ev_basis": "book",
-      "ev_cr": 6254.61,
-      "multiples": {
-        "EV/EBITDA": 7.3496,
-        "EV/Revenue": 0.9926,
-        "EV/EBIT": 10.5724
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1671,
-        "margin": 0.1275,
+        "scale": 0.1831,
+        "margin": 0.1197,
         "customer": 0.15,
         "export": 0.03
       },
       "selected_because": [
-        "same NAICS subsector 336",
+        "same NAICS subsector 333",
         "comparable revenue scale",
         "similar EBITDA margin",
         "same customer type (B2B)"
       ],
       "differences": []
+    },
+    {
+      "duns": "INA00090000",
+      "name": "BHEL Turbine Controls",
+      "score": 0.8826,
+      "listed": false,
+      "city": "Hyderabad",
+      "revenue_cr": 4741.28,
+      "ebitda_margin": 0.1497,
+      "revenue_growth": 0.123,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 7204.36,
+      "multiples": {
+        "EV/EBITDA": 10.147,
+        "EV/Revenue": 1.5195,
+        "EV/EBIT": 15.8711
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1647,
+        "margin": 0.1379,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INA00070000",
+      "name": "Triveni Turbine Controls",
+      "score": 0.8807,
+      "listed": false,
+      "city": "Bengaluru",
+      "revenue_cr": 7953.51,
+      "ebitda_margin": 0.1298,
+      "revenue_growth": 0.009,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 10766.36,
+      "multiples": {
+        "EV/EBITDA": 10.4271,
+        "EV/Revenue": 1.3537,
+        "EV/EBIT": 17.8006
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1535,
+        "margin": 0.1472,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": [
+        "revenue ₹7954 Cr vs ₹5874 Cr"
+      ]
+    },
+    {
+      "duns": "INA00150000",
+      "name": "Sanghvi Engine Equipment",
+      "score": 0.8687,
+      "listed": true,
+      "city": "Chennai",
+      "revenue_cr": 4950.85,
+      "ebitda_margin": 0.1764,
+      "revenue_growth": 0.1598,
+      "ev_basis": "market",
+      "market_ev_cr": 14659.31,
+      "market_cap_cr": 13584.88,
+      "book_ev_cr": 7191.29,
+      "multiples": {
+        "EV/EBITDA": 16.7884,
+        "EV/Revenue": 2.961,
+        "EV/EBIT": 20.378
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1708,
+        "margin": 0.1179,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "comparable revenue scale",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "INA00120000",
+      "name": "Apex Engine Controls",
+      "score": 0.8648,
+      "listed": true,
+      "city": "Coimbatore",
+      "revenue_cr": 4556.73,
+      "ebitda_margin": 0.1666,
+      "revenue_growth": 0.1733,
+      "ev_basis": "market",
+      "market_ev_cr": 11639.76,
+      "market_cap_cr": 10792.1,
+      "book_ev_cr": 4890.57,
+      "multiples": {
+        "EV/EBITDA": 15.3367,
+        "EV/Revenue": 2.5544,
+        "EV/EBIT": 22.0325
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1595,
+        "margin": 0.1253,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": [
+        "revenue ₹4557 Cr vs ₹5874 Cr"
+      ]
+    },
+    {
+      "duns": "INA00100000",
+      "name": "Shakti Engine Governors",
+      "score": 0.861,
+      "listed": true,
+      "city": "Bengaluru",
+      "revenue_cr": 8588.67,
+      "ebitda_margin": 0.1521,
+      "revenue_growth": 0.1379,
+      "ev_basis": "market",
+      "market_ev_cr": 18149.99,
+      "market_cap_cr": 17837.47,
+      "book_ev_cr": 8407.38,
+      "multiples": {
+        "EV/EBITDA": 13.8922,
+        "EV/Revenue": 2.1132,
+        "EV/EBIT": 21.5661
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1449,
+        "margin": 0.1361,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 333",
+        "similar EBITDA margin",
+        "same customer type (B2B)"
+      ],
+      "differences": [
+        "revenue ₹8589 Cr vs ₹5874 Cr"
+      ]
     }
   ],
   "peers_ranked_count": 53,
@@ -651,445 +674,264 @@
     "methods": [
       {
         "method": "EV/EBITDA",
-        "target_driver": 1267.28,
-        "n_peers": 15,
-        "n_multiples": 15,
+        "target_driver": 785.01,
+        "ev_basis": "market",
+        "n_peers": 11,
+        "n_multiples": 11,
         "n_outliers_dropped": 0,
         "range_basis": "P25/P75",
-        "multiple_p25": 6.1622,
-        "multiple_median": 7.3496,
-        "multiple_p75": 8.7253,
-        "ev_low_cr": 7809.2667,
-        "ev_mid_cr": 9314.0412,
-        "ev_high_cr": 11057.3649,
-        "equity_low_cr": 4356.9654,
-        "equity_mid_cr": 5560.7849,
-        "equity_high_cr": 6955.4439
+        "multiple_p25": 14.836,
+        "multiple_median": 16.7884,
+        "multiple_p75": 17.9089,
+        "ev_low_cr": 11646.4338,
+        "ev_mid_cr": 13179.0753,
+        "ev_high_cr": 14058.6921,
+        "equity_low_cr": 8252.843,
+        "equity_mid_cr": 9478.9562,
+        "equity_high_cr": 10182.6497
       },
       {
         "method": "EV/Revenue",
-        "target_driver": 7674.23,
-        "n_peers": 15,
-        "n_multiples": 15,
+        "target_driver": 5874.35,
+        "ev_basis": "market",
+        "n_peers": 11,
+        "n_multiples": 11,
         "n_outliers_dropped": 0,
         "range_basis": "P25/P75",
-        "multiple_p25": 0.97,
-        "multiple_median": 1.1094,
-        "multiple_p75": 1.2273,
-        "ev_low_cr": 7443.9427,
-        "ev_mid_cr": 8513.6585,
-        "ev_high_cr": 9418.4987,
-        "equity_low_cr": 4064.7061,
-        "equity_mid_cr": 4920.4788,
-        "equity_high_cr": 5644.3509
+        "multiple_p25": 2.3985,
+        "multiple_median": 2.659,
+        "multiple_p75": 3.1039,
+        "ev_low_cr": 14089.6787,
+        "ev_mid_cr": 15619.6852,
+        "ev_high_cr": 18233.2248,
+        "equity_low_cr": 10207.4389,
+        "equity_mid_cr": 11431.4441,
+        "equity_high_cr": 13522.2758
       },
       {
         "method": "EV/EBIT",
-        "target_driver": 991.45,
-        "n_peers": 15,
-        "n_multiples": 15,
+        "target_driver": 445.95,
+        "ev_basis": "market",
+        "n_peers": 11,
+        "n_multiples": 11,
         "n_outliers_dropped": 0,
         "range_basis": "P25/P75",
-        "multiple_p25": 8.8965,
-        "multiple_median": 10.5724,
-        "multiple_p75": 12.5814,
-        "ev_low_cr": 8820.4131,
-        "ev_mid_cr": 10481.9694,
-        "ev_high_cr": 12473.8164,
-        "equity_low_cr": 5165.8825,
-        "equity_mid_cr": 6495.1275,
-        "equity_high_cr": 8088.6051
+        "multiple_p25": 20.972,
+        "multiple_median": 22.3208,
+        "multiple_p75": 26.7316,
+        "ev_low_cr": 9352.4715,
+        "ev_mid_cr": 9953.9633,
+        "ev_high_cr": 11920.9654,
+        "equity_low_cr": 6417.6732,
+        "equity_mid_cr": 6898.8667,
+        "equity_high_cr": 8472.4684
       }
     ],
-    "net_debt_cr": 2363.06,
+    "net_debt_cr": 1330.38,
     "discount": 0.2,
-    "discount_reason": "revenue ≥ ₹500 Cr (lower illiquidity)",
-    "equity_low_cr": 4356.9654,
-    "equity_mid_cr": 5560.7849,
-    "equity_high_cr": 6955.4439,
+    "discount_reason": "DLOM 20% — established private co. (revenue ≥ ₹500 Cr)",
+    "equity_low_cr": 8252.843,
+    "equity_mid_cr": 9478.9562,
+    "equity_high_cr": 10182.6497,
     "peers_used": [
       {
-        "duns": "INB00340000",
-        "name": "Subros Auto Parts",
-        "score": 0.9734,
+        "duns": "INA00040000",
+        "name": "Bharat Turbine Controls",
+        "score": 0.9661,
         "listed": true,
-        "city": "Aurangabad",
-        "revenue_cr": 6963.66,
-        "ebitda_margin": 0.1769,
-        "revenue_growth": 0.0453,
-        "ev_basis": "book",
-        "ev_cr": 10600.39,
-        "multiples": {
-          "EV/EBITDA": 8.6072,
-          "EV/Revenue": 1.5222,
-          "EV/EBIT": 10.8113
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1823,
-          "margin": 0.1411,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INB00310000",
-        "name": "Minda Auto Parts",
-        "score": 0.9351,
-        "listed": false,
         "city": "Chennai",
-        "revenue_cr": 5034.82,
-        "ebitda_margin": 0.1577,
-        "revenue_growth": -0.0107,
-        "ev_basis": "book",
-        "ev_cr": 4955.45,
+        "revenue_cr": 6739.01,
+        "ebitda_margin": 0.1205,
+        "revenue_growth": 0.1032,
+        "ev_basis": "market",
+        "market_ev_cr": 13731.96,
+        "market_cap_cr": 14115.39,
+        "book_ev_cr": 7137.53,
         "multiples": {
-          "EV/EBITDA": 6.24,
-          "EV/Revenue": 0.9842,
-          "EV/EBIT": 9.5477
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1407,
-          "margin": 0.1444,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹5035 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00250000",
-        "name": "Sona Steering Components",
-        "score": 0.9324,
-        "listed": true,
-        "city": "Gurugram",
-        "revenue_cr": 9799.43,
-        "ebitda_margin": 0.1274,
-        "revenue_growth": 0.2532,
-        "ev_basis": "book",
-        "ev_cr": 14189.8,
-        "multiples": {
-          "EV/EBITDA": 11.3702,
-          "EV/Revenue": 1.448,
-          "EV/EBIT": 15.6906
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1607,
-          "margin": 0.1217,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INB00300000",
-        "name": "JBM Auto Systems",
-        "score": 0.9291,
-        "listed": true,
-        "city": "Aurangabad",
-        "revenue_cr": 5162.69,
-        "ebitda_margin": 0.1463,
-        "revenue_growth": 0.2383,
-        "ev_basis": "book",
-        "ev_cr": 6017.98,
-        "multiples": {
-          "EV/EBITDA": 7.9697,
-          "EV/Revenue": 1.1657,
-          "EV/EBIT": 11.7348
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1432,
-          "margin": 0.1359,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹5163 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00270000",
-        "name": "Endurance Auto Systems",
-        "score": 0.929,
-        "listed": true,
-        "city": "Gurugram",
-        "revenue_cr": 5719.45,
-        "ebitda_margin": 0.131,
-        "revenue_growth": -0.0458,
-        "ev_basis": "book",
-        "ev_cr": 7371.86,
-        "multiples": {
-          "EV/EBITDA": 9.8408,
-          "EV/Revenue": 1.2889,
-          "EV/EBIT": 13.0027
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1546,
-          "margin": 0.1244,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹5719 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00280000",
-        "name": "Gabriel Suspension Parts",
-        "score": 0.9083,
-        "listed": false,
-        "city": "Pune",
-        "revenue_cr": 4210.16,
-        "ebitda_margin": 0.1873,
-        "revenue_growth": 0.2567,
-        "ev_basis": "book",
-        "ev_cr": 4717.9,
-        "multiples": {
-          "EV/EBITDA": 5.9821,
-          "EV/Revenue": 1.1206,
-          "EV/EBIT": 7.4855
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.125,
-          "margin": 0.1333,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹4210 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00320000",
-        "name": "Lumax Auto Components",
-        "score": 0.9053,
-        "listed": false,
-        "city": "Pantnagar",
-        "revenue_cr": 8095.52,
-        "ebitda_margin": 0.1457,
-        "revenue_growth": 0.0879,
-        "ev_basis": "book",
-        "ev_cr": 6792.52,
-        "multiples": {
-          "EV/EBITDA": 5.7582,
-          "EV/Revenue": 0.839,
-          "EV/EBIT": 8.2453
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1899,
-          "margin": 0.1354,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INB00350000",
-        "name": "Jamna Auto Components",
-        "score": 0.9053,
-        "listed": false,
-        "city": "Gurugram",
-        "revenue_cr": 3300.96,
-        "ebitda_margin": 0.1609,
-        "revenue_growth": 0.0775,
-        "ev_basis": "book",
-        "ev_cr": 3756.69,
-        "multiples": {
-          "EV/EBITDA": 7.0731,
-          "EV/Revenue": 1.1381,
-          "EV/EBIT": 10.2404
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1085,
-          "margin": 0.1468,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹3301 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00240000",
-        "name": "Wabco Brake Systems",
-        "score": 0.9008,
-        "listed": true,
-        "city": "Manesar",
-        "revenue_cr": 3559.94,
-        "ebitda_margin": 0.1487,
-        "revenue_growth": 0.0294,
-        "ev_basis": "book",
-        "ev_cr": 5215.04,
-        "multiples": {
-          "EV/EBITDA": 9.8544,
-          "EV/Revenue": 1.4649,
-          "EV/EBIT": 15.8705
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1131,
-          "margin": 0.1377,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹3560 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00260000",
-        "name": "Amtek Auto Parts",
-        "score": 0.8966,
-        "listed": false,
-        "city": "Gurugram",
-        "revenue_cr": 6691.61,
-        "ebitda_margin": 0.1527,
-        "revenue_growth": 0.0951,
-        "ev_basis": "book",
-        "ev_cr": 6216.1,
-        "multiples": {
-          "EV/EBITDA": 6.0844,
-          "EV/Revenue": 0.9289,
-          "EV/EBIT": 9.6411
+          "EV/EBITDA": 16.9163,
+          "EV/Revenue": 2.0377,
+          "EV/EBIT": 27.3867
         },
         "components": {
           "industry": 0.4,
           "scale": 0.1759,
-          "margin": 0.1407,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INB00200000",
-        "name": "Rane Auto Parts",
-        "score": 0.8933,
-        "listed": false,
-        "city": "Pantnagar",
-        "revenue_cr": 2488.78,
-        "ebitda_margin": 0.1641,
-        "revenue_growth": 0.199,
-        "ev_basis": "book",
-        "ev_cr": 2349.84,
-        "multiples": {
-          "EV/EBITDA": 5.7542,
-          "EV/Revenue": 0.9442,
-          "EV/EBIT": 8.2243
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.0941,
-          "margin": 0.1492,
+          "margin": 0.1402,
           "customer": 0.15,
           "export": 0.1
         },
         "selected_because": [
-          "same NAICS subsector 336",
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INC00480000",
+        "name": "Mather Platt Fluid",
+        "score": 0.9502,
+        "listed": true,
+        "city": "Ghaziabad",
+        "revenue_cr": 6545.91,
+        "ebitda_margin": 0.174,
+        "revenue_growth": 0.2228,
+        "ev_basis": "market",
+        "market_ev_cr": 16328.74,
+        "market_cap_cr": 15862.55,
+        "book_ev_cr": 8187.5,
+        "multiples": {
+          "EV/EBITDA": 14.3354,
+          "EV/Revenue": 2.4945,
+          "EV/EBIT": 20.0527
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1805,
+          "margin": 0.1197,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INA00060000",
+        "name": "Greaves Governor Systems",
+        "score": 0.9481,
+        "listed": true,
+        "city": "Hyderabad",
+        "revenue_cr": 5376.17,
+        "ebitda_margin": 0.1811,
+        "revenue_growth": 0.2647,
+        "ev_basis": "market",
+        "market_ev_cr": 12378.75,
+        "market_cap_cr": 11719.04,
+        "book_ev_cr": 6622.13,
+        "multiples": {
+          "EV/EBITDA": 12.7132,
+          "EV/Revenue": 2.3025,
+          "EV/EBIT": 15.4393
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1837,
+          "margin": 0.1144,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INC00460000",
+        "name": "Darling Pumps Machinery",
+        "score": 0.9472,
+        "listed": false,
+        "city": "Ahmedabad",
+        "revenue_cr": 8225.79,
+        "ebitda_margin": 0.1304,
+        "revenue_growth": 0.2534,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 8245.1,
+        "multiples": {
+          "EV/EBITDA": 7.6855,
+          "EV/Revenue": 1.0023,
+          "EV/EBIT": 11.1108
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1496,
+          "margin": 0.1476,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
           "similar EBITDA margin",
           "same customer type (B2B)",
           "same export profile"
         ],
         "differences": [
-          "revenue ₹2489 Cr vs ₹7674 Cr"
+          "revenue ₹8226 Cr vs ₹5874 Cr"
         ]
       },
       {
-        "duns": "INB00360000",
-        "name": "Pricol Auto Systems",
-        "score": 0.8927,
-        "listed": false,
+        "duns": "INA00170000",
+        "name": "Deccan Engine Controls",
+        "score": 0.943,
+        "listed": true,
         "city": "Pune",
-        "revenue_cr": 6987.39,
-        "ebitda_margin": 0.1382,
-        "revenue_growth": 0.1977,
-        "ev_basis": "book",
-        "ev_cr": 7751.69,
+        "revenue_cr": 7340.48,
+        "ebitda_margin": 0.1611,
+        "revenue_growth": 0.1694,
+        "ev_basis": "market",
+        "market_ev_cr": 19829.07,
+        "market_cap_cr": 19751.83,
+        "book_ev_cr": 8342.82,
         "multiples": {
-          "EV/EBITDA": 8.0245,
-          "EV/Revenue": 1.1094,
-          "EV/EBIT": 12.5584
+          "EV/EBITDA": 16.7666,
+          "EV/Revenue": 2.7013,
+          "EV/EBIT": 25.9478
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1829,
-          "margin": 0.1298,
+          "scale": 0.1636,
+          "margin": 0.1294,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INC00440000",
+        "name": "Texmo Pumps Machinery",
+        "score": 0.9224,
+        "listed": true,
+        "city": "Ghaziabad",
+        "revenue_cr": 5841.7,
+        "ebitda_margin": 0.1249,
+        "revenue_growth": 0.0856,
+        "ev_basis": "market",
+        "market_ev_cr": 15532.87,
+        "market_cap_cr": 14996.75,
+        "book_ev_cr": 6647.54,
+        "multiples": {
+          "EV/EBITDA": 21.284,
+          "EV/Revenue": 2.659,
+          "EV/EBIT": 30.0169
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1989,
+          "margin": 0.1435,
           "customer": 0.15,
           "export": 0.03
         },
         "selected_because": [
-          "same NAICS subsector 336",
+          "same NAICS subsector 333",
           "comparable revenue scale",
           "similar EBITDA margin",
           "same customer type (B2B)"
@@ -1097,104 +939,309 @@
         "differences": []
       },
       {
-        "duns": "INB00220000",
-        "name": "Motherson Auto Systems",
-        "score": 0.8859,
-        "listed": false,
-        "city": "Pantnagar",
-        "revenue_cr": 3892.7,
-        "ebitda_margin": 0.1208,
-        "revenue_growth": 0.0203,
-        "ev_basis": "book",
-        "ev_cr": 4158.93,
+        "duns": "INC00450000",
+        "name": "Aqua Pump Industries",
+        "score": 0.918,
+        "listed": true,
+        "city": "Vadodara",
+        "revenue_cr": 7927.91,
+        "ebitda_margin": 0.1815,
+        "revenue_growth": 0.0929,
+        "ev_basis": "market",
+        "market_ev_cr": 25740.13,
+        "market_cap_cr": 24356.6,
+        "book_ev_cr": 11742.06,
         "multiples": {
-          "EV/EBITDA": 8.8433,
-          "EV/Revenue": 1.0684,
-          "EV/EBIT": 12.6043
+          "EV/EBITDA": 17.888,
+          "EV/Revenue": 3.2468,
+          "EV/EBIT": 22.3208
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1191,
-          "margin": 0.1168,
+          "scale": 0.1539,
+          "margin": 0.1141,
           "customer": 0.15,
           "export": 0.1
         },
         "selected_because": [
-          "same NAICS subsector 336",
+          "same NAICS subsector 333",
           "similar EBITDA margin",
           "same customer type (B2B)",
           "same export profile"
         ],
         "differences": [
-          "revenue ₹3893 Cr vs ₹7674 Cr"
+          "revenue ₹7928 Cr vs ₹5874 Cr"
         ]
       },
       {
-        "duns": "INB00290000",
-        "name": "Munjal Auto Components",
+        "duns": "INA00030000",
+        "name": "Cummins Governor Controls",
+        "score": 0.8943,
+        "listed": false,
+        "city": "Coimbatore",
+        "revenue_cr": 4757.0,
+        "ebitda_margin": 0.1348,
+        "revenue_growth": 0.1653,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 4977.72,
+        "multiples": {
+          "EV/EBITDA": 7.7613,
+          "EV/Revenue": 1.0464,
+          "EV/EBIT": 12.1568
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1652,
+          "margin": 0.1491,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INA00180000",
+        "name": "Elgi Governor Controls",
+        "score": 0.8873,
+        "listed": true,
+        "city": "Coimbatore",
+        "revenue_cr": 5987.79,
+        "ebitda_margin": 0.1854,
+        "revenue_growth": 0.0599,
+        "ev_basis": "market",
+        "market_ev_cr": 19907.88,
+        "market_cap_cr": 18924.75,
+        "book_ev_cr": 8849.1,
+        "multiples": {
+          "EV/EBITDA": 17.9299,
+          "EV/Revenue": 3.3247,
+          "EV/EBIT": 26.0765
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1962,
+          "margin": 0.1111,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INC00380000",
+        "name": "KSB Pumps India",
         "score": 0.8828,
         "listed": true,
-        "city": "Manesar",
-        "revenue_cr": 2363.76,
-        "ebitda_margin": 0.1529,
-        "revenue_growth": 0.2105,
-        "ev_basis": "book",
-        "ev_cr": 2259.16,
+        "city": "Coimbatore",
+        "revenue_cr": 5356.16,
+        "ebitda_margin": 0.174,
+        "revenue_growth": -0.0394,
+        "ev_basis": "market",
+        "market_ev_cr": 18082.2,
+        "market_cap_cr": 17902.46,
+        "book_ev_cr": 7076.61,
         "multiples": {
-          "EV/EBITDA": 6.2515,
-          "EV/Revenue": 0.9557,
-          "EV/EBIT": 7.9383
+          "EV/EBITDA": 19.3986,
+          "EV/Revenue": 3.376,
+          "EV/EBIT": 28.2782
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.0919,
-          "margin": 0.1409,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 336",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": [
-          "revenue ₹2364 Cr vs ₹7674 Cr"
-        ]
-      },
-      {
-        "duns": "INB00330000",
-        "name": "Fiem Auto Systems",
-        "score": 0.8746,
-        "listed": true,
-        "city": "Pune",
-        "revenue_cr": 6301.16,
-        "ebitda_margin": 0.1351,
-        "revenue_growth": -0.0228,
-        "ev_basis": "book",
-        "ev_cr": 6254.61,
-        "multiples": {
-          "EV/EBITDA": 7.3496,
-          "EV/Revenue": 0.9926,
-          "EV/EBIT": 10.5724
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1671,
-          "margin": 0.1275,
+          "scale": 0.1831,
+          "margin": 0.1197,
           "customer": 0.15,
           "export": 0.03
         },
         "selected_because": [
-          "same NAICS subsector 336",
+          "same NAICS subsector 333",
           "comparable revenue scale",
           "similar EBITDA margin",
           "same customer type (B2B)"
         ],
         "differences": []
+      },
+      {
+        "duns": "INA00090000",
+        "name": "BHEL Turbine Controls",
+        "score": 0.8826,
+        "listed": false,
+        "city": "Hyderabad",
+        "revenue_cr": 4741.28,
+        "ebitda_margin": 0.1497,
+        "revenue_growth": 0.123,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 7204.36,
+        "multiples": {
+          "EV/EBITDA": 10.147,
+          "EV/Revenue": 1.5195,
+          "EV/EBIT": 15.8711
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1647,
+          "margin": 0.1379,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INA00070000",
+        "name": "Triveni Turbine Controls",
+        "score": 0.8807,
+        "listed": false,
+        "city": "Bengaluru",
+        "revenue_cr": 7953.51,
+        "ebitda_margin": 0.1298,
+        "revenue_growth": 0.009,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 10766.36,
+        "multiples": {
+          "EV/EBITDA": 10.4271,
+          "EV/Revenue": 1.3537,
+          "EV/EBIT": 17.8006
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1535,
+          "margin": 0.1472,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": [
+          "revenue ₹7954 Cr vs ₹5874 Cr"
+        ]
+      },
+      {
+        "duns": "INA00150000",
+        "name": "Sanghvi Engine Equipment",
+        "score": 0.8687,
+        "listed": true,
+        "city": "Chennai",
+        "revenue_cr": 4950.85,
+        "ebitda_margin": 0.1764,
+        "revenue_growth": 0.1598,
+        "ev_basis": "market",
+        "market_ev_cr": 14659.31,
+        "market_cap_cr": 13584.88,
+        "book_ev_cr": 7191.29,
+        "multiples": {
+          "EV/EBITDA": 16.7884,
+          "EV/Revenue": 2.961,
+          "EV/EBIT": 20.378
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1708,
+          "margin": 0.1179,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "comparable revenue scale",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "INA00120000",
+        "name": "Apex Engine Controls",
+        "score": 0.8648,
+        "listed": true,
+        "city": "Coimbatore",
+        "revenue_cr": 4556.73,
+        "ebitda_margin": 0.1666,
+        "revenue_growth": 0.1733,
+        "ev_basis": "market",
+        "market_ev_cr": 11639.76,
+        "market_cap_cr": 10792.1,
+        "book_ev_cr": 4890.57,
+        "multiples": {
+          "EV/EBITDA": 15.3367,
+          "EV/Revenue": 2.5544,
+          "EV/EBIT": 22.0325
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1595,
+          "margin": 0.1253,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": [
+          "revenue ₹4557 Cr vs ₹5874 Cr"
+        ]
+      },
+      {
+        "duns": "INA00100000",
+        "name": "Shakti Engine Governors",
+        "score": 0.861,
+        "listed": true,
+        "city": "Bengaluru",
+        "revenue_cr": 8588.67,
+        "ebitda_margin": 0.1521,
+        "revenue_growth": 0.1379,
+        "ev_basis": "market",
+        "market_ev_cr": 18149.99,
+        "market_cap_cr": 17837.47,
+        "book_ev_cr": 8407.38,
+        "multiples": {
+          "EV/EBITDA": 13.8922,
+          "EV/Revenue": 2.1132,
+          "EV/EBIT": 21.5661
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1449,
+          "margin": 0.1361,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 333",
+          "similar EBITDA margin",
+          "same customer type (B2B)"
+        ],
+        "differences": [
+          "revenue ₹8589 Cr vs ₹5874 Cr"
+        ]
       }
     ],
-    "ev_basis": "EV = market EV where available (0 peers), else book capital-employed proxy (15 peers)",
+    "ev_basis": "Primary basis: market enterprise value (market cap + net debt) of 11 LISTED comparables. Book capital-employed proxy (4 unlisted comps) is used only as a per-method fallback when fewer than 3 listed comps exist for a metric.",
     "notes": [],
     "warnings": []
   },
@@ -1205,83 +1252,71 @@
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-10T02:07:45.652+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
-      "detail": "pipeline start for query 'Bharat Forge Components'",
+      "detail": "pipeline start for query 'Woodward'",
       "data": {
-        "methodology_version": "1.1.0"
+        "methodology_version": "1.2.0"
       }
     },
     {
       "seq": 2,
-      "ts": "2026-07-10T02:07:45.652+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
-      "detail": "search name='Bharat Forge Components' country=IN",
+      "detail": "search name='Woodward' country=IN",
       "data": null
     },
     {
       "seq": 3,
-      "ts": "2026-07-10T02:07:45.652+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "resolve",
-      "level": "INFO",
-      "code": "MATCH_CANDIDATES",
-      "detail": "7 candidates; selected highest confidence",
+      "level": "DECISION",
+      "code": "TARGET_RESOLVED",
+      "detail": "'Woodward' -> Woodward India Controls (DUNS INA00010000, confidence 8)",
       "data": {
-        "candidates": 7,
-        "selected_confidence": 10
+        "query": "Woodward",
+        "duns": "INA00010000",
+        "confidence": 8
       }
     },
     {
       "seq": 4,
-      "ts": "2026-07-10T02:07:45.652+00:00",
-      "stage": "resolve",
-      "level": "DECISION",
-      "code": "TARGET_RESOLVED",
-      "detail": "'Bharat Forge Components' -> Bharat Forge Components (DUNS INB00190000, confidence 10)",
-      "data": {
-        "query": "Bharat Forge Components",
-        "duns": "INB00190000",
-        "confidence": 10
-      }
-    },
-    {
-      "seq": 5,
-      "ts": "2026-07-10T02:07:45.652+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00190000 found=True",
+      "detail": "duns=INA00010000 found=True",
+      "data": null
+    },
+    {
+      "seq": 5,
+      "ts": "2026-07-13T13:42:40.790+00:00",
+      "stage": "dnb",
+      "level": "INFO",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00010000 found=True",
       "data": null
     },
     {
       "seq": 6,
-      "ts": "2026-07-10T02:07:45.652+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00190000 found=True",
+      "code": "DNB_COMPANY_MANAGEMENT",
+      "detail": "duns=INA00010000 found=True",
       "data": null
     },
     {
       "seq": 7,
-      "ts": "2026-07-10T02:07:45.652+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_MANAGEMENT",
-      "detail": "duns=INB00190000 found=True",
-      "data": null
-    },
-    {
-      "seq": 8,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
-      "detail": "Bharat Forge Components: manufacturer/finished_goods/B2B (conf 0.95)",
+      "detail": "Woodward India Controls: manufacturer/finished_goods/B2B (conf 0.95)",
       "data": {
         "operating_model": "manufacturer",
         "value_chain": "finished_goods",
@@ -1289,8 +1324,8 @@
       }
     },
     {
-      "seq": 9,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "seq": 8,
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1303,1034 +1338,1034 @@
       }
     },
     {
-      "seq": 10,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "seq": 9,
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00010000 found=True",
+      "detail": "duns=INA00020000 found=True",
+      "data": null
+    },
+    {
+      "seq": 10,
+      "ts": "2026-07-13T13:42:40.790+00:00",
+      "stage": "dnb",
+      "level": "INFO",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00020000 found=True",
       "data": null
     },
     {
       "seq": 11,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00010000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00030000 found=True",
       "data": null
     },
     {
       "seq": 12,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00020000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00030000 found=True",
       "data": null
     },
     {
       "seq": 13,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00020000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00040000 found=True",
       "data": null
     },
     {
       "seq": 14,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00030000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00040000 found=True",
       "data": null
     },
     {
       "seq": 15,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00030000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00050000 found=True",
       "data": null
     },
     {
       "seq": 16,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00040000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00050000 found=True",
       "data": null
     },
     {
       "seq": 17,
-      "ts": "2026-07-10T02:07:45.653+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00040000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00060000 found=True",
       "data": null
     },
     {
       "seq": 18,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00050000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00060000 found=True",
       "data": null
     },
     {
       "seq": 19,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00050000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00070000 found=True",
       "data": null
     },
     {
       "seq": 20,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.790+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00060000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00070000 found=True",
       "data": null
     },
     {
       "seq": 21,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00060000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00080000 found=True",
       "data": null
     },
     {
       "seq": 22,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00070000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00080000 found=True",
       "data": null
     },
     {
       "seq": 23,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00070000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00090000 found=True",
       "data": null
     },
     {
       "seq": 24,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00080000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00090000 found=True",
       "data": null
     },
     {
       "seq": 25,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00080000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00100000 found=True",
       "data": null
     },
     {
       "seq": 26,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00090000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00100000 found=True",
       "data": null
     },
     {
       "seq": 27,
-      "ts": "2026-07-10T02:07:45.654+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00090000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00110000 found=True",
       "data": null
     },
     {
       "seq": 28,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00100000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00110000 found=True",
       "data": null
     },
     {
       "seq": 29,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00100000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00120000 found=True",
       "data": null
     },
     {
       "seq": 30,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00110000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00120000 found=True",
       "data": null
     },
     {
       "seq": 31,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00110000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00130000 found=True",
       "data": null
     },
     {
       "seq": 32,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00120000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00130000 found=True",
       "data": null
     },
     {
       "seq": 33,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00120000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00140000 found=True",
       "data": null
     },
     {
       "seq": 34,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00130000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00140000 found=True",
       "data": null
     },
     {
       "seq": 35,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00130000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00150000 found=True",
       "data": null
     },
     {
       "seq": 36,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00140000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00150000 found=True",
       "data": null
     },
     {
       "seq": 37,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00140000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00160000 found=True",
       "data": null
     },
     {
       "seq": 38,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00150000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00160000 found=True",
       "data": null
     },
     {
       "seq": 39,
-      "ts": "2026-07-10T02:07:45.655+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00150000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00170000 found=True",
       "data": null
     },
     {
       "seq": 40,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00160000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00170000 found=True",
       "data": null
     },
     {
       "seq": 41,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00160000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INA00180000 found=True",
       "data": null
     },
     {
       "seq": 42,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00170000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INA00180000 found=True",
       "data": null
     },
     {
       "seq": 43,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00170000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00190000 found=True",
       "data": null
     },
     {
       "seq": 44,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00180000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=INB00190000 found=True",
       "data": null
     },
     {
       "seq": 45,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00180000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00200000 found=True",
       "data": null
     },
     {
       "seq": 46,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00200000 found=True",
       "data": null
     },
     {
       "seq": 47,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00200000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00210000 found=True",
       "data": null
     },
     {
       "seq": 48,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00210000 found=True",
       "data": null
     },
     {
       "seq": 49,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00210000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00220000 found=True",
       "data": null
     },
     {
       "seq": 50,
-      "ts": "2026-07-10T02:07:45.656+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00220000 found=True",
       "data": null
     },
     {
       "seq": 51,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00220000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00230000 found=True",
       "data": null
     },
     {
       "seq": 52,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00230000 found=True",
       "data": null
     },
     {
       "seq": 53,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00230000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00240000 found=True",
       "data": null
     },
     {
       "seq": 54,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00240000 found=True",
       "data": null
     },
     {
       "seq": 55,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00240000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00250000 found=True",
       "data": null
     },
     {
       "seq": 56,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00250000 found=True",
       "data": null
     },
     {
       "seq": 57,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00250000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00260000 found=True",
       "data": null
     },
     {
       "seq": 58,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00260000 found=True",
       "data": null
     },
     {
       "seq": 59,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00260000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00270000 found=True",
       "data": null
     },
     {
       "seq": 60,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00270000 found=True",
       "data": null
     },
     {
       "seq": 61,
-      "ts": "2026-07-10T02:07:45.657+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00270000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00280000 found=True",
       "data": null
     },
     {
       "seq": 62,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00280000 found=True",
       "data": null
     },
     {
       "seq": 63,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00280000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00290000 found=True",
       "data": null
     },
     {
       "seq": 64,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00290000 found=True",
       "data": null
     },
     {
       "seq": 65,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00290000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00300000 found=True",
       "data": null
     },
     {
       "seq": 66,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00300000 found=True",
       "data": null
     },
     {
       "seq": 67,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00300000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00310000 found=True",
       "data": null
     },
     {
       "seq": 68,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00310000 found=True",
       "data": null
     },
     {
       "seq": 69,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00310000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00320000 found=True",
       "data": null
     },
     {
       "seq": 70,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00320000 found=True",
       "data": null
     },
     {
       "seq": 71,
-      "ts": "2026-07-10T02:07:45.658+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00320000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00330000 found=True",
       "data": null
     },
     {
       "seq": 72,
-      "ts": "2026-07-10T02:07:45.659+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00330000 found=True",
       "data": null
     },
     {
       "seq": 73,
-      "ts": "2026-07-10T02:07:45.659+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00330000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00340000 found=True",
       "data": null
     },
     {
       "seq": 74,
-      "ts": "2026-07-10T02:07:45.659+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00340000 found=True",
       "data": null
     },
     {
       "seq": 75,
-      "ts": "2026-07-10T02:07:45.659+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00340000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00350000 found=True",
       "data": null
     },
     {
       "seq": 76,
-      "ts": "2026-07-10T02:07:45.659+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00350000 found=True",
       "data": null
     },
     {
       "seq": 77,
-      "ts": "2026-07-10T02:07:45.659+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00350000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INB00360000 found=True",
       "data": null
     },
     {
       "seq": 78,
-      "ts": "2026-07-10T02:07:45.661+00:00",
+      "ts": "2026-07-13T13:42:40.791+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INB00360000 found=True",
       "data": null
     },
     {
       "seq": 79,
-      "ts": "2026-07-10T02:07:45.661+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00360000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00370000 found=True",
       "data": null
     },
     {
       "seq": 80,
-      "ts": "2026-07-10T02:07:45.661+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00370000 found=True",
       "data": null
     },
     {
       "seq": 81,
-      "ts": "2026-07-10T02:07:45.661+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00370000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00380000 found=True",
       "data": null
     },
     {
       "seq": 82,
-      "ts": "2026-07-10T02:07:45.661+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00380000 found=True",
       "data": null
     },
     {
       "seq": 83,
-      "ts": "2026-07-10T02:07:45.661+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00380000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00390000 found=True",
       "data": null
     },
     {
       "seq": 84,
-      "ts": "2026-07-10T02:07:45.662+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00390000 found=True",
       "data": null
     },
     {
       "seq": 85,
-      "ts": "2026-07-10T02:07:45.662+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00390000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00400000 found=True",
       "data": null
     },
     {
       "seq": 86,
-      "ts": "2026-07-10T02:07:45.662+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00400000 found=True",
       "data": null
     },
     {
       "seq": 87,
-      "ts": "2026-07-10T02:07:45.662+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00400000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00410000 found=True",
       "data": null
     },
     {
       "seq": 88,
-      "ts": "2026-07-10T02:07:45.662+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00410000 found=True",
       "data": null
     },
     {
       "seq": 89,
-      "ts": "2026-07-10T02:07:45.662+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00410000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00420000 found=True",
       "data": null
     },
     {
       "seq": 90,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00420000 found=True",
       "data": null
     },
     {
       "seq": 91,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00420000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00430000 found=True",
       "data": null
     },
     {
       "seq": 92,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00430000 found=True",
       "data": null
     },
     {
       "seq": 93,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00430000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00440000 found=True",
       "data": null
     },
     {
       "seq": 94,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00440000 found=True",
       "data": null
     },
     {
       "seq": 95,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00440000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00450000 found=True",
       "data": null
     },
     {
       "seq": 96,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00450000 found=True",
       "data": null
     },
     {
       "seq": 97,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00450000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00460000 found=True",
       "data": null
     },
     {
       "seq": 98,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00460000 found=True",
       "data": null
     },
     {
       "seq": 99,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00460000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00470000 found=True",
       "data": null
     },
     {
       "seq": 100,
-      "ts": "2026-07-10T02:07:45.663+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00470000 found=True",
       "data": null
     },
     {
       "seq": 101,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00470000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00480000 found=True",
       "data": null
     },
     {
       "seq": 102,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00480000 found=True",
       "data": null
     },
     {
       "seq": 103,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00480000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00490000 found=True",
       "data": null
     },
     {
       "seq": 104,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00490000 found=True",
       "data": null
     },
     {
       "seq": 105,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00490000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00500000 found=True",
       "data": null
     },
     {
       "seq": 106,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00500000 found=True",
       "data": null
     },
     {
       "seq": 107,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00500000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00510000 found=True",
       "data": null
     },
     {
       "seq": 108,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00510000 found=True",
       "data": null
     },
     {
       "seq": 109,
-      "ts": "2026-07-10T02:07:45.664+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00510000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00520000 found=True",
       "data": null
     },
     {
       "seq": 110,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00520000 found=True",
       "data": null
     },
     {
       "seq": 111,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00520000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00530000 found=True",
       "data": null
     },
     {
       "seq": 112,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00530000 found=True",
       "data": null
     },
     {
       "seq": 113,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00530000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INC00540000 found=True",
       "data": null
     },
     {
       "seq": 114,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INC00540000 found=True",
       "data": null
     },
     {
       "seq": 115,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00540000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INW00550000 found=True",
       "data": null
     },
     {
       "seq": 116,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INW00550000 found=True",
       "data": null
     },
     {
       "seq": 117,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00550000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INW00560000 found=True",
       "data": null
     },
     {
       "seq": 118,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INW00560000 found=True",
       "data": null
     },
     {
       "seq": 119,
-      "ts": "2026-07-10T02:07:45.665+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00560000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INW00570000 found=True",
       "data": null
     },
     {
       "seq": 120,
-      "ts": "2026-07-10T02:07:45.666+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INW00570000 found=True",
       "data": null
     },
     {
       "seq": 121,
-      "ts": "2026-07-10T02:07:45.666+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00570000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=INW00580000 found=True",
       "data": null
     },
     {
       "seq": 122,
-      "ts": "2026-07-10T02:07:45.666+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
+      "code": "DNB_COMPANY_FINANCIALS",
       "detail": "duns=INW00580000 found=True",
       "data": null
     },
     {
       "seq": 123,
-      "ts": "2026-07-10T02:07:45.666+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00580000 found=True",
-      "data": null
-    },
-    {
-      "seq": 124,
-      "ts": "2026-07-10T02:07:45.666+00:00",
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2338,8 +2373,8 @@
       "data": null
     },
     {
-      "seq": 125,
-      "ts": "2026-07-10T02:07:45.666+00:00",
+      "seq": 124,
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2347,8 +2382,8 @@
       "data": null
     },
     {
-      "seq": 126,
-      "ts": "2026-07-10T02:07:45.666+00:00",
+      "seq": 125,
+      "ts": "2026-07-13T13:42:40.792+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
@@ -2358,8 +2393,8 @@
       }
     },
     {
-      "seq": 127,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 126,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2370,8 +2405,8 @@
       }
     },
     {
-      "seq": 128,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 127,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2382,8 +2417,8 @@
       }
     },
     {
-      "seq": 129,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 128,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2394,8 +2429,8 @@
       }
     },
     {
-      "seq": 130,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 129,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2406,8 +2441,8 @@
       }
     },
     {
-      "seq": 131,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 130,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2418,8 +2453,8 @@
       }
     },
     {
-      "seq": 132,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 131,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -2430,62 +2465,65 @@
       }
     },
     {
-      "seq": 133,
-      "ts": "2026-07-10T02:07:45.667+00:00",
+      "seq": 132,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
-      "detail": "illiquidity discount 20%: revenue ≥ ₹500 Cr (lower illiquidity)",
+      "detail": "applied DLOM 20% — established private co. (revenue ≥ ₹500 Cr)",
       "data": {
         "discount": 0.2,
-        "revenue_cr": 7674.23
+        "revenue_cr": 5874.35
+      }
+    },
+    {
+      "seq": 133,
+      "ts": "2026-07-13T13:42:40.793+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "METHOD_COMPUTED",
+      "detail": "EV/EBITDA: median 16.79x on 11 market multiples (0 outliers dropped)",
+      "data": {
+        "method": "EV/EBITDA",
+        "median": 16.7884,
+        "ev_basis": "market",
+        "n_multiples": 11,
+        "n_outliers_dropped": 0
       }
     },
     {
       "seq": 134,
-      "ts": "2026-07-10T02:07:45.668+00:00",
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
-      "detail": "EV/EBITDA: median 7.35x on 15 multiples (0 outliers dropped)",
+      "detail": "EV/Revenue: median 2.66x on 11 market multiples (0 outliers dropped)",
       "data": {
-        "method": "EV/EBITDA",
-        "median": 7.3496,
-        "n_multiples": 15,
+        "method": "EV/Revenue",
+        "median": 2.659,
+        "ev_basis": "market",
+        "n_multiples": 11,
         "n_outliers_dropped": 0
       }
     },
     {
       "seq": 135,
-      "ts": "2026-07-10T02:07:45.668+00:00",
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
-      "detail": "EV/Revenue: median 1.11x on 15 multiples (0 outliers dropped)",
+      "detail": "EV/EBIT: median 22.32x on 11 market multiples (0 outliers dropped)",
       "data": {
-        "method": "EV/Revenue",
-        "median": 1.1094,
-        "n_multiples": 15,
+        "method": "EV/EBIT",
+        "median": 22.3208,
+        "ev_basis": "market",
+        "n_multiples": 11,
         "n_outliers_dropped": 0
       }
     },
     {
       "seq": 136,
-      "ts": "2026-07-10T02:07:45.668+00:00",
-      "stage": "value",
-      "level": "INFO",
-      "code": "METHOD_COMPUTED",
-      "detail": "EV/EBIT: median 10.57x on 15 multiples (0 outliers dropped)",
-      "data": {
-        "method": "EV/EBIT",
-        "median": 10.5724,
-        "n_multiples": 15,
-        "n_outliers_dropped": 0
-      }
-    },
-    {
-      "seq": 137,
-      "ts": "2026-07-10T02:07:45.668+00:00",
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -2495,8 +2533,8 @@
       }
     },
     {
-      "seq": 138,
-      "ts": "2026-07-10T02:07:45.668+00:00",
+      "seq": 137,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -2507,8 +2545,8 @@
       }
     },
     {
-      "seq": 139,
-      "ts": "2026-07-10T02:07:45.668+00:00",
+      "seq": 138,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
@@ -2519,8 +2557,8 @@
       }
     },
     {
-      "seq": 140,
-      "ts": "2026-07-10T02:07:45.668+00:00",
+      "seq": 139,
+      "ts": "2026-07-13T13:42:40.793+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",

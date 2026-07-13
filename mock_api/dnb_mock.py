@@ -87,6 +87,42 @@ _CLUSTER_ACTIVITY = {
 
 _STATE_CODE = {"A": "MH", "B": "MH", "C": "TZ"}
 
+# Sector trading-multiple bands (EV/EBITDA) used to synthesize REALISTIC market
+# enterprise values for LISTED comparables. These reflect how each sub-sector
+# actually trades on Indian exchanges: precision engineering / turbine controls
+# and pumps command premium multiples; auto components trade lower.
+#   Enterprise value of a listed peer = EBITDA x (a multiple drawn from its band),
+#   and its market capitalisation = enterprise value - net debt.
+# This is what makes the derived EV/EBITDA, EV/Revenue and EV/EBIT multiples true
+# *trading* multiples rather than meaningless book ratios.
+_CLUSTER_EV_EBITDA = {
+    "A": (12.0, 18.0),   # engine / turbine controls, precision engineering
+    "B": (8.0, 14.0),    # auto components / motor-vehicle parts
+    "C": (14.0, 22.0),   # industrial pumps, valves & fluid machinery
+}
+_DEFAULT_EV_EBITDA = (9.0, 16.0)
+
+
+def _market_valuation(fin, listed, band, rng):
+    """
+    Synthesize a market-based enterprise value for a LISTED company.
+
+    EV      = EBITDA x sector EV/EBITDA multiple (drawn from `band`, with light noise)
+    net debt = long-term debt - cash
+    mktcap  = EV - net debt
+
+    Returns (market_ev_cr, market_cap_cr, ev_ebitda_multiple) or (None, None, None)
+    for unlisted companies (no observable market value — they are excluded from the
+    trading-multiple set at valuation time).
+    """
+    if not listed or (fin.get("ebitda") or 0) <= 0:
+        return None, None, None
+    mult = rng.uniform(*band)
+    net_debt = fin["debt"] - fin["cash"]
+    market_ev = fin["ebitda"] * mult
+    market_cap = market_ev - net_debt
+    return round(market_ev, 2), round(market_cap, 2), round(mult, 2)
+
 # ---------------------------------------------------------------------------
 # The 5 "wrong" entities (must be rejected by the economic filter)
 # ---------------------------------------------------------------------------
@@ -249,13 +285,13 @@ def _build_universe() -> dict:
                 activity = _CLUSTER_ACTIVITY[cluster]
 
             fin_cr = _make_financials_cr(rng)
-            listed = rng.random() < 0.40
+            # ~60% listed so any peer set has a healthy number of trading comps.
+            listed = rng.random() < 0.60
             year = rng.randint(1985, 2012)
             duns = f"IN{cluster}{seq:04d}0000"
             cin = _cin(listed, state, year, seq)
-            market_ev_cr = None
-            if listed:
-                market_ev_cr = round(fin_cr["capital_employed"] * rng.uniform(1.05, 1.70), 2)
+            market_ev_cr, market_cap_cr, ev_mult = _market_valuation(
+                fin_cr, listed, _CLUSTER_EV_EBITDA[cluster], rng)
 
             universe[duns] = {
                 "duns": duns,
@@ -274,6 +310,8 @@ def _build_universe() -> dict:
                 "state": state,
                 "value_chain": "finished_goods",
                 "market_ev_cr": market_ev_cr,
+                "market_cap_cr": market_cap_cr,
+                "ev_ebitda_mult": ev_mult,
                 "fin_cr": fin_cr,
                 "principals": [f"Director {name.split()[0]} {n}" for n in ("A", "B", "C")],
             }
@@ -286,9 +324,8 @@ def _build_universe() -> dict:
         year = rng.randint(1990, 2015)
         duns = f"INW{seq:04d}0000"
         cin = _cin(w["listed"], w["state"], year, seq)
-        market_ev_cr = None
-        if w["listed"]:
-            market_ev_cr = round(fin_cr["capital_employed"] * rng.uniform(1.05, 1.70), 2)
+        market_ev_cr, market_cap_cr, ev_mult = _market_valuation(
+            fin_cr, w["listed"], _DEFAULT_EV_EBITDA, rng)
         universe[duns] = {
             "duns": duns,
             "name": w["name"],
@@ -306,6 +343,8 @@ def _build_universe() -> dict:
             "state": w["state"],
             "value_chain": "raw_material" if "billets" in w["activity"] else "finished_goods",
             "market_ev_cr": market_ev_cr,
+            "market_cap_cr": market_cap_cr,
+            "ev_ebitda_mult": ev_mult,
             "fin_cr": fin_cr,
             "principals": [f"Director {w['name'].split()[0]} {n}" for n in ("A", "B")],
         }
@@ -387,6 +426,19 @@ def _company_financials_response(rec):
         {"financialStatementToDate": "2022-03-31", "salesRevenue": round(prior2, 2)},
         {"financialStatementToDate": "2021-03-31", "salesRevenue": round(prior3, 2)},
     ]
+    # Market data — present ONLY for listed companies (observable market value).
+    # In production this is the D&B Hoovers public-company market module (or a
+    # market-data feed such as NSE/BSE); the schema/units mirror the financials.
+    market_data = None
+    if rec.get("market_ev_cr") is not None:
+        market_data = {
+            "units": "Thousand",
+            "currency": "INR",
+            "asOfDate": "2024-03-31",
+            "isPubliclyTraded": True,
+            "marketCapitalization": round(rec["market_cap_cr"] * 10000.0, 2),
+            "enterpriseValue": round(rec["market_ev_cr"] * 10000.0, 2),
+        }
     return {
         "data": {
             "organization": {
@@ -398,6 +450,7 @@ def _company_financials_response(rec):
                     "overview": overview,
                 },
                 "otherFinancials": other,
+                "marketData": market_data,
             }
         }
     }

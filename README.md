@@ -58,15 +58,22 @@ text like *"sourced from manufacturers"* is correctly classified as a **distribu
 Peers are rejected **before** scoring on operating_model / value_chain /
 major_industry mismatch, each with a recorded reason.
 
-### Valuation
-- EV = `market_ev_cr` if set else `capital_employed_cr` (book EV proxy — disclosed).
-  D&B does not supply market EV, so the market hook stays `None` and all peers use the
-  book proxy; the `ev_basis` string discloses the split honestly.
+### Valuation (trading comps)
+- Peer multiples use **market enterprise value** of *listed* comps:
+  `EV = market cap + net debt` (from the D&B market-data block). These are true
+  trading multiples, not book ratios. Unlisted peers have no observable market value
+  and are excluded from multiples (they still inform comparability). If a method has
+  fewer than 3 listed comps, it falls back to the **book capital-employed proxy** for
+  that method only — logged as `FALLBACK_BOOK_EV`. The `ev_basis` string discloses the
+  split.
 - Per method: Tukey 1.5×IQR outlier trim (skipped if <4 values), then P25 / median /
-  P75 multiples × target driver → EV → `equity = (EV − net_debt) × (1 − discount)`.
-- `net_debt = debt − cash`; `discount = 0.30 / 0.25 / 0.20` by revenue band.
+  P75 multiples × target driver → implied EV → `equity = (EV − net_debt) × (1 − DLOM)`.
+- `net_debt = debt − cash`; **DLOM** (discount for lack of marketability) = 0.30 / 0.25
+  / 0.20 by revenue band — a private MSME is less liquid than the listed peers whose
+  multiples were used.
 - Headline = first computable of EV/EBITDA → EV/Revenue → EV/EBIT; all methods reported
-  for triangulation.
+  for triangulation. The dashboard shows the full equity **bridge**
+  (multiple → EV → less net debt → less DLOM → equity).
 
 ### Confidence
 `0.35·profile_conf + 0.35·min(peers,15)/15 + 0.15·(EBITDA>0) + 0.15·(methods≥2)`
