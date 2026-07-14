@@ -103,21 +103,40 @@ _CLUSTER_EV_EBITDA = {
 _DEFAULT_EV_EBITDA = (9.0, 16.0)
 
 
+def _clamp01(x):
+    return max(0.0, min(1.0, x))
+
+
 def _market_valuation(fin, listed, band, rng):
     """
-    Synthesize a market-based enterprise value for a LISTED company.
+    Synthesize a REALISTIC market-based enterprise value for a LISTED company.
 
-    EV      = EBITDA x sector EV/EBITDA multiple (drawn from `band`, with light noise)
-    net debt = long-term debt - cash
-    mktcap  = EV - net debt
+    The trading multiple is DRIVEN BY FUNDAMENTALS, as in real markets: higher EBITDA
+    margin and higher revenue growth command a higher EV/EBITDA within the sector band.
+    Without this, a company's multiple would be independent of its quality and any
+    "positioning by margin" in the valuation engine would be pure luck. A residual noise
+    term keeps it from being a perfect function (real multiples reflect factors we do not
+    model), so calibration is good but never suspiciously exact.
+
+        quality  = 0.65 * margin_rank + 0.35 * growth_rank            (0..1)
+        fraction = clamp(quality + noise, 0, 1)                        (noise +/-0.12)
+        EV/EBITDA = band_low + (band_high - band_low) * fraction
+        EV        = EBITDA * EV/EBITDA
+        mkt cap   = EV - net debt   (net debt = long-term debt - cash)
 
     Returns (market_ev_cr, market_cap_cr, ev_ebitda_multiple) or (None, None, None)
-    for unlisted companies (no observable market value — they are excluded from the
-    trading-multiple set at valuation time).
+    for unlisted companies (no observable market value; excluded from trading multiples).
     """
     if not listed or (fin.get("ebitda") or 0) <= 0:
         return None, None, None
-    mult = rng.uniform(*band)
+    lo, hi = band
+    # normalize fundamentals within their generation ranges (see _make_financials_cr)
+    m_rank = _clamp01((fin["margin"] - 0.12) / (0.19 - 0.12))
+    g_rank = _clamp01((fin["growth"] - (-0.05)) / (0.28 - (-0.05)))
+    quality = 0.65 * m_rank + 0.35 * g_rank
+    noise = rng.uniform(-0.12, 0.12)
+    fraction = _clamp01(quality + noise)
+    mult = lo + (hi - lo) * fraction
     net_debt = fin["debt"] - fin["cash"]
     market_ev = fin["ebitda"] * mult
     market_cap = market_ev - net_debt

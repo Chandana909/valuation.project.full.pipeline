@@ -1,9 +1,9 @@
 {
   "meta": {
     "engine": "dnb-msme-comparable-valuation",
-    "methodology_version": "1.2.0",
+    "methodology_version": "1.5.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-13T13:42:40+00:00",
+    "run_timestamp": "2026-07-14T01:14:22+00:00",
     "data_source": "Dun & Bradstreet (dnbhoovers)",
     "currency": "INR",
     "reporting_units": "Crore",
@@ -45,8 +45,8 @@
     "net_worth_cr": 4054.55,
     "total_assets_cr": 8784.85,
     "working_capital_cr": 1174.87,
-    "market_cap_cr": 10376.3,
-    "market_ev_cr": 11706.68,
+    "market_cap_cr": 10259.19,
+    "market_ev_cr": 11589.57,
     "listing_status": "listed",
     "directors": [
       "Director Woodward A",
@@ -123,19 +123,21 @@
       "duns": "INA00040000",
       "name": "Bharat Turbine Controls",
       "score": 0.9661,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Chennai",
       "revenue_cr": 6739.01,
       "ebitda_margin": 0.1205,
       "revenue_growth": 0.1032,
       "ev_basis": "market",
-      "market_ev_cr": 13731.96,
-      "market_cap_cr": 14115.39,
+      "market_ev_cr": 10928.46,
+      "market_cap_cr": 11311.89,
       "book_ev_cr": 7137.53,
       "multiples": {
-        "EV/EBITDA": 16.9163,
-        "EV/Revenue": 2.0377,
-        "EV/EBIT": 27.3867
+        "EV/EBITDA": 13.4627,
+        "EV/Revenue": 1.6217,
+        "EV/EBIT": 21.7955
       },
       "components": {
         "industry": 0.4,
@@ -157,19 +159,21 @@
       "duns": "INC00480000",
       "name": "Mather Platt Fluid",
       "score": 0.9502,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Ghaziabad",
       "revenue_cr": 6545.91,
       "ebitda_margin": 0.174,
       "revenue_growth": 0.2228,
       "ev_basis": "market",
-      "market_ev_cr": 16328.74,
-      "market_cap_cr": 15862.55,
+      "market_ev_cr": 22150.64,
+      "market_cap_cr": 21684.45,
       "book_ev_cr": 8187.5,
       "multiples": {
-        "EV/EBITDA": 14.3354,
-        "EV/Revenue": 2.4945,
-        "EV/EBIT": 20.0527
+        "EV/EBITDA": 19.4466,
+        "EV/Revenue": 3.3839,
+        "EV/EBIT": 27.2024
       },
       "components": {
         "industry": 0.4,
@@ -191,19 +195,21 @@
       "duns": "INA00060000",
       "name": "Greaves Governor Systems",
       "score": 0.9481,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Hyderabad",
       "revenue_cr": 5376.17,
       "ebitda_margin": 0.1811,
       "revenue_growth": 0.2647,
       "ev_basis": "market",
-      "market_ev_cr": 12378.75,
-      "market_cap_cr": 11719.04,
+      "market_ev_cr": 16414.42,
+      "market_cap_cr": 15754.71,
       "book_ev_cr": 6622.13,
       "multiples": {
-        "EV/EBITDA": 12.7132,
-        "EV/Revenue": 2.3025,
-        "EV/EBIT": 15.4393
+        "EV/EBITDA": 16.858,
+        "EV/Revenue": 3.0532,
+        "EV/EBIT": 20.4727
       },
       "components": {
         "industry": 0.4,
@@ -225,6 +231,8 @@
       "duns": "INC00460000",
       "name": "Darling Pumps Machinery",
       "score": 0.9472,
+      "weight": 1.0,
+      "borderline": false,
       "listed": false,
       "city": "Ahmedabad",
       "revenue_cr": 8225.79,
@@ -260,19 +268,21 @@
       "duns": "INA00170000",
       "name": "Deccan Engine Controls",
       "score": 0.943,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Pune",
       "revenue_cr": 7340.48,
       "ebitda_margin": 0.1611,
       "revenue_growth": 0.1694,
       "ev_basis": "market",
-      "market_ev_cr": 19829.07,
-      "market_cap_cr": 19751.83,
+      "market_ev_cr": 19052.53,
+      "market_cap_cr": 18975.29,
       "book_ev_cr": 8342.82,
       "multiples": {
-        "EV/EBITDA": 16.7666,
-        "EV/Revenue": 2.7013,
-        "EV/EBIT": 25.9478
+        "EV/EBITDA": 16.11,
+        "EV/Revenue": 2.5955,
+        "EV/EBIT": 24.9317
       },
       "components": {
         "industry": 0.4,
@@ -294,19 +304,21 @@
       "duns": "INC00440000",
       "name": "Texmo Pumps Machinery",
       "score": 0.9224,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Ghaziabad",
       "revenue_cr": 5841.7,
       "ebitda_margin": 0.1249,
       "revenue_growth": 0.0856,
       "ev_basis": "market",
-      "market_ev_cr": 15532.87,
-      "market_cap_cr": 14996.75,
+      "market_ev_cr": 11897.56,
+      "market_cap_cr": 11361.44,
       "book_ev_cr": 6647.54,
       "multiples": {
-        "EV/EBITDA": 21.284,
-        "EV/Revenue": 2.659,
-        "EV/EBIT": 30.0169
+        "EV/EBITDA": 16.3027,
+        "EV/Revenue": 2.0367,
+        "EV/EBIT": 22.9918
       },
       "components": {
         "industry": 0.4,
@@ -327,19 +339,21 @@
       "duns": "INC00450000",
       "name": "Aqua Pump Industries",
       "score": 0.918,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Vadodara",
       "revenue_cr": 7927.91,
       "ebitda_margin": 0.1815,
       "revenue_growth": 0.0929,
       "ev_basis": "market",
-      "market_ev_cr": 25740.13,
-      "market_cap_cr": 24356.6,
+      "market_ev_cr": 28425.47,
+      "market_cap_cr": 27041.94,
       "book_ev_cr": 11742.06,
       "multiples": {
-        "EV/EBITDA": 17.888,
-        "EV/Revenue": 3.2468,
-        "EV/EBIT": 22.3208
+        "EV/EBITDA": 19.7542,
+        "EV/Revenue": 3.5855,
+        "EV/EBIT": 24.6494
       },
       "components": {
         "industry": 0.4,
@@ -362,6 +376,8 @@
       "duns": "INA00030000",
       "name": "Cummins Governor Controls",
       "score": 0.8943,
+      "weight": 1.0,
+      "borderline": false,
       "listed": false,
       "city": "Coimbatore",
       "revenue_cr": 4757.0,
@@ -395,19 +411,21 @@
       "duns": "INA00180000",
       "name": "Elgi Governor Controls",
       "score": 0.8873,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Coimbatore",
       "revenue_cr": 5987.79,
       "ebitda_margin": 0.1854,
       "revenue_growth": 0.0599,
       "ev_basis": "market",
-      "market_ev_cr": 19907.88,
-      "market_cap_cr": 18924.75,
+      "market_ev_cr": 18926.79,
+      "market_cap_cr": 17943.66,
       "book_ev_cr": 8849.1,
       "multiples": {
-        "EV/EBITDA": 17.9299,
-        "EV/Revenue": 3.3247,
-        "EV/EBIT": 26.0765
+        "EV/EBITDA": 17.0462,
+        "EV/Revenue": 3.1609,
+        "EV/EBIT": 24.7915
       },
       "components": {
         "industry": 0.4,
@@ -428,19 +446,21 @@
       "duns": "INC00380000",
       "name": "KSB Pumps India",
       "score": 0.8828,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Coimbatore",
       "revenue_cr": 5356.16,
       "ebitda_margin": 0.174,
       "revenue_growth": -0.0394,
       "ev_basis": "market",
-      "market_ev_cr": 18082.2,
-      "market_cap_cr": 17902.46,
+      "market_ev_cr": 17185.89,
+      "market_cap_cr": 17006.15,
       "book_ev_cr": 7076.61,
       "multiples": {
-        "EV/EBITDA": 19.3986,
-        "EV/Revenue": 3.376,
-        "EV/EBIT": 28.2782
+        "EV/EBITDA": 18.437,
+        "EV/Revenue": 3.2086,
+        "EV/EBIT": 26.8765
       },
       "components": {
         "industry": 0.4,
@@ -461,6 +481,8 @@
       "duns": "INA00090000",
       "name": "BHEL Turbine Controls",
       "score": 0.8826,
+      "weight": 1.0,
+      "borderline": false,
       "listed": false,
       "city": "Hyderabad",
       "revenue_cr": 4741.28,
@@ -494,6 +516,8 @@
       "duns": "INA00070000",
       "name": "Triveni Turbine Controls",
       "score": 0.8807,
+      "weight": 1.0,
+      "borderline": false,
       "listed": false,
       "city": "Bengaluru",
       "revenue_cr": 7953.51,
@@ -528,19 +552,21 @@
       "duns": "INA00150000",
       "name": "Sanghvi Engine Equipment",
       "score": 0.8687,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Chennai",
       "revenue_cr": 4950.85,
       "ebitda_margin": 0.1764,
       "revenue_growth": 0.1598,
       "ev_basis": "market",
-      "market_ev_cr": 14659.31,
-      "market_cap_cr": 13584.88,
+      "market_ev_cr": 14762.5,
+      "market_cap_cr": 13688.07,
       "book_ev_cr": 7191.29,
       "multiples": {
-        "EV/EBITDA": 16.7884,
-        "EV/Revenue": 2.961,
-        "EV/EBIT": 20.378
+        "EV/EBITDA": 16.9066,
+        "EV/Revenue": 2.9818,
+        "EV/EBIT": 20.5214
       },
       "components": {
         "industry": 0.4,
@@ -561,19 +587,21 @@
       "duns": "INA00120000",
       "name": "Apex Engine Controls",
       "score": 0.8648,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Coimbatore",
       "revenue_cr": 4556.73,
       "ebitda_margin": 0.1666,
       "revenue_growth": 0.1733,
       "ev_basis": "market",
-      "market_ev_cr": 11639.76,
-      "market_cap_cr": 10792.1,
+      "market_ev_cr": 12217.64,
+      "market_cap_cr": 11369.98,
       "book_ev_cr": 4890.57,
       "multiples": {
-        "EV/EBITDA": 15.3367,
-        "EV/Revenue": 2.5544,
-        "EV/EBIT": 22.0325
+        "EV/EBITDA": 16.0981,
+        "EV/Revenue": 2.6812,
+        "EV/EBIT": 23.1263
       },
       "components": {
         "industry": 0.4,
@@ -595,19 +623,21 @@
       "duns": "INA00100000",
       "name": "Shakti Engine Governors",
       "score": 0.861,
+      "weight": 1.0,
+      "borderline": false,
       "listed": true,
       "city": "Bengaluru",
       "revenue_cr": 8588.67,
       "ebitda_margin": 0.1521,
       "revenue_growth": 0.1379,
       "ev_basis": "market",
-      "market_ev_cr": 18149.99,
-      "market_cap_cr": 17837.47,
+      "market_ev_cr": 19229.28,
+      "market_cap_cr": 18916.76,
       "book_ev_cr": 8407.38,
       "multiples": {
-        "EV/EBITDA": 13.8922,
-        "EV/Revenue": 2.1132,
-        "EV/EBIT": 21.5661
+        "EV/EBITDA": 14.7183,
+        "EV/Revenue": 2.2389,
+        "EV/EBIT": 22.8485
       },
       "components": {
         "industry": 0.4,
@@ -677,18 +707,19 @@
         "target_driver": 785.01,
         "ev_basis": "market",
         "n_peers": 11,
-        "n_multiples": 11,
-        "n_outliers_dropped": 0,
-        "range_basis": "P25/P75",
-        "multiple_p25": 14.836,
-        "multiple_median": 16.7884,
-        "multiple_p75": 17.9089,
-        "ev_low_cr": 11646.4338,
-        "ev_mid_cr": 13179.0753,
-        "ev_high_cr": 14058.6921,
-        "equity_low_cr": 8252.843,
-        "equity_mid_cr": 9478.9562,
-        "equity_high_cr": 10182.6497
+        "n_multiples": 10,
+        "effective_n": 10.0,
+        "n_outliers_dropped": 1,
+        "range_basis": "positioned at margin P27 (band P7–P47)",
+        "multiple_p25": 14.9482,
+        "multiple_median": 16.1421,
+        "multiple_p75": 16.8661,
+        "ev_low_cr": 11734.5207,
+        "ev_mid_cr": 12671.7466,
+        "ev_high_cr": 13240.0255,
+        "equity_low_cr": 10404.1407,
+        "equity_mid_cr": 11341.3666,
+        "equity_high_cr": 11909.6455
       },
       {
         "method": "EV/Revenue",
@@ -696,17 +727,18 @@
         "ev_basis": "market",
         "n_peers": 11,
         "n_multiples": 11,
+        "effective_n": 11.0,
         "n_outliers_dropped": 0,
-        "range_basis": "P25/P75",
-        "multiple_p25": 2.3985,
-        "multiple_median": 2.659,
-        "multiple_p75": 3.1039,
-        "ev_low_cr": 14089.6787,
-        "ev_mid_cr": 15619.6852,
-        "ev_high_cr": 18233.2248,
-        "equity_low_cr": 10207.4389,
-        "equity_mid_cr": 11431.4441,
-        "equity_high_cr": 13522.2758
+        "range_basis": "positioned at margin P27 (band P7–P47)",
+        "multiple_p25": 1.7185,
+        "multiple_median": 2.3935,
+        "multiple_p75": 2.8716,
+        "ev_low_cr": 10095.0836,
+        "ev_mid_cr": 14059.9763,
+        "ev_high_cr": 16868.7717,
+        "equity_low_cr": 8764.7036,
+        "equity_mid_cr": 12729.5963,
+        "equity_high_cr": 15538.3917
       },
       {
         "method": "EV/EBIT",
@@ -714,43 +746,46 @@
         "ev_basis": "market",
         "n_peers": 11,
         "n_multiples": 11,
+        "effective_n": 11.0,
         "n_outliers_dropped": 0,
-        "range_basis": "P25/P75",
-        "multiple_p25": 20.972,
-        "multiple_median": 22.3208,
-        "multiple_p75": 26.7316,
-        "ev_low_cr": 9352.4715,
-        "ev_mid_cr": 9953.9633,
-        "ev_high_cr": 11920.9654,
-        "equity_low_cr": 6417.6732,
-        "equity_mid_cr": 6898.8667,
-        "equity_high_cr": 8472.4684
+        "range_basis": "positioned at margin P27 (band P7–P47)",
+        "multiple_p25": 20.4841,
+        "multiple_median": 22.2518,
+        "multiple_p75": 23.077,
+        "ev_low_cr": 9134.881,
+        "ev_mid_cr": 9923.1753,
+        "ev_high_cr": 10291.187,
+        "equity_low_cr": 7804.501,
+        "equity_mid_cr": 8592.7953,
+        "equity_high_cr": 8960.807
       }
     ],
     "net_debt_cr": 1330.38,
-    "discount": 0.2,
-    "discount_reason": "DLOM 20% — established private co. (revenue ≥ ₹500 Cr)",
-    "equity_low_cr": 8252.843,
-    "equity_mid_cr": 9478.9562,
-    "equity_high_cr": 10182.6497,
+    "discount": 0.0,
+    "discount_reason": "no DLOM — target is listed/public (liquid equity)",
+    "equity_low_cr": 10404.1407,
+    "equity_mid_cr": 11341.3666,
+    "equity_high_cr": 11909.6455,
     "peers_used": [
       {
         "duns": "INA00040000",
         "name": "Bharat Turbine Controls",
         "score": 0.9661,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Chennai",
         "revenue_cr": 6739.01,
         "ebitda_margin": 0.1205,
         "revenue_growth": 0.1032,
         "ev_basis": "market",
-        "market_ev_cr": 13731.96,
-        "market_cap_cr": 14115.39,
+        "market_ev_cr": 10928.46,
+        "market_cap_cr": 11311.89,
         "book_ev_cr": 7137.53,
         "multiples": {
-          "EV/EBITDA": 16.9163,
-          "EV/Revenue": 2.0377,
-          "EV/EBIT": 27.3867
+          "EV/EBITDA": 13.4627,
+          "EV/Revenue": 1.6217,
+          "EV/EBIT": 21.7955
         },
         "components": {
           "industry": 0.4,
@@ -772,19 +807,21 @@
         "duns": "INC00480000",
         "name": "Mather Platt Fluid",
         "score": 0.9502,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Ghaziabad",
         "revenue_cr": 6545.91,
         "ebitda_margin": 0.174,
         "revenue_growth": 0.2228,
         "ev_basis": "market",
-        "market_ev_cr": 16328.74,
-        "market_cap_cr": 15862.55,
+        "market_ev_cr": 22150.64,
+        "market_cap_cr": 21684.45,
         "book_ev_cr": 8187.5,
         "multiples": {
-          "EV/EBITDA": 14.3354,
-          "EV/Revenue": 2.4945,
-          "EV/EBIT": 20.0527
+          "EV/EBITDA": 19.4466,
+          "EV/Revenue": 3.3839,
+          "EV/EBIT": 27.2024
         },
         "components": {
           "industry": 0.4,
@@ -806,19 +843,21 @@
         "duns": "INA00060000",
         "name": "Greaves Governor Systems",
         "score": 0.9481,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Hyderabad",
         "revenue_cr": 5376.17,
         "ebitda_margin": 0.1811,
         "revenue_growth": 0.2647,
         "ev_basis": "market",
-        "market_ev_cr": 12378.75,
-        "market_cap_cr": 11719.04,
+        "market_ev_cr": 16414.42,
+        "market_cap_cr": 15754.71,
         "book_ev_cr": 6622.13,
         "multiples": {
-          "EV/EBITDA": 12.7132,
-          "EV/Revenue": 2.3025,
-          "EV/EBIT": 15.4393
+          "EV/EBITDA": 16.858,
+          "EV/Revenue": 3.0532,
+          "EV/EBIT": 20.4727
         },
         "components": {
           "industry": 0.4,
@@ -840,6 +879,8 @@
         "duns": "INC00460000",
         "name": "Darling Pumps Machinery",
         "score": 0.9472,
+        "weight": 1.0,
+        "borderline": false,
         "listed": false,
         "city": "Ahmedabad",
         "revenue_cr": 8225.79,
@@ -875,19 +916,21 @@
         "duns": "INA00170000",
         "name": "Deccan Engine Controls",
         "score": 0.943,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Pune",
         "revenue_cr": 7340.48,
         "ebitda_margin": 0.1611,
         "revenue_growth": 0.1694,
         "ev_basis": "market",
-        "market_ev_cr": 19829.07,
-        "market_cap_cr": 19751.83,
+        "market_ev_cr": 19052.53,
+        "market_cap_cr": 18975.29,
         "book_ev_cr": 8342.82,
         "multiples": {
-          "EV/EBITDA": 16.7666,
-          "EV/Revenue": 2.7013,
-          "EV/EBIT": 25.9478
+          "EV/EBITDA": 16.11,
+          "EV/Revenue": 2.5955,
+          "EV/EBIT": 24.9317
         },
         "components": {
           "industry": 0.4,
@@ -909,19 +952,21 @@
         "duns": "INC00440000",
         "name": "Texmo Pumps Machinery",
         "score": 0.9224,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Ghaziabad",
         "revenue_cr": 5841.7,
         "ebitda_margin": 0.1249,
         "revenue_growth": 0.0856,
         "ev_basis": "market",
-        "market_ev_cr": 15532.87,
-        "market_cap_cr": 14996.75,
+        "market_ev_cr": 11897.56,
+        "market_cap_cr": 11361.44,
         "book_ev_cr": 6647.54,
         "multiples": {
-          "EV/EBITDA": 21.284,
-          "EV/Revenue": 2.659,
-          "EV/EBIT": 30.0169
+          "EV/EBITDA": 16.3027,
+          "EV/Revenue": 2.0367,
+          "EV/EBIT": 22.9918
         },
         "components": {
           "industry": 0.4,
@@ -942,19 +987,21 @@
         "duns": "INC00450000",
         "name": "Aqua Pump Industries",
         "score": 0.918,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Vadodara",
         "revenue_cr": 7927.91,
         "ebitda_margin": 0.1815,
         "revenue_growth": 0.0929,
         "ev_basis": "market",
-        "market_ev_cr": 25740.13,
-        "market_cap_cr": 24356.6,
+        "market_ev_cr": 28425.47,
+        "market_cap_cr": 27041.94,
         "book_ev_cr": 11742.06,
         "multiples": {
-          "EV/EBITDA": 17.888,
-          "EV/Revenue": 3.2468,
-          "EV/EBIT": 22.3208
+          "EV/EBITDA": 19.7542,
+          "EV/Revenue": 3.5855,
+          "EV/EBIT": 24.6494
         },
         "components": {
           "industry": 0.4,
@@ -977,6 +1024,8 @@
         "duns": "INA00030000",
         "name": "Cummins Governor Controls",
         "score": 0.8943,
+        "weight": 1.0,
+        "borderline": false,
         "listed": false,
         "city": "Coimbatore",
         "revenue_cr": 4757.0,
@@ -1010,19 +1059,21 @@
         "duns": "INA00180000",
         "name": "Elgi Governor Controls",
         "score": 0.8873,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Coimbatore",
         "revenue_cr": 5987.79,
         "ebitda_margin": 0.1854,
         "revenue_growth": 0.0599,
         "ev_basis": "market",
-        "market_ev_cr": 19907.88,
-        "market_cap_cr": 18924.75,
+        "market_ev_cr": 18926.79,
+        "market_cap_cr": 17943.66,
         "book_ev_cr": 8849.1,
         "multiples": {
-          "EV/EBITDA": 17.9299,
-          "EV/Revenue": 3.3247,
-          "EV/EBIT": 26.0765
+          "EV/EBITDA": 17.0462,
+          "EV/Revenue": 3.1609,
+          "EV/EBIT": 24.7915
         },
         "components": {
           "industry": 0.4,
@@ -1043,19 +1094,21 @@
         "duns": "INC00380000",
         "name": "KSB Pumps India",
         "score": 0.8828,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Coimbatore",
         "revenue_cr": 5356.16,
         "ebitda_margin": 0.174,
         "revenue_growth": -0.0394,
         "ev_basis": "market",
-        "market_ev_cr": 18082.2,
-        "market_cap_cr": 17902.46,
+        "market_ev_cr": 17185.89,
+        "market_cap_cr": 17006.15,
         "book_ev_cr": 7076.61,
         "multiples": {
-          "EV/EBITDA": 19.3986,
-          "EV/Revenue": 3.376,
-          "EV/EBIT": 28.2782
+          "EV/EBITDA": 18.437,
+          "EV/Revenue": 3.2086,
+          "EV/EBIT": 26.8765
         },
         "components": {
           "industry": 0.4,
@@ -1076,6 +1129,8 @@
         "duns": "INA00090000",
         "name": "BHEL Turbine Controls",
         "score": 0.8826,
+        "weight": 1.0,
+        "borderline": false,
         "listed": false,
         "city": "Hyderabad",
         "revenue_cr": 4741.28,
@@ -1109,6 +1164,8 @@
         "duns": "INA00070000",
         "name": "Triveni Turbine Controls",
         "score": 0.8807,
+        "weight": 1.0,
+        "borderline": false,
         "listed": false,
         "city": "Bengaluru",
         "revenue_cr": 7953.51,
@@ -1143,19 +1200,21 @@
         "duns": "INA00150000",
         "name": "Sanghvi Engine Equipment",
         "score": 0.8687,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Chennai",
         "revenue_cr": 4950.85,
         "ebitda_margin": 0.1764,
         "revenue_growth": 0.1598,
         "ev_basis": "market",
-        "market_ev_cr": 14659.31,
-        "market_cap_cr": 13584.88,
+        "market_ev_cr": 14762.5,
+        "market_cap_cr": 13688.07,
         "book_ev_cr": 7191.29,
         "multiples": {
-          "EV/EBITDA": 16.7884,
-          "EV/Revenue": 2.961,
-          "EV/EBIT": 20.378
+          "EV/EBITDA": 16.9066,
+          "EV/Revenue": 2.9818,
+          "EV/EBIT": 20.5214
         },
         "components": {
           "industry": 0.4,
@@ -1176,19 +1235,21 @@
         "duns": "INA00120000",
         "name": "Apex Engine Controls",
         "score": 0.8648,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Coimbatore",
         "revenue_cr": 4556.73,
         "ebitda_margin": 0.1666,
         "revenue_growth": 0.1733,
         "ev_basis": "market",
-        "market_ev_cr": 11639.76,
-        "market_cap_cr": 10792.1,
+        "market_ev_cr": 12217.64,
+        "market_cap_cr": 11369.98,
         "book_ev_cr": 4890.57,
         "multiples": {
-          "EV/EBITDA": 15.3367,
-          "EV/Revenue": 2.5544,
-          "EV/EBIT": 22.0325
+          "EV/EBITDA": 16.0981,
+          "EV/Revenue": 2.6812,
+          "EV/EBIT": 23.1263
         },
         "components": {
           "industry": 0.4,
@@ -1210,19 +1271,21 @@
         "duns": "INA00100000",
         "name": "Shakti Engine Governors",
         "score": 0.861,
+        "weight": 1.0,
+        "borderline": false,
         "listed": true,
         "city": "Bengaluru",
         "revenue_cr": 8588.67,
         "ebitda_margin": 0.1521,
         "revenue_growth": 0.1379,
         "ev_basis": "market",
-        "market_ev_cr": 18149.99,
-        "market_cap_cr": 17837.47,
+        "market_ev_cr": 19229.28,
+        "market_cap_cr": 18916.76,
         "book_ev_cr": 8407.38,
         "multiples": {
-          "EV/EBITDA": 13.8922,
-          "EV/Revenue": 2.1132,
-          "EV/EBIT": 21.5661
+          "EV/EBITDA": 14.7183,
+          "EV/Revenue": 2.2389,
+          "EV/EBIT": 22.8485
         },
         "components": {
           "industry": 0.4,
@@ -1241,29 +1304,48 @@
         ]
       }
     ],
-    "ev_basis": "Primary basis: market enterprise value (market cap + net debt) of 11 LISTED comparables. Book capital-employed proxy (4 unlisted comps) is used only as a per-method fallback when fewer than 3 listed comps exist for a metric.",
+    "ev_basis": "Primary basis: market enterprise value (market cap + net debt) of 11 LISTED comparables. Book capital-employed proxy (4 unlisted comps) is used only as a per-method fallback when fewer than 3 listed comps exist for a metric. Peer multiples are similarity-weighted (borderline comps count less).",
+    "quality_percentile": 0.267,
+    "positioning": "target EBITDA margin 13.4% ranks at the 27th percentile of the peer set → central multiple taken at peer P27 (not the flat median).",
+    "market_cross_check": {
+      "own_market_cap_cr": 10259.19,
+      "own_ev_ebitda": 14.76,
+      "comps_mid_equity_cr": 11341.3666,
+      "delta_pct": 10.5,
+      "within_25pct": true
+    },
+    "effective_peer_count": 15.0,
+    "n_borderline": 0,
     "notes": [],
     "warnings": []
   },
   "confidence": {
-    "score": 0.982,
-    "label": "HIGH"
+    "score": 0.805,
+    "label": "HIGH",
+    "breakdown": {
+      "profile": 0.19,
+      "peer_coverage": 0.2,
+      "ebitda_positive": 0.1,
+      "methods": 0.1,
+      "triangulation": 0.1,
+      "comp_tightness": 0.115
+    }
   },
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.662+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
       "detail": "pipeline start for query 'Woodward'",
       "data": {
-        "methodology_version": "1.2.0"
+        "methodology_version": "1.5.0"
       }
     },
     {
       "seq": 2,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
@@ -1272,7 +1354,7 @@
     },
     {
       "seq": 3,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "resolve",
       "level": "DECISION",
       "code": "TARGET_RESOLVED",
@@ -1285,7 +1367,7 @@
     },
     {
       "seq": 4,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1294,7 +1376,7 @@
     },
     {
       "seq": 5,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1303,7 +1385,7 @@
     },
     {
       "seq": 6,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_MANAGEMENT",
@@ -1312,7 +1394,7 @@
     },
     {
       "seq": 7,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
@@ -1325,7 +1407,7 @@
     },
     {
       "seq": 8,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1339,7 +1421,7 @@
     },
     {
       "seq": 9,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1348,7 +1430,7 @@
     },
     {
       "seq": 10,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1357,7 +1439,7 @@
     },
     {
       "seq": 11,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1366,7 +1448,7 @@
     },
     {
       "seq": 12,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1375,7 +1457,7 @@
     },
     {
       "seq": 13,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1384,7 +1466,7 @@
     },
     {
       "seq": 14,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1393,7 +1475,7 @@
     },
     {
       "seq": 15,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1402,7 +1484,7 @@
     },
     {
       "seq": 16,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1411,7 +1493,7 @@
     },
     {
       "seq": 17,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1420,7 +1502,7 @@
     },
     {
       "seq": 18,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1429,7 +1511,7 @@
     },
     {
       "seq": 19,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1438,7 +1520,7 @@
     },
     {
       "seq": 20,
-      "ts": "2026-07-13T13:42:40.790+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1447,7 +1529,7 @@
     },
     {
       "seq": 21,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1456,7 +1538,7 @@
     },
     {
       "seq": 22,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1465,7 +1547,7 @@
     },
     {
       "seq": 23,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1474,7 +1556,7 @@
     },
     {
       "seq": 24,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1483,7 +1565,7 @@
     },
     {
       "seq": 25,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1492,7 +1574,7 @@
     },
     {
       "seq": 26,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1501,7 +1583,7 @@
     },
     {
       "seq": 27,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1510,7 +1592,7 @@
     },
     {
       "seq": 28,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1519,7 +1601,7 @@
     },
     {
       "seq": 29,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1528,7 +1610,7 @@
     },
     {
       "seq": 30,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.663+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1537,7 +1619,7 @@
     },
     {
       "seq": 31,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1546,7 +1628,7 @@
     },
     {
       "seq": 32,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1555,7 +1637,7 @@
     },
     {
       "seq": 33,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1564,7 +1646,7 @@
     },
     {
       "seq": 34,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1573,7 +1655,7 @@
     },
     {
       "seq": 35,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1582,7 +1664,7 @@
     },
     {
       "seq": 36,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1591,7 +1673,7 @@
     },
     {
       "seq": 37,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1600,7 +1682,7 @@
     },
     {
       "seq": 38,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1609,7 +1691,7 @@
     },
     {
       "seq": 39,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1618,7 +1700,7 @@
     },
     {
       "seq": 40,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1627,7 +1709,7 @@
     },
     {
       "seq": 41,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1636,7 +1718,7 @@
     },
     {
       "seq": 42,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1645,7 +1727,7 @@
     },
     {
       "seq": 43,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1654,7 +1736,7 @@
     },
     {
       "seq": 44,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1663,7 +1745,7 @@
     },
     {
       "seq": 45,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1672,7 +1754,7 @@
     },
     {
       "seq": 46,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1681,7 +1763,7 @@
     },
     {
       "seq": 47,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1690,7 +1772,7 @@
     },
     {
       "seq": 48,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1699,7 +1781,7 @@
     },
     {
       "seq": 49,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1708,7 +1790,7 @@
     },
     {
       "seq": 50,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1717,7 +1799,7 @@
     },
     {
       "seq": 51,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1726,7 +1808,7 @@
     },
     {
       "seq": 52,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1735,7 +1817,7 @@
     },
     {
       "seq": 53,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1744,7 +1826,7 @@
     },
     {
       "seq": 54,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1753,7 +1835,7 @@
     },
     {
       "seq": 55,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1762,7 +1844,7 @@
     },
     {
       "seq": 56,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1771,7 +1853,7 @@
     },
     {
       "seq": 57,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1780,7 +1862,7 @@
     },
     {
       "seq": 58,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1789,7 +1871,7 @@
     },
     {
       "seq": 59,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1798,7 +1880,7 @@
     },
     {
       "seq": 60,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1807,7 +1889,7 @@
     },
     {
       "seq": 61,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1816,7 +1898,7 @@
     },
     {
       "seq": 62,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1825,7 +1907,7 @@
     },
     {
       "seq": 63,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1834,7 +1916,7 @@
     },
     {
       "seq": 64,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1843,7 +1925,7 @@
     },
     {
       "seq": 65,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1852,7 +1934,7 @@
     },
     {
       "seq": 66,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1861,7 +1943,7 @@
     },
     {
       "seq": 67,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1870,7 +1952,7 @@
     },
     {
       "seq": 68,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1879,7 +1961,7 @@
     },
     {
       "seq": 69,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1888,7 +1970,7 @@
     },
     {
       "seq": 70,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1897,7 +1979,7 @@
     },
     {
       "seq": 71,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1906,7 +1988,7 @@
     },
     {
       "seq": 72,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1915,7 +1997,7 @@
     },
     {
       "seq": 73,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1924,7 +2006,7 @@
     },
     {
       "seq": 74,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1933,7 +2015,7 @@
     },
     {
       "seq": 75,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1942,7 +2024,7 @@
     },
     {
       "seq": 76,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.664+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1951,7 +2033,7 @@
     },
     {
       "seq": 77,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1960,7 +2042,7 @@
     },
     {
       "seq": 78,
-      "ts": "2026-07-13T13:42:40.791+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1969,7 +2051,7 @@
     },
     {
       "seq": 79,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1978,7 +2060,7 @@
     },
     {
       "seq": 80,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1987,7 +2069,7 @@
     },
     {
       "seq": 81,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1996,7 +2078,7 @@
     },
     {
       "seq": 82,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2005,7 +2087,7 @@
     },
     {
       "seq": 83,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2014,7 +2096,7 @@
     },
     {
       "seq": 84,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2023,7 +2105,7 @@
     },
     {
       "seq": 85,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2032,7 +2114,7 @@
     },
     {
       "seq": 86,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2041,7 +2123,7 @@
     },
     {
       "seq": 87,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2050,7 +2132,7 @@
     },
     {
       "seq": 88,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2059,7 +2141,7 @@
     },
     {
       "seq": 89,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2068,7 +2150,7 @@
     },
     {
       "seq": 90,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2077,7 +2159,7 @@
     },
     {
       "seq": 91,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2086,7 +2168,7 @@
     },
     {
       "seq": 92,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2095,7 +2177,7 @@
     },
     {
       "seq": 93,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2104,7 +2186,7 @@
     },
     {
       "seq": 94,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2113,7 +2195,7 @@
     },
     {
       "seq": 95,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2122,7 +2204,7 @@
     },
     {
       "seq": 96,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2131,7 +2213,7 @@
     },
     {
       "seq": 97,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2140,7 +2222,7 @@
     },
     {
       "seq": 98,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2149,7 +2231,7 @@
     },
     {
       "seq": 99,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2158,7 +2240,7 @@
     },
     {
       "seq": 100,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2167,7 +2249,7 @@
     },
     {
       "seq": 101,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2176,7 +2258,7 @@
     },
     {
       "seq": 102,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2185,7 +2267,7 @@
     },
     {
       "seq": 103,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2194,7 +2276,7 @@
     },
     {
       "seq": 104,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2203,7 +2285,7 @@
     },
     {
       "seq": 105,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2212,7 +2294,7 @@
     },
     {
       "seq": 106,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2221,7 +2303,7 @@
     },
     {
       "seq": 107,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2230,7 +2312,7 @@
     },
     {
       "seq": 108,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2239,7 +2321,7 @@
     },
     {
       "seq": 109,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2248,7 +2330,7 @@
     },
     {
       "seq": 110,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2257,7 +2339,7 @@
     },
     {
       "seq": 111,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2266,7 +2348,7 @@
     },
     {
       "seq": 112,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2275,7 +2357,7 @@
     },
     {
       "seq": 113,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2284,7 +2366,7 @@
     },
     {
       "seq": 114,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2293,7 +2375,7 @@
     },
     {
       "seq": 115,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2302,7 +2384,7 @@
     },
     {
       "seq": 116,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2311,7 +2393,7 @@
     },
     {
       "seq": 117,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2320,7 +2402,7 @@
     },
     {
       "seq": 118,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2329,7 +2411,7 @@
     },
     {
       "seq": 119,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2338,7 +2420,7 @@
     },
     {
       "seq": 120,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2347,7 +2429,7 @@
     },
     {
       "seq": 121,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2356,7 +2438,7 @@
     },
     {
       "seq": 122,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2365,7 +2447,7 @@
     },
     {
       "seq": 123,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2374,7 +2456,7 @@
     },
     {
       "seq": 124,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2383,7 +2465,7 @@
     },
     {
       "seq": 125,
-      "ts": "2026-07-13T13:42:40.792+00:00",
+      "ts": "2026-07-14T01:14:22.665+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
@@ -2394,7 +2476,7 @@
     },
     {
       "seq": 126,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2406,7 +2488,7 @@
     },
     {
       "seq": 127,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2418,7 +2500,7 @@
     },
     {
       "seq": 128,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2430,7 +2512,7 @@
     },
     {
       "seq": 129,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2442,7 +2524,7 @@
     },
     {
       "seq": 130,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2454,7 +2536,7 @@
     },
     {
       "seq": 131,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -2466,64 +2548,81 @@
     },
     {
       "seq": 132,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "value",
       "level": "DECISION",
-      "code": "DISCOUNT_APPLIED",
-      "detail": "applied DLOM 20% — established private co. (revenue ≥ ₹500 Cr)",
+      "code": "QUALITY_POSITIONED",
+      "detail": "target EBITDA margin 13.4% ranks at the 27th percentile of the peer set → central multiple taken at peer P27 (not the flat median).",
       "data": {
-        "discount": 0.2,
-        "revenue_cr": 5874.35
+        "q_rank": 0.267,
+        "mid_q": 0.267,
+        "window": 0.2
       }
     },
     {
       "seq": 133,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "value",
-      "level": "INFO",
-      "code": "METHOD_COMPUTED",
-      "detail": "EV/EBITDA: median 16.79x on 11 market multiples (0 outliers dropped)",
+      "level": "DECISION",
+      "code": "DISCOUNT_APPLIED",
+      "detail": "applied no DLOM — target is listed/public (liquid equity)",
       "data": {
-        "method": "EV/EBITDA",
-        "median": 16.7884,
-        "ev_basis": "market",
-        "n_multiples": 11,
-        "n_outliers_dropped": 0
+        "discount": 0.0,
+        "revenue_cr": 5874.35,
+        "listed": true
       }
     },
     {
       "seq": 134,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
-      "detail": "EV/Revenue: median 2.66x on 11 market multiples (0 outliers dropped)",
+      "detail": "EV/EBITDA: positioned 16.14x on 10 market multiples (effective 10.0, 1 outliers dropped)",
       "data": {
-        "method": "EV/Revenue",
-        "median": 2.659,
+        "method": "EV/EBITDA",
+        "multiple": 16.1421,
         "ev_basis": "market",
-        "n_multiples": 11,
-        "n_outliers_dropped": 0
+        "effective_n": 10.0,
+        "n_multiples": 10,
+        "n_outliers_dropped": 1
       }
     },
     {
       "seq": 135,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
-      "detail": "EV/EBIT: median 22.32x on 11 market multiples (0 outliers dropped)",
+      "detail": "EV/Revenue: positioned 2.39x on 11 market multiples (effective 11.0, 0 outliers dropped)",
       "data": {
-        "method": "EV/EBIT",
-        "median": 22.3208,
+        "method": "EV/Revenue",
+        "multiple": 2.3935,
         "ev_basis": "market",
+        "effective_n": 11.0,
         "n_multiples": 11,
         "n_outliers_dropped": 0
       }
     },
     {
       "seq": 136,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "ts": "2026-07-14T01:14:22.666+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "METHOD_COMPUTED",
+      "detail": "EV/EBIT: positioned 22.25x on 11 market multiples (effective 11.0, 0 outliers dropped)",
+      "data": {
+        "method": "EV/EBIT",
+        "multiple": 22.2518,
+        "ev_basis": "market",
+        "effective_n": 11.0,
+        "n_multiples": 11,
+        "n_outliers_dropped": 0
+      }
+    },
+    {
+      "seq": 137,
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -2533,8 +2632,23 @@
       }
     },
     {
-      "seq": 137,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "seq": 138,
+      "ts": "2026-07-14T01:14:22.666+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "MARKET_CROSSCHECK",
+      "detail": "comps mid equity ₹11341 Cr vs own market cap ₹10259 Cr (+10.5%)",
+      "data": {
+        "own_market_cap_cr": 10259.19,
+        "own_ev_ebitda": 14.76,
+        "comps_mid_equity_cr": 11341.3666,
+        "delta_pct": 10.5,
+        "within_25pct": true
+      }
+    },
+    {
+      "seq": 139,
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -2545,20 +2659,28 @@
       }
     },
     {
-      "seq": 138,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "seq": 140,
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
-      "detail": "HIGH (0.982)",
+      "detail": "HIGH (0.805) — triangulation 0.1, comp-tightness 0.115",
       "data": {
-        "score": 0.982,
-        "label": "HIGH"
+        "score": 0.805,
+        "label": "HIGH",
+        "breakdown": {
+          "profile": 0.19,
+          "peer_coverage": 0.2,
+          "ebitda_positive": 0.1,
+          "methods": 0.1,
+          "triangulation": 0.1,
+          "comp_tightness": 0.115
+        }
       }
     },
     {
-      "seq": 139,
-      "ts": "2026-07-13T13:42:40.793+00:00",
+      "seq": 141,
+      "ts": "2026-07-14T01:14:22.666+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",
@@ -2567,5 +2689,28 @@
         "status": "ok"
       }
     }
-  ]
+  ],
+  "validation": {
+    "n_targets": 32,
+    "margin_multiple_corr": 0.487,
+    "positioned": {
+      "n": 32,
+      "mean_abs_pct": 8.1,
+      "median_abs_pct": 7.5,
+      "max_abs_pct": 26.1,
+      "within_15pct": 28,
+      "within_25pct": 31
+    },
+    "flat_median": {
+      "n": 32,
+      "mean_abs_pct": 10.5,
+      "median_abs_pct": 8.3,
+      "max_abs_pct": 36.9,
+      "within_15pct": 23,
+      "within_25pct": 31
+    },
+    "positioning_wins": 24,
+    "verdict": "PASS",
+    "verdict_ok": true
+  }
 }

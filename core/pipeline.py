@@ -90,6 +90,11 @@ class Valuation:
     equity_high_cr: Optional[float]
     peers_used: List[Dict[str, Any]]
     ev_basis: str
+    quality_percentile: Optional[float] = None      # target margin rank within peers
+    positioning: Optional[str] = None               # human note on how the multiple was set
+    market_cross_check: Optional[Dict[str, Any]] = None  # listed target: comps vs own mkt cap
+    effective_peer_count: Optional[float] = None    # similarity-weighted peer count
+    n_borderline: int = 0                           # peers below the strong-match line
     notes: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
@@ -121,6 +126,19 @@ def _percentile(sorted_vals, p):
     f = int(k)
     c = min(f + 1, len(sorted_vals) - 1)
     return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
+
+
+def _pct_rank(value, sorted_vals):
+    """Percentile rank of `value` within `sorted_vals` (fraction at-or-below, 0..1)."""
+    if not sorted_vals or value is None:
+        return 0.5
+    below = sum(1 for x in sorted_vals if x < value)
+    equal = sum(1 for x in sorted_vals if x == value)
+    return (below + 0.5 * equal) / len(sorted_vals)
+
+
+def _clamp(x, lo, hi):
+    return max(lo, min(hi, x))
 
 
 # ---------------------------------------------------------------------------
@@ -562,6 +580,76 @@ def _tukey_trim(values):
     return kept, len(s) - len(kept)
 
 
+# --- similarity weighting of peer multiples --------------------------------
+# The peer set is rarely all "exact" matches. Rather than treat a borderline
+# comparable (just outside the ideal range on scale / margin / industry) the same
+# as a perfect one, its multiple is DOWN-WEIGHTED in proportion to how far its
+# similarity score sits below the "full match" line. This keeps a thin or weak peer
+# set from distorting the headline number — the answer leans on the closest comps.
+# The taper is linear between two anchors:
+#     score >= 0.85  -> full weight 1.0        (an exact comparable)
+#     score  = 0.625 -> ~0.5                    (only half counts)
+#     score <= 0.40  -> floor 0.15              (barely counts, but still informs)
+_FULL_MATCH = 0.85
+_MIN_MATCH = 0.40
+_WEIGHT_FLOOR = 0.15
+
+
+def _match_weight(score):
+    if score is None:
+        return _WEIGHT_FLOOR
+    frac = (score - _MIN_MATCH) / (_FULL_MATCH - _MIN_MATCH)
+    return max(_WEIGHT_FLOOR, min(1.0, frac))
+
+
+def _tukey_trim_pairs(pairs):
+    """Tukey-trim a list of (value, weight) pairs on the VALUE. Skip if <4."""
+    if len(pairs) < 4:
+        return list(pairs), 0
+    vals = sorted(v for v, _ in pairs)
+    q1 = _percentile(vals, 0.25)
+    q3 = _percentile(vals, 0.75)
+    iqr = q3 - q1
+    lo = q1 - 1.5 * iqr
+    hi = q3 + 1.5 * iqr
+    kept = [(v, w) for (v, w) in pairs if lo <= v <= hi]
+    return kept, len(pairs) - len(kept)
+
+
+def _weighted_percentile(pairs, p):
+    """
+    Weighted percentile of (value, weight) pairs (linear interpolation on the
+    cumulative-weight midpoints). Falls back to the unweighted percentile if all
+    weights are zero. `p` in [0,1].
+    """
+    if not pairs:
+        return None
+    s = sorted(pairs, key=lambda t: t[0])
+    vals = [v for v, _ in s]
+    ws = [max(0.0, w) for _, w in s]
+    total = sum(ws)
+    if total <= 0:
+        return _percentile(vals, p)
+    if len(vals) == 1:
+        return vals[0]
+    # cumulative-weight midpoint for each value, normalized to [0,1]
+    cum = []
+    running = 0.0
+    for w in ws:
+        cum.append((running + w / 2.0) / total)
+        running += w
+    if p <= cum[0]:
+        return vals[0]
+    if p >= cum[-1]:
+        return vals[-1]
+    for i in range(1, len(cum)):
+        if p <= cum[i]:
+            lo_c, hi_c = cum[i - 1], cum[i]
+            frac = (p - lo_c) / (hi_c - lo_c) if hi_c > lo_c else 0.0
+            return vals[i - 1] + (vals[i] - vals[i - 1]) * frac
+    return vals[-1]
+
+
 _METHOD_SPEC = [
     ("EV/EBITDA", "ebitda_cr"),
     ("EV/Revenue", "revenue_cr"),
@@ -575,34 +663,62 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
     warnings = []
     n_used = len(used)
 
-    # --- range basis: widen quantiles when the peer set is thin ----------
-    if n_used < 10:
-        low_q, high_q = 0.10, 0.90
-        range_basis = "P10/P90 (widened: fewer than 10 peers)"
-        if audit is not None:
+    # --- Quality positioning -------------------------------------------
+    # Applying the flat peer *median* multiple to every target is inaccurate: a
+    # below-median-quality company should trade below the median, an above-median
+    # one above it. We position the target by its EBITDA-margin percentile within
+    # the peer set and read the peer multiple at THAT percentile as the central
+    # (mid) estimate — this is what closes the gap to a listed target's own market
+    # value. The low/high band is a window around that position (±20pts, ±30 when
+    # the peer set is thin) reflecting comp dispersion.
+    peer_margins = sorted(p["company"].ebitda_margin for p in used
+                          if p["company"].ebitda_margin is not None)
+    q_rank = _pct_rank(target.ebitda_margin, peer_margins)
+    # Effective peer count = sum of similarity weights. A set padded with borderline
+    # comps has a low effective count even if nominally 15 — so we widen the range on
+    # the EFFECTIVE count, not the raw one. Not enough *exact* peers => wider range.
+    effective_peer_count = round(sum(_match_weight(r["score"]) for r in used), 2)
+    n_borderline = sum(1 for r in used if r["score"] < _FULL_MATCH)
+    thin = effective_peer_count < 10 or n_used < 10
+    window = 0.30 if thin else 0.20
+    mid_q = _clamp(q_rank, 0.15, 0.85)
+    low_q = _clamp(mid_q - window, 0.05, 0.95)
+    high_q = _clamp(mid_q + window, 0.05, 0.95)
+    range_basis = (f"positioned at margin P{int(round(mid_q*100))} "
+                   f"(band P{int(round(low_q*100))}–P{int(round(high_q*100))})")
+    _tm = "n/a" if target.ebitda_margin is None else f"{target.ebitda_margin*100:.1f}%"
+    positioning = (
+        f"target EBITDA margin {_tm} ranks at the "
+        f"{int(round(q_rank*100))}th percentile of the peer set → central multiple "
+        f"taken at peer P{int(round(mid_q*100))} (not the flat median).")
+    if audit is not None:
+        audit.decision("value", "QUALITY_POSITIONED", positioning,
+                       {"q_rank": round(q_rank, 3), "mid_q": round(mid_q, 3),
+                        "window": window})
+        if thin:
             audit.decision("value", "RANGE_WIDENED",
-                           f"only {n_used} peers: widening range to P10/P90",
-                           {"n_peers": n_used, "low_q": low_q, "high_q": high_q})
-    else:
-        low_q, high_q = 0.25, 0.75
-        range_basis = "P25/P75"
+                           f"effective peer count {effective_peer_count} (of {n_used}): "
+                           f"widening positioning band to ±30pts",
+                           {"n_peers": n_used,
+                            "effective_peer_count": effective_peer_count, "window": window})
 
     # Net debt bridges enterprise value to equity value.
     net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
-    # DLOM — Discount for Lack of Marketability. Listed peers' multiples embed a
-    # liquidity premium a private MSME does not enjoy; the discount is size-scaled
-    # (smaller = less marketable = larger discount). Standard private-company practice.
+    # DLOM — Discount for Lack of Marketability — applies ONLY to a PRIVATE target,
+    # because it is priced off *listed* peers whose equity is liquid. A listed target
+    # is itself liquid, so no DLOM. For private targets the DLOM is size-scaled.
     rev = target.revenue_cr or 0.0
-    if rev < 100:
+    if target.listed:
+        discount, dreason = 0.0, "no DLOM — target is listed/public (liquid equity)"
+    elif rev < 100:
         discount, dreason = 0.30, "DLOM 30% — micro/small private co. (revenue < ₹100 Cr)"
     elif rev < 500:
         discount, dreason = 0.25, "DLOM 25% — small-mid private co. (revenue ₹100–500 Cr)"
     else:
         discount, dreason = 0.20, "DLOM 20% — established private co. (revenue ≥ ₹500 Cr)"
     if audit is not None:
-        audit.decision("value", "DISCOUNT_APPLIED",
-                       f"applied {dreason}",
-                       {"discount": discount, "revenue_cr": rev})
+        audit.decision("value", "DISCOUNT_APPLIED", f"applied {dreason}",
+                       {"discount": discount, "revenue_cr": rev, "listed": target.listed})
 
     # Collect multiples in TWO pools:
     #   market_multiples — from LISTED comps priced off observed market EV (primary)
@@ -610,6 +726,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
     # A trading multiple is only meaningful off a market enterprise value, so the
     # market pool is preferred; the book pool is a documented last resort used per
     # method only when there are fewer than 3 listed comps for that metric.
+    # each pool holds (multiple, weight) pairs — weight = similarity match weight
     market_multiples = {name: [] for name, _ in _METHOD_SPEC}
     book_multiples = {name: [] for name, _ in _METHOD_SPEC}
     peers_used_out = []
@@ -617,6 +734,8 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
     n_book = 0
     for r in used:
         p = r["company"]
+        weight = _match_weight(r["score"])       # effective count computed above
+        borderline = r["score"] < _FULL_MATCH
         mkt_ev = p.market_ev_cr if (p.market_ev_cr and p.market_ev_cr > 0) else None
         book_ev = p.capital_employed_cr if (p.capital_employed_cr and
                                             p.capital_employed_cr > 0) else None
@@ -631,14 +750,15 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             if dv is None or dv <= 0:
                 continue
             if mkt_ev:
-                market_multiples[mname].append(mkt_ev / dv)
+                market_multiples[mname].append((mkt_ev / dv, weight))
                 pm[mname] = round(mkt_ev / dv, 4)
             if book_ev:
-                book_multiples[mname].append(book_ev / dv)
+                book_multiples[mname].append((book_ev / dv, weight))
                 if not mkt_ev:
                     pm[mname] = round(book_ev / dv, 4)
         peers_used_out.append({
             "duns": p.duns, "name": p.name, "score": r["score"],
+            "weight": round(weight, 3), "borderline": borderline,
             "listed": p.listed, "city": p.city,
             "revenue_cr": p.revenue_cr, "ebitda_margin": p.ebitda_margin,
             "revenue_growth": p.revenue_growth,
@@ -650,11 +770,19 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             "selected_because": r["selected_because"],
             "differences": r["differences"],
         })
+    if audit is not None and n_borderline:
+        audit.decision("value", "PEERS_WEIGHTED",
+                       f"{n_borderline}/{len(used)} peers are borderline (similarity < "
+                       f"{_FULL_MATCH}); multiples similarity-weighted — effective "
+                       f"peer count {effective_peer_count} of {len(used)}",
+                       {"n_borderline": n_borderline, "n_used": len(used),
+                        "effective_peer_count": effective_peer_count})
 
     ev_basis = (f"Primary basis: market enterprise value (market cap + net debt) of "
                 f"{n_market} LISTED comparables. Book capital-employed proxy "
                 f"({n_book} unlisted comps) is used only as a per-method fallback when "
-                f"fewer than 3 listed comps exist for a metric.")
+                f"fewer than 3 listed comps exist for a metric. Peer multiples are "
+                f"similarity-weighted (borderline comps count less).")
 
     # compute each method
     methods = []
@@ -667,7 +795,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
     for mname, _driver in _METHOD_SPEC:
         # market-primary, book-fallback selection of the peer multiple set
         if len(market_multiples[mname]) >= 3:
-            raw = market_multiples[mname]
+            raw = market_multiples[mname]          # list of (multiple, weight)
             method_basis = "market"
         else:
             raw = book_multiples[mname]
@@ -678,7 +806,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                                f"capital-employed multiples",
                                {"method": mname,
                                 "n_market": len(market_multiples[mname])})
-        kept, dropped = _tukey_trim(raw)
+        kept, dropped = _tukey_trim_pairs(raw)
         tdriver = target_drivers[mname]
         if tdriver is None or tdriver <= 0:
             if len(kept) >= 3:
@@ -695,17 +823,27 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                            f"{mname} skipped: only {len(kept)} multiples after trimming",
                            {"method": mname, "n_multiples": len(kept)})
             continue
-        ks = sorted(kept)
-        median = _percentile(ks, 0.5)
-        p_low = _percentile(ks, low_q)
-        p_high = _percentile(ks, high_q)
+        eff_n = round(sum(w for _, w in kept), 2)          # effective (weighted) count
+        # similarity-weighted positioned multiple + band
+        p_mid = _weighted_percentile(kept, mid_q)
+        p_low = _weighted_percentile(kept, low_q)
+        p_high = _weighted_percentile(kept, high_q)
+        # strict ordering guard (flat/degenerate distributions)
+        if not (p_low < p_mid < p_high):
+            p_low = _weighted_percentile(kept, 0.25)
+            p_mid = _weighted_percentile(kept, 0.5)
+            p_high = _weighted_percentile(kept, 0.75)
+            if not (p_low < p_mid < p_high):
+                ks = sorted(v for v, _ in kept)
+                lo_v, hi_v = ks[0], ks[-1]
+                p_low, p_mid, p_high = lo_v, (lo_v + hi_v) / 2.0, hi_v
 
         def equity(mult):
             ev_x = mult * tdriver
             return round((ev_x - net_debt) * (1.0 - discount), 4), round(ev_x, 4)
 
         eq_low, ev_low = equity(p_low)
-        eq_mid, ev_mid = equity(median)
+        eq_mid, ev_mid = equity(p_mid)
         eq_high, ev_high = equity(p_high)
         methods.append({
             "method": mname,
@@ -713,20 +851,21 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             "ev_basis": method_basis,
             "n_peers": len(raw),
             "n_multiples": len(kept),
+            "effective_n": eff_n,
             "n_outliers_dropped": dropped,
             "range_basis": range_basis,
             "multiple_p25": round(p_low, 4),
-            "multiple_median": round(median, 4),
+            "multiple_median": round(p_mid, 4),
             "multiple_p75": round(p_high, 4),
             "ev_low_cr": ev_low, "ev_mid_cr": ev_mid, "ev_high_cr": ev_high,
             "equity_low_cr": eq_low, "equity_mid_cr": eq_mid, "equity_high_cr": eq_high,
         })
         if audit is not None:
             audit.info("value", "METHOD_COMPUTED",
-                       f"{mname}: median {median:.2f}x on {len(kept)} {method_basis} "
-                       f"multiples ({dropped} outliers dropped)",
-                       {"method": mname, "median": round(median, 4),
-                        "ev_basis": method_basis,
+                       f"{mname}: positioned {p_mid:.2f}x on {len(kept)} {method_basis} "
+                       f"multiples (effective {eff_n}, {dropped} outliers dropped)",
+                       {"method": mname, "multiple": round(p_mid, 4),
+                        "ev_basis": method_basis, "effective_n": eff_n,
                         "n_multiples": len(kept), "n_outliers_dropped": dropped})
 
     # headline selection: EV/EBITDA -> EV/Revenue -> EV/EBIT
@@ -763,16 +902,44 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             headline_method="none", methods=methods, net_debt_cr=net_debt,
             discount=discount, discount_reason=dreason,
             equity_low_cr=None, equity_mid_cr=None, equity_high_cr=None,
-            peers_used=peers_used_out, ev_basis=ev_basis, notes=notes, warnings=warnings,
+            peers_used=peers_used_out, ev_basis=ev_basis,
+            quality_percentile=round(q_rank, 3), positioning=positioning,
+            effective_peer_count=effective_peer_count, n_borderline=n_borderline,
+            notes=notes, warnings=warnings,
         )
 
     h = computed[headline_method]
+
+    # Market cross-check — the strongest accuracy signal available. When the target
+    # is itself listed we can compare our comps-derived equity to its OWN observed
+    # market capitalisation. A small delta means the engine is well-calibrated.
+    market_cross_check = None
+    if target.listed and target.market_cap_cr and target.market_cap_cr > 0:
+        own = target.market_cap_cr
+        delta = h["equity_mid_cr"] / own - 1.0
+        market_cross_check = {
+            "own_market_cap_cr": round(own, 2),
+            "own_ev_ebitda": (round(target.market_ev_cr / target.ebitda_cr, 2)
+                              if target.ebitda_cr else None),
+            "comps_mid_equity_cr": h["equity_mid_cr"],
+            "delta_pct": round(delta * 100, 1),
+            "within_25pct": abs(delta) <= 0.25,
+        }
+        if audit is not None:
+            audit.info("value", "MARKET_CROSSCHECK",
+                       f"comps mid equity ₹{h['equity_mid_cr']:.0f} Cr vs own market cap "
+                       f"₹{own:.0f} Cr ({delta*100:+.1f}%)", market_cross_check)
+
     return Valuation(
         headline_method=headline_method, methods=methods, net_debt_cr=net_debt,
         discount=discount, discount_reason=dreason,
         equity_low_cr=h["equity_low_cr"], equity_mid_cr=h["equity_mid_cr"],
         equity_high_cr=h["equity_high_cr"],
-        peers_used=peers_used_out, ev_basis=ev_basis, notes=notes, warnings=warnings,
+        peers_used=peers_used_out, ev_basis=ev_basis,
+        quality_percentile=round(q_rank, 3), positioning=positioning,
+        market_cross_check=market_cross_check,
+        effective_peer_count=effective_peer_count, n_borderline=n_borderline,
+        notes=notes, warnings=warnings,
     )
 
 

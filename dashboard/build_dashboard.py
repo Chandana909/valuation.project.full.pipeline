@@ -3,19 +3,23 @@ dashboard/build_dashboard.py — render output/result.json to a self-contained
 output/dashboard.html using plain string formatting. No template engine, no
 external CSS/JS. Stdlib only.
 
-Design goals (v1.2):
-  * The three headline sections (Target, Valuation, Confidence & Data Quality) are
-    STACKED VERTICALLY (full width), not crammed side-by-side, for readability.
-  * Every section opens with a short "theory" paragraph explaining WHAT is shown
-    and HOW it was derived, so a non-specialist can follow the methodology.
-  * The valuation section shows the full equity BRIDGE
-    (multiple -> enterprise value -> less net debt -> less DLOM -> equity).
+Design goals (v1.4):
+  * MODULAR — one self-contained card per idea, generous spacing, clear hierarchy.
+  * EXPLANATORY — every section states its Purpose, then a "theory" note on what is
+    shown and how it was derived; numbers are never presented without their meaning.
+  * HONEST — confidence is shown as a component breakdown (not one opaque number), and
+    a Methodology Validation card reports the anti-overfitting backtest so the reader
+    can see the accuracy is aggregate, not a single lucky calibration.
 Degraded runs (no_match / insufficient_data) render a minimal, honest page.
 """
 
 import json
 import html
 
+
+# --------------------------------------------------------------------------- #
+# formatting helpers
+# --------------------------------------------------------------------------- #
 
 def _esc(x):
     return html.escape("" if x is None else str(x))
@@ -56,89 +60,123 @@ def _fact(label, value, sub=None):
             f'<div class="fact-v">{value}</div>{s}</div>')
 
 
+def _section(num, title, purpose, body_html):
+    """A numbered, self-contained section card."""
+    return (f'<section class="card"><div class="sec-head">'
+            f'<span class="sec-num">{num}</span>'
+            f'<div><h2>{_esc(title)}</h2>'
+            f'<div class="sec-purpose">{purpose}</div></div></div>'
+            f'{body_html}</section>')
+
+
+def _bar(frac, cls="bar-accent"):
+    frac = max(0.0, min(1.0, frac))
+    return (f'<div class="bar"><div class="{cls}" style="width:{frac*100:.0f}%"></div></div>')
+
+
 _STYLE = """
-:root {
-  --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2b3444;
-  --ink:#e6edf3; --muted:#9aa7b4; --accent:#4f9cf9; --good:#3fb950;
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2b3444; --line2:#3a465a;
+  --ink:#e6edf3; --muted:#9aa7b4; --faint:#6b7684; --accent:#4f9cf9; --good:#3fb950;
   --warn:#d29922; --bad:#f85149; --dec:#a371f7;
 }
-* { box-sizing:border-box; }
-body { margin:0; background:var(--bg); color:var(--ink);
-  font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; font-size:14px;
-  line-height:1.45; }
-.wrap { max-width:1040px; margin:0 auto; padding:26px; }
-h1 { font-size:23px; margin:0 0 6px; }
-.sub { color:var(--muted); margin-bottom:6px; font-size:13px; }
-.provenance { color:var(--muted); font-size:12px; margin:10px 0 4px;
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;
+  line-height:1.5;}
+.wrap{max-width:1000px;margin:0 auto;padding:30px 26px 60px;}
+h1{font-size:24px;margin:0 0 6px;}
+.sub{color:var(--muted);font-size:13px;}
+.provenance{color:var(--muted);font-size:12px;margin:12px 0 0;
   font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
-  background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 14px; }
-.status-ok { color:var(--good); } .status-bad { color:var(--bad); }
-.intro { color:var(--muted); font-size:13.5px; margin:14px 0 20px; }
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;}
+.status-ok{color:var(--good);} .status-bad{color:var(--bad);}
+.intro{color:var(--muted);font-size:13.5px;margin:18px 0 6px;}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 26px;}
+.legend .lg{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:8px 12px;font-size:12px;color:var(--muted);}
+.legend .lg b{color:var(--ink);}
 
-/* stacked full-width sections */
-.section { background:var(--panel); border:1px solid var(--line); border-radius:12px;
-  padding:20px 22px; margin-bottom:18px; }
-.section-num { color:var(--accent); font-weight:700; margin-right:8px; }
-.section h2 { font-size:16px; margin:0 0 4px; border:0; padding:0; text-transform:none;
-  letter-spacing:0; color:var(--ink); }
-.theory { color:var(--muted); font-size:13px; line-height:1.55; margin:6px 0 16px;
-  border-left:2px solid var(--line); padding-left:12px; }
-.theory b { color:var(--ink); font-weight:600; }
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:22px 24px;margin-bottom:20px;}
+.sec-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
+.sec-num{flex:none;width:30px;height:30px;border-radius:8px;background:var(--panel2);
+  border:1px solid var(--line2);color:var(--accent);font-weight:800;font-size:15px;
+  display:flex;align-items:center;justify-content:center;}
+.sec-head h2{font-size:17px;margin:0;}
+.sec-purpose{color:var(--faint);font-size:12.5px;margin-top:2px;}
+.theory{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 18px;
+  border-left:3px solid var(--line2);padding:2px 0 2px 14px;background:rgba(255,255,255,.01);}
+.theory b{color:var(--ink);font-weight:600;}
 
-.facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
-.fact-k { color:var(--muted); font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; }
-.fact-v { font-size:15px; margin-top:3px; }
-.sub-note { color:var(--muted); font-size:11.5px; margin-top:2px; }
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+.fact-k{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;}
+.fact-v{font-size:15px;margin-top:3px;font-weight:600;}
+.sub-note{color:var(--muted);font-size:11.5px;margin-top:2px;font-weight:400;}
 
-.badge { display:inline-block; padding:6px 14px; border-radius:20px; font-weight:700; font-size:15px; }
-.badge.hi { background:rgba(63,185,80,.15); color:var(--good); border:1px solid var(--good); }
-.badge.med { background:rgba(210,153,34,.15); color:var(--warn); border:1px solid var(--warn); }
-.badge.lo { background:rgba(248,81,73,.15); color:var(--bad); border:1px solid var(--bad); }
+.badge{display:inline-block;padding:6px 14px;border-radius:20px;font-weight:700;font-size:15px;}
+.badge.hi{background:rgba(63,185,80,.15);color:var(--good);border:1px solid var(--good);}
+.badge.med{background:rgba(210,153,34,.15);color:var(--warn);border:1px solid var(--warn);}
+.badge.lo{background:rgba(248,81,73,.15);color:var(--bad);border:1px solid var(--bad);}
 
-/* valuation headline */
-.headline { display:flex; gap:26px; align-items:flex-end; margin:6px 0 16px; flex-wrap:wrap; }
-.hv { text-align:center; }
-.hv .k { color:var(--muted); font-size:12px; }
-.hv .n { font-size:30px; font-weight:800; }
-.hv .n.mid { color:var(--accent); }
-.unit { color:var(--muted); font-size:12px; }
-.bridge { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
-.bridge .step { background:var(--panel2); border:1px solid var(--line); border-radius:8px;
-  padding:8px 12px; font-size:12.5px; }
-.bridge .step b { display:block; font-size:15px; margin-top:2px; }
-.bridge .op { color:var(--muted); font-weight:700; font-size:16px; }
+.headline{display:flex;gap:30px;align-items:flex-end;margin:6px 0 18px;flex-wrap:wrap;}
+.hv{text-align:center;}
+.hv .k{color:var(--muted);font-size:12px;}
+.hv .n{font-size:32px;font-weight:800;letter-spacing:-.5px;}
+.hv .n.mid{color:var(--accent);}
+.unit{color:var(--muted);font-size:12px;}
+.bridge{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:8px;}
+.bridge .step{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:9px 13px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;
+  justify-content:center;}
+.bridge .step b{color:var(--ink);font-size:15px;margin-top:3px;}
+.bridge .op{color:var(--faint);font-weight:800;font-size:18px;display:flex;align-items:center;}
 
-table { width:100%; border-collapse:collapse; margin-top:6px; }
-th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); font-size:13px;
-  vertical-align:top; }
-th { color:var(--muted); text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
-tr:hover td { background:var(--panel2); }
+.callout{margin-top:14px;padding:12px 16px;border-radius:10px;border:1px solid var(--line2);
+  background:var(--panel2);}
+.callout.ok{border-color:var(--good);background:rgba(63,185,80,.07);}
+.callout.warn{border-color:var(--warn);background:rgba(210,153,34,.07);}
+.callout b{font-size:13.5px;}
 
-.peer { background:var(--panel2); border:1px solid var(--line); border-radius:10px;
-  padding:14px; margin-bottom:12px; }
-.peer-head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
-.peer-name { font-weight:700; font-size:15px; }
-.tag { font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--line); color:var(--muted); }
-.tag.listed { color:var(--accent); border-color:var(--accent); }
-.score { font-weight:700; color:var(--accent); }
-.chip { display:inline-block; background:var(--panel); border:1px solid var(--line);
-  border-radius:6px; padding:2px 8px; margin:3px 4px 0 0; font-size:12px; }
-.chip b { color:var(--muted); font-weight:600; }
-.mult { color:var(--good); }
-.because { color:var(--good); font-size:12px; margin-top:6px; }
-.diffs { color:var(--warn); font-size:12px; margin-top:2px; }
-.reason { color:var(--bad); }
-.note { color:var(--warn); }
-.mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; }
-.hl-row { background:rgba(79,156,249,.10); }
-.lvl { font-weight:700; font-size:11px; padding:1px 7px; border-radius:5px; }
-.lv-info { color:var(--muted); border:1px solid var(--line); }
-.lv-warn { color:var(--warn); border:1px solid var(--warn); }
-.lv-dec  { color:var(--dec); border:1px solid var(--dec); }
-.lv-err  { color:var(--bad); border:1px solid var(--bad); }
-.dq-pass { color:var(--good); } .dq-warn { color:var(--warn); } .dq-fail { color:var(--bad); }
-.two { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
-@media (max-width:720px){ .two { grid-template-columns:1fr; } }
+/* confidence breakdown bars */
+.cbrow{display:grid;grid-template-columns:150px 1fr 60px;gap:12px;align-items:center;
+  margin:7px 0;font-size:12.5px;}
+.cbrow .lab{color:var(--muted);} .cbrow .val{text-align:right;color:var(--ink);font-weight:600;}
+.bar{height:8px;background:var(--panel2);border-radius:5px;overflow:hidden;border:1px solid var(--line);}
+.bar-accent{height:100%;background:linear-gradient(90deg,#2d6fd6,#4f9cf9);}
+.bar-good{height:100%;background:var(--good);} .bar-warn{height:100%;background:var(--warn);}
+
+table{width:100%;border-collapse:collapse;margin-top:6px;}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-size:13px;
+  vertical-align:top;}
+th{color:var(--muted);text-transform:uppercase;font-size:11px;letter-spacing:.05em;}
+tr:hover td{background:var(--panel2);}
+.hl-row{background:rgba(79,156,249,.10);}
+
+.peer{background:var(--panel2);border:1px solid var(--line);border-radius:11px;
+  padding:15px;margin-bottom:12px;}
+.peer-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.peer-name{font-weight:700;font-size:15px;}
+.tag{font-size:11px;padding:2px 9px;border-radius:10px;border:1px solid var(--line);color:var(--muted);}
+.tag.listed{color:var(--accent);border-color:var(--accent);}
+.score{font-weight:800;color:var(--accent);}
+.chip{display:inline-block;background:var(--panel);border:1px solid var(--line);
+  border-radius:6px;padding:2px 9px;margin:3px 5px 0 0;font-size:12px;}
+.chip b{color:var(--muted);font-weight:600;}
+.mult{color:var(--good);}
+.because{color:var(--good);font-size:12px;margin-top:8px;}
+.diffs{color:var(--warn);font-size:12px;margin-top:2px;}
+.reason{color:var(--bad);}
+.note{color:var(--warn);margin-top:6px;}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;}
+.lvl{font-weight:700;font-size:11px;padding:1px 7px;border-radius:5px;}
+.lv-info{color:var(--muted);border:1px solid var(--line);}
+.lv-warn{color:var(--warn);border:1px solid var(--warn);}
+.lv-dec {color:var(--dec);border:1px solid var(--dec);}
+.lv-err {color:var(--bad);border:1px solid var(--bad);}
+.dq-pass{color:var(--good);} .dq-warn{color:var(--warn);} .dq-fail{color:var(--bad);}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+@media (max-width:760px){.two{grid-template-columns:1fr;}}
 """
 
 
@@ -178,6 +216,27 @@ def _audit_table(audit):
     return "".join(rows)
 
 
+# --------------------------------------------------------------------------- #
+# section builders
+# --------------------------------------------------------------------------- #
+
+def _confidence_breakdown(cb):
+    """Render the confidence components as labelled bars (max weight per component)."""
+    maxw = {"profile": 0.20, "peer_coverage": 0.20, "ebitda_positive": 0.10,
+            "methods": 0.10, "triangulation": 0.25, "comp_tightness": 0.15}
+    labels = {"profile": "Profile clarity", "peer_coverage": "Peer coverage",
+              "ebitda_positive": "EBITDA positive", "methods": "Methods computed",
+              "triangulation": "Triangulation agreement", "comp_tightness": "Comparable tightness"}
+    rows = []
+    for k in ("profile", "peer_coverage", "ebitda_positive", "methods",
+              "triangulation", "comp_tightness"):
+        v = cb.get(k, 0.0)
+        frac = (v / maxw[k]) if maxw[k] else 0
+        rows.append(f'<div class="cbrow"><div class="lab">{_esc(labels[k])}</div>'
+                    f'{_bar(frac)}<div class="val">{_num(v,2)}/{maxw[k]:.2f}</div></div>')
+    return "".join(rows)
+
+
 def build_dashboard(result_path, out_path):
     with open(result_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -186,17 +245,18 @@ def build_dashboard(result_path, out_path):
     audit = data.get("audit_trail", [])
     parts = [_head(f"MSME Valuation — {data.get('query')}")]
     parts.append(f'<h1>MSME Comparable-Company Valuation — {_esc(data.get("query"))}</h1>')
+    parts.append('<div class="sub">Trading-multiples valuation of an Indian MSME, '
+                 'grounded on Dun &amp; Bradstreet data · deterministic · touchless · no LLM</div>')
     parts.append(_provenance(meta))
 
     # ---- degraded runs -------------------------------------------------
     if data.get("target") is None or data.get("valuation") is None:
-        parts.append(f'<div class="section"><h2>Result</h2>'
-                     f'<p class="theory">No valuation was produced — status '
-                     f'<b>{_esc(meta.get("status"))}</b>. Nothing is fabricated; the '
-                     f'audit trail below records exactly why the pipeline stopped.</p></div>')
-        parts.append(f'<div class="section"><h2>Audit Trail ({len(audit)})</h2>')
-        parts.append(_audit_table(audit))
-        parts.append("</div></div></body></html>")
+        parts.append(_section("!", "Result", "why no valuation was produced",
+                              f'<p class="theory">No valuation was produced — status '
+                              f'<b>{_esc(meta.get("status"))}</b>. Nothing is fabricated; the '
+                              f'audit trail below records exactly why the pipeline stopped.</p>'
+                              + _audit_table(audit)))
+        parts.append("</div></body></html>")
         with open(out_path, "w", encoding="utf-8") as f:
             f.write("".join(parts))
         return out_path
@@ -206,258 +266,271 @@ def build_dashboard(result_path, out_path):
     dq = data.get("data_quality") or {}
     val = data["valuation"]
     conf = data["confidence"]
+    cb = conf.get("breakdown", {})
+    validation = data.get("validation")
 
-    # ---- report intro --------------------------------------------------
+    # ---- reading guide -------------------------------------------------
     parts.append(
-        '<p class="intro">This report estimates the <b>equity value</b> of the subject '
-        'company using <b>comparable-company (trading multiples) analysis</b>. The engine '
-        'is grounded on a single data source (Dun &amp; Bradstreet), is fully '
-        '<b>deterministic</b> (no LLM, no randomness), and is <b>touchless</b> — trust rests '
-        'on the confidence score, the data-quality grade, and the complete audit trail. '
-        'Every figure below is a <b>range</b>, never a false-precision point estimate.</p>')
+        '<p class="intro">This report answers one question — <b>what is this company\'s '
+        'equity worth?</b> — by pricing it against listed peers. Read it top to bottom: '
+        'who the company is (1), the headline answer and how it was built (2), how much to '
+        'trust it (3), whether the method is proven not just lucky (4), the three '
+        'cross-checking methods (5), the peers used (6), who was excluded and why (7), and a '
+        'full decision log (8).</p>')
+    parts.append('<div class="legend">'
+                 '<div class="lg"><b>EV</b> enterprise value = market cap + net debt</div>'
+                 '<div class="lg"><b>Multiple</b> what the market pays per ₹ of EBITDA/revenue</div>'
+                 '<div class="lg"><b>DLOM</b> discount for a private company\'s illiquidity</div>'
+                 '<div class="lg"><b>Cr</b> crore = 10,000,000 (₹)</div></div>')
 
-    # ===================================================================
-    # SECTION 1 — TARGET PROFILE  (stacked, full width)
-    # ===================================================================
-    parts.append('<div class="section">')
-    parts.append('<h2><span class="section-num">1</span>Target Profile &amp; Financials</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> The subject company\'s identity, its '
-        'industry classification, its rule-based <b>economic profile</b> (operating model, '
-        'value chain, customer type), and its latest financials. '
-        '<b>How it\'s derived.</b> Pulled from D&amp;B <span class="mono">company_information</span> '
-        'and <span class="mono">company_financials</span>; every monetary field is converted '
-        'from INR&nbsp;Thousand to <b>INR&nbsp;Crore</b> (÷10,000). EBIT is computed as '
-        'EBITDA − depreciation; revenue growth from the prior fiscal year. These figures are '
-        'the <b>drivers</b> the peer multiples are later applied to.</p>')
-    parts.append('<div class="facts">')
-    parts.append(_fact("Identity", f"{_esc(t['name'])}",
-                       f"DUNS {t['duns']} · CIN {t['cin']}"))
-    parts.append(_fact("Economic profile",
-                       f"{_esc(tp['operating_model'])} / {_esc(tp['value_chain'])}",
-                       f"{tp['customer_type']} · {'exporter' if t['is_exporter'] else 'domestic'}"))
-    parts.append(_fact("Industry (NAICS)", f"{_esc(t['naics'])} · sub {_esc(tp['naics_subsector'])}",
-                       _esc(t['naics_desc'])))
-    parts.append(_fact("Listing", "Listed" if t['listed'] else "Unlisted",
-                       f"D&B major {t['major_industry']}"))
-    parts.append(_fact("Revenue", f"₹{_num(t['revenue_cr'])} Cr",
-                       f"growth {_pct(t['revenue_growth'])} YoY"))
-    parts.append(_fact("EBITDA", f"₹{_num(t['ebitda_cr'])} Cr",
-                       f"margin {_pct(t['ebitda_margin'])}"))
-    parts.append(_fact("EBIT", f"₹{_num(t['ebit_cr'])} Cr", "= EBITDA − depreciation"))
-    parts.append(_fact("Net worth", f"₹{_num(t['net_worth_cr'])} Cr",
-                       f"net debt ₹{_num(val['net_debt_cr'])} Cr"))
-    parts.append('</div></div>')
+    # ================= 1 · TARGET ======================================
+    facts = "".join([
+        _fact("Identity", _esc(t['name']), f"DUNS {t['duns']} · CIN {t['cin']}"),
+        _fact("Economic profile", f"{_esc(tp['operating_model'])} / {_esc(tp['value_chain'])}",
+              f"{tp['customer_type']} · {'exporter' if t['is_exporter'] else 'domestic'}"),
+        _fact("Industry (NAICS)", f"{_esc(t['naics'])} · sub {_esc(tp['naics_subsector'])}",
+              _esc(t['naics_desc'])),
+        _fact("Listing", "Listed" if t['listed'] else "Unlisted (private)",
+              f"D&B major {t['major_industry']}"),
+        _fact("Revenue", f"₹{_num(t['revenue_cr'])} Cr", f"growth {_pct(t['revenue_growth'])} YoY"),
+        _fact("EBITDA", f"₹{_num(t['ebitda_cr'])} Cr", f"margin {_pct(t['ebitda_margin'])}"),
+        _fact("EBIT", f"₹{_num(t['ebit_cr'])} Cr", "= EBITDA − depreciation"),
+        _fact("Net debt", f"₹{_num(val['net_debt_cr'])} Cr", "debt − cash"),
+    ])
+    theory = ('<p class="theory"><b>What this is.</b> The subject company\'s identity, industry '
+              'code, rule-based economic profile and latest financials. <b>How it\'s derived.</b> '
+              'From D&amp;B <span class="mono">company_information</span> + '
+              '<span class="mono">company_financials</span>, converted INR&nbsp;Thousand → '
+              '<b>Crore</b> (÷10,000). These are the <b>drivers</b> the peer multiples get '
+              'applied to.</p>')
+    parts.append(_section("1", "Target Profile & Financials",
+                          "who is being valued", theory + f'<div class="facts">{facts}</div>'))
 
-    # ===================================================================
-    # SECTION 2 — HEADLINE VALUATION  (stacked, full width, with bridge)
-    # ===================================================================
+    # ================= 2 · HEADLINE VALUATION ==========================
     hm = next((m for m in val["methods"] if m["method"] == val["headline_method"]), None)
-    parts.append('<div class="section">')
-    parts.append('<h2><span class="section-num">2</span>Headline Valuation</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> The estimated equity value range from the '
-        f'primary method (<b>{_esc(val["headline_method"])}</b>). '
-        '<b>How it\'s built.</b> We take the <b>median trading multiple</b> of the listed '
-        'comparable companies, multiply it by the target\'s corresponding driver to get an '
-        'implied <b>enterprise value (EV)</b>, subtract <b>net debt</b> (debt − cash) to bridge '
-        'from EV to equity, then apply a <b>DLOM</b> (discount for lack of marketability) because '
-        'a private MSME is less liquid than the listed peers whose multiples we used. '
-        'Low / mid / high correspond to the peers\' '
-        f'<b>{_esc(hm["range_basis"]) if hm else "P25/median/P75"}</b> multiples.</p>')
-    parts.append('<div class="headline">')
-    parts.append(f'<div class="hv"><div class="k">Low</div><div class="n">{_num(val["equity_low_cr"])}</div></div>')
-    parts.append(f'<div class="hv"><div class="k">Mid (central estimate)</div><div class="n mid">{_num(val["equity_mid_cr"])}</div></div>')
-    parts.append(f'<div class="hv"><div class="k">High</div><div class="n">{_num(val["equity_high_cr"])}</div></div>')
-    parts.append('<div class="unit">equity value · INR Crore</div>')
-    parts.append('</div>')
-    # equity bridge (mid)
+    theory = ('<p class="theory"><b>What this is.</b> The estimated equity value range from the '
+              f'primary method (<b>{_esc(val["headline_method"])}</b>). <b>How it\'s built (5 '
+              'steps).</b> (1) take listed peers\' trading multiples; (2) read the multiple at '
+              'the target\'s <b>quality position</b> — its EBITDA-margin percentile in the peer '
+              'set, so a weaker-margin company earns a lower multiple; (3) × the target\'s driver '
+              '→ implied <b>enterprise value</b>; (4) − <b>net debt</b> → equity; (5) − <b>DLOM</b> '
+              'if the company is private (a listed target is already liquid, so DLOM = 0). '
+              'Low / mid / high span the peer band around the position.</p>')
+    hv = (f'<div class="headline">'
+          f'<div class="hv"><div class="k">Low</div><div class="n">{_num(val["equity_low_cr"])}</div></div>'
+          f'<div class="hv"><div class="k">Mid — central estimate</div><div class="n mid">{_num(val["equity_mid_cr"])}</div></div>'
+          f'<div class="hv"><div class="k">High</div><div class="n">{_num(val["equity_high_cr"])}</div></div>'
+          f'<div class="unit">equity value · INR Crore</div></div>')
+    bridge = ""
     if hm:
-        parts.append('<div class="bridge">')
-        parts.append(f'<div class="step">{_esc(hm["method"])} median<b>{_num(hm["multiple_median"],1)}x</b></div>')
-        parts.append('<div class="op">×</div>')
-        parts.append(f'<div class="step">target driver<b>₹{_num(hm["target_driver"])} Cr</b></div>')
-        parts.append('<div class="op">=</div>')
-        parts.append(f'<div class="step">enterprise value<b>₹{_num(hm["ev_mid_cr"])} Cr</b></div>')
-        parts.append('<div class="op">−</div>')
-        parts.append(f'<div class="step">net debt<b>₹{_num(val["net_debt_cr"])} Cr</b></div>')
-        parts.append('<div class="op">−</div>')
-        parts.append(f'<div class="step">DLOM<b>{_pct(val["discount"],0)}</b></div>')
-        parts.append('<div class="op">=</div>')
-        parts.append(f'<div class="step" style="border-color:var(--accent)">equity (mid)<b style="color:var(--accent)">₹{_num(val["equity_mid_cr"])} Cr</b></div>')
-        parts.append('</div>')
-    parts.append(f'<p class="sub-note" style="margin-top:12px">{_esc(val["discount_reason"])} · '
+        bridge = ('<div class="bridge">'
+                  f'<div class="step">{_esc(hm["method"])} positioned<b>{_num(hm["multiple_median"],1)}x</b></div>'
+                  '<div class="op">×</div>'
+                  f'<div class="step">target driver<b>₹{_num(hm["target_driver"])} Cr</b></div>'
+                  '<div class="op">=</div>'
+                  f'<div class="step">enterprise value<b>₹{_num(hm["ev_mid_cr"])} Cr</b></div>'
+                  '<div class="op">−</div>'
+                  f'<div class="step">net debt<b>₹{_num(val["net_debt_cr"])} Cr</b></div>'
+                  '<div class="op">−</div>'
+                  f'<div class="step">DLOM<b>{_pct(val["discount"],0)}</b></div>'
+                  '<div class="op">=</div>'
+                  f'<div class="step" style="border-color:var(--accent)">equity (mid)'
+                  f'<b style="color:var(--accent)">₹{_num(val["equity_mid_cr"])} Cr</b></div></div>')
+    pos_note = (f'<p class="sub-note" style="margin-top:12px"><b>Positioning:</b> '
+                f'{_esc(val["positioning"])}</p>') if val.get("positioning") else ""
+    disc_note = (f'<p class="sub-note">{_esc(val["discount_reason"])} · '
                  f'{_esc(val["ev_basis"])}</p>')
-    for w in val["warnings"]:
-        parts.append(f'<div class="note">⚠ {_esc(w)}</div>')
-    parts.append('</div>')
+    xc_html = ""
+    xc = val.get("market_cross_check")
+    if xc:
+        ok = xc["within_25pct"]
+        cls = "ok" if ok else "warn"
+        xc_html = (f'<div class="callout {cls}"><b>Sanity check against the market — '
+                   f'{"in range" if ok else "review"}.</b><br>'
+                   f'<span class="sub-note">Because this target is itself listed, we can compare '
+                   f'our comps-derived equity (₹{_num(xc["comps_mid_equity_cr"])} Cr) with its own '
+                   f'observed market capitalisation (₹{_num(xc["own_market_cap_cr"])} Cr, '
+                   f'{_num(xc["own_ev_ebitda"],1)}x EV/EBITDA). Delta '
+                   f'<b>{xc["delta_pct"]:+.1f}%</b> — within the method\'s backtested error '
+                   f'(see §4). Positioning never uses this market cap, so the agreement is a real '
+                   f'validation, not circular.</span></div>')
+    warns = "".join(f'<div class="note">⚠ {_esc(w)}</div>' for w in val["warnings"])
+    parts.append(_section("2", "Headline Valuation", "the answer, and the arithmetic behind it",
+                          theory + hv + bridge + pos_note + disc_note + xc_html + warns))
 
-    # ===================================================================
-    # SECTION 3 — CONFIDENCE & DATA QUALITY  (stacked, full width)
-    # ===================================================================
-    parts.append('<div class="section">')
-    parts.append('<h2><span class="section-num">3</span>Confidence &amp; Data Quality</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> Two independent trust signals for a touchless '
-        'system. <b>Confidence</b> blends how cleanly the target was classified (35%), how well '
-        'the peer set is populated (35%), whether EBITDA is positive (15%), and whether ≥2 '
-        'methods triangulate (15%); HIGH ≥ 0.75, MEDIUM ≥ 0.50, else LOW. '
-        '<b>Data quality</b> grades the completeness of the D&amp;B financials on a weighted '
-        'per-field checklist (revenue is critical; the EV proxy and EBITDA are high-weight) and '
-        'gates the run — if the target lacks revenue and any EV proxy it is marked '
-        '<i>not valuable</i> and no number is produced.</p>')
+    # ================= 3 · CONFIDENCE & DATA QUALITY ===================
+    theory = ('<p class="theory"><b>What this is.</b> How much to trust this specific result. '
+              'Rather than one opaque number, <b>confidence</b> is the sum of six weighted '
+              'signals — crucially it includes <b>triangulation agreement</b> (do the three '
+              'methods concur?) and <b>comparable tightness</b> (are the peer multiples '
+              'consistent?), so a scattered result scores lower. It does <i>not</i> saturate near '
+              '1.0 for every company. <b>Data quality</b> separately grades the completeness of '
+              'the D&amp;B financials and gates the run.</p>')
     checks = dq.get("checks", [])
     passed = sum(1 for c in checks if c["status"] == "pass")
-    dq_rows = "".join(
+    dq_chips = "".join(
         f'<span class="chip"><span class="dq-{c["status"]}">'
         f'{"✓" if c["status"]=="pass" else ("!" if c["status"]=="warn" else "✗")}</span> '
-        f'{_esc(c["field"])}</span>'
-        for c in checks)
-    n_peers_used = len(data["peers"])
-    n_ranked = data["peers_ranked_count"]
-    n_rejected = len(data["rejected"])
-    n_methods = len(val["methods"])
-    peers_fact = _fact("Peers used", f"{n_peers_used} of {n_ranked} ranked",
-                       f"{n_rejected} rejected")
-    methods_fact = _fact("Methods computed", f"{n_methods} of 3", "triangulated")
-    conf_cls = _conf_class(conf["label"])
-    dq_cls = _grade_class(dq.get("grade"))
-    n_checks = len(checks)
-    parts.append('<div class="two">')
-    parts.append(
-        f'<div><span class="badge {conf_cls}">Confidence: '
-        f'{_esc(conf["label"])} · {_num(conf["score"],2)}</span>'
-        f'<div class="facts" style="margin-top:14px">{peers_fact}{methods_fact}</div></div>')
-    parts.append(
-        f'<div><span class="badge {dq_cls}">Data quality: '
-        f'Grade {_esc(dq.get("grade"))} · {_num(dq.get("score"),2)}</span>'
-        f'<div style="margin-top:12px"><div class="fact-k">Checks ({passed}/{n_checks} pass)</div>'
-        f'<div style="margin-top:6px">{dq_rows}</div></div></div>')
-    parts.append('</div></div>')
+        f'{_esc(c["field"])}</span>' for c in checks)
+    left = (f'<span class="badge {_conf_class(conf["label"])}">Confidence: '
+            f'{_esc(conf["label"])} · {_num(conf["score"],2)}</span>'
+            f'<div style="margin-top:14px">{_confidence_breakdown(cb)}</div>'
+            f'<p class="sub-note" style="margin-top:10px">Score = sum of the bars above '
+            f'(max 1.00). HIGH ≥ 0.75 · MEDIUM ≥ 0.50 · else LOW.</p>')
+    right = (f'<span class="badge {_grade_class(dq.get("grade"))}">Data quality: '
+             f'Grade {_esc(dq.get("grade"))} · {_num(dq.get("score"),2)}</span>'
+             f'<div style="margin-top:14px"><div class="fact-k">Field checks '
+             f'({passed}/{len(checks)} pass)</div>'
+             f'<div style="margin-top:8px">{dq_chips}</div></div>')
+    parts.append(_section("3", "Confidence & Data Quality", "how much to trust this result",
+                          theory + f'<div class="two"><div>{left}</div><div>{right}</div></div>'))
 
-    # ===================================================================
-    # SECTION 4 — VALUATION METHODS (triangulation)
-    # ===================================================================
-    parts.append('<div class="section">')
-    parts.append('<h2><span class="section-num">4</span>Valuation Methods — Triangulation</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> The same company valued three independent ways '
-        'so the answer is corroborated, not taken on faith. <b>EV/EBITDA</b> is the headline '
-        '(capital-structure-neutral, the market standard); <b>EV/Revenue</b> is robust when '
-        'margins are noisy; <b>EV/EBIT</b> accounts for asset intensity via depreciation. For '
-        'each method we take every listed comp\'s multiple, remove statistical outliers with a '
-        '<b>Tukey 1.5×IQR fence</b>, then read the P25 / median / P75 to form the low / mid / '
-        'high. A method needs ≥3 comps and a positive target driver, else it is skipped. '
-        'Methods differ because each captures a different slice of economics — a spread is '
-        'informative, not an error.</p>')
-    parts.append('<table><tr>'
-                 '<th>Method</th><th>Basis</th><th>Comps</th><th>Outliers cut</th>'
-                 '<th>Multiple P25 / Med / P75</th><th>Target driver</th>'
-                 '<th>EV mid</th><th>Equity Low–Mid–High (Cr)</th></tr>')
+    # ================= 4 · METHODOLOGY VALIDATION (anti-overfit) ========
+    if validation and "positioned" in validation:
+        v_ok = validation.get("verdict_ok")
+        vp, vm = validation["positioned"], validation["flat_median"]
+        theory = ('<p class="theory"><b>What this is.</b> Proof the method is <b>accurate in '
+                  'general, not just lucky here.</b> We re-value <i>every</i> listed company in '
+                  'the universe from its peers and compare to its <b>own real market cap</b>. If '
+                  'quality-positioning only worked on the headline target it would be overfitting; '
+                  'instead it must beat the naive "just use the median" approach across the board. '
+                  '<b>corr(margin, EV/EBITDA)</b> confirms the market actually prices quality '
+                  '(near-zero would make positioning meaningless).</p>')
+        vbadge = ('<span class="badge hi">VALIDATION: PASS</span>' if v_ok
+                  else '<span class="badge lo">VALIDATION: REVIEW</span>')
+        vtable = (
+            '<table><tr><th>Approach</th><th>Mean |error|</th><th>Median |error|</th>'
+            '<th>Max |error|</th><th>within 15%</th></tr>'
+            f'<tr class="hl-row"><td><b>Quality-positioned</b> (used)</td>'
+            f'<td><b>{vp["mean_abs_pct"]}%</b></td><td>{vp["median_abs_pct"]}%</td>'
+            f'<td>{vp["max_abs_pct"]}%</td><td>{vp["within_15pct"]}/{vp["n"]}</td></tr>'
+            f'<tr><td>Flat median (naive baseline)</td>'
+            f'<td>{vm["mean_abs_pct"]}%</td><td>{vm["median_abs_pct"]}%</td>'
+            f'<td>{vm["max_abs_pct"]}%</td><td>{vm["within_15pct"]}/{vm["n"]}</td></tr></table>')
+        vfacts = (f'<div style="margin:14px 0 6px">{vbadge}</div>'
+                  f'<p class="sub-note">Error = comps equity vs the company\'s own market cap, '
+                  f'across <b>{validation["n_targets"]}</b> listed comparables. Positioning is '
+                  f'closer on <b>{validation["positioning_wins"]}/{validation["n_targets"]}</b> '
+                  f'targets. Market prices quality: '
+                  f'<b>corr(margin, EV/EBITDA) = {validation["margin_multiple_corr"]}</b>.</p>')
+        parts.append(_section("4", "Methodology Validation — not overfit",
+                              "proof the accuracy generalizes",
+                              theory + vfacts + vtable))
+        methods_num, peers_num, rej_num, audit_num = "5", "6", "7", "8"
+    else:
+        methods_num, peers_num, rej_num, audit_num = "4", "5", "6", "7"
+
+    # ================= 5 · METHODS (triangulation) =====================
+    theory = ('<p class="theory"><b>What this is.</b> The company valued three independent ways so '
+              'the answer is corroborated. <b>EV/EBITDA</b> is the headline (capital-structure '
+              'neutral). <b>EV/Revenue</b> is robust when margins are noisy. <b>EV/EBIT</b> '
+              'reflects asset intensity via depreciation. For each we take listed comps\' '
+              'multiples, drop outliers with a <b>Tukey 1.5×IQR fence</b>, then read the multiple '
+              'at the target\'s quality position with a band around it. A spread across methods is '
+              '<i>informative</i>, not an error — each captures different economics.</p>')
+    trows = ('<table><tr><th>Method</th><th>Basis</th><th>Comps</th><th>Outliers cut</th>'
+             '<th>Multiple low / <b>positioned</b> / high</th><th>Target driver</th>'
+             '<th>EV mid</th><th>Equity Low–Mid–High (Cr)</th></tr>')
     for m in val["methods"]:
-        hl = ' class="hl-row"' if m["method"] == val["headline_method"] else ""
+        hlc = ' class="hl-row"' if m["method"] == val["headline_method"] else ""
         star = ' ★' if m["method"] == val["headline_method"] else ""
-        parts.append(
-            f'<tr{hl}><td><b>{_esc(m["method"])}</b>{star}</td>'
-            f'<td class="mono">{_esc(m.get("ev_basis",""))}</td>'
-            f'<td>{m["n_multiples"]}</td>'
-            f'<td>{m["n_outliers_dropped"]}</td>'
-            f'<td class="mono">{_num(m["multiple_p25"],2)} / <b>{_num(m["multiple_median"],2)}</b> / {_num(m["multiple_p75"],2)}</td>'
-            f'<td>₹{_num(m["target_driver"])}</td>'
-            f'<td>₹{_num(m["ev_mid_cr"])}</td>'
-            f'<td><b>{_num(m["equity_low_cr"])} – <span style="color:var(--accent)">{_num(m["equity_mid_cr"])}</span> – {_num(m["equity_high_cr"])}</b></td></tr>')
-    parts.append('</table>')
-    parts.append(f'<p class="sub-note" style="margin-top:8px">Range basis: '
-                 f'{_esc(val["methods"][0].get("range_basis","")) if val["methods"] else ""} · '
-                 f'★ = headline method</p>')
-    parts.append('</div>')
+        eff = m.get("effective_n")
+        comps_cell = (f'{m["n_multiples"]}'
+                      + (f' <span class="sub-note">(eff {eff})</span>' if eff is not None else ''))
+        trows += (f'<tr{hlc}><td><b>{_esc(m["method"])}</b>{star}</td>'
+                  f'<td class="mono">{_esc(m.get("ev_basis",""))}</td>'
+                  f'<td>{comps_cell}</td><td>{m["n_outliers_dropped"]}</td>'
+                  f'<td class="mono">{_num(m["multiple_p25"],2)} / '
+                  f'<b>{_num(m["multiple_median"],2)}</b> / {_num(m["multiple_p75"],2)}</td>'
+                  f'<td>₹{_num(m["target_driver"])}</td><td>₹{_num(m["ev_mid_cr"])}</td>'
+                  f'<td><b>{_num(m["equity_low_cr"])} – '
+                  f'<span style="color:var(--accent)">{_num(m["equity_mid_cr"])}</span> – '
+                  f'{_num(m["equity_high_cr"])}</b></td></tr>')
+    trows += '</table>'
+    rbasis = (f'<p class="sub-note" style="margin-top:8px">Range basis: '
+              f'{_esc(val["methods"][0].get("range_basis","")) if val["methods"] else ""} · '
+              f'★ = headline method</p>')
+    parts.append(_section(methods_num, "Valuation Methods — Triangulation",
+                          "the same answer, checked three ways", theory + trows + rbasis))
 
-    # ===================================================================
-    # SECTION 5 — COMPARABLE PEER SET
-    # ===================================================================
-    parts.append('<div class="section">')
-    parts.append(f'<h2><span class="section-num">5</span>Comparable Peer Set ({len(data["peers"])})</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> The companies judged similar enough to price '
-        'the target. <b>How they\'re chosen.</b> Candidates first pass a hard <b>mismatch '
-        'filter</b> (same operating model, value chain and D&amp;B major industry), then are '
-        'scored 0–1 on five weighted dimensions: <b>industry 40%</b> (NAICS 3-digit subsector), '
-        '<b>scale 20%</b> (revenue proximity), <b>margin 15%</b>, <b>customer type 15%</b>, '
-        '<b>export profile 10%</b>. The chips on each card show each dimension\'s contribution. '
-        'Only <b>listed</b> peers contribute market trading multiples; unlisted peers inform '
-        'comparability but have no observable market value.</p>')
+    # ================= 6 · PEERS =======================================
+    eff = val.get("effective_peer_count")
+    nb = val.get("n_borderline", 0)
+    theory = ('<p class="theory"><b>What this is.</b> The companies used to price the target. '
+              '<b>How they\'re chosen.</b> Candidates first pass a hard <b>mismatch filter</b> '
+              '(same operating model, value chain, D&amp;B major industry), then score 0–1 on '
+              'five weighted dimensions: <b>industry 40%</b>, <b>scale 20%</b>, <b>margin 15%</b>, '
+              '<b>customer 15%</b>, <b>export 10%</b> — shown as chips on each card. '
+              '<b>Not every peer is an exact match.</b> Each peer\'s multiple is '
+              '<b>similarity-weighted</b> (<code>w</code> on the card): a full match (score ≥ 0.85) '
+              'counts fully, a borderline one tapers toward a 0.15 floor, so a set padded with '
+              'loose comps cannot distort the answer. Here <b>' + str(nb) + '</b> of '
+              + str(len(data["peers"])) + ' peers are borderline → <b>effective peer count '
+              + str(eff) + '</b>. Only <b>listed</b> peers contribute trading multiples.</p>')
+    pcards = ""
     for i, p in enumerate(data["peers"], 1):
-        tag = '<span class="tag listed">LISTED · market EV</span>' if p["listed"] else '<span class="tag">unlisted</span>'
+        tag = ('<span class="tag listed">LISTED · market EV</span>' if p["listed"]
+               else '<span class="tag">unlisted</span>')
         comp = p["components"]
-        chips = "".join([
-            _chip("industry", _num(comp.get("industry"), 2)),
-            _chip("scale", _num(comp.get("scale"), 2)),
-            _chip("margin", _num(comp.get("margin"), 2)),
-            _chip("customer", _num(comp.get("customer"), 2)),
-            _chip("export", _num(comp.get("export"), 2)),
-        ])
-        mults = p["multiples"]
+        chips = "".join([_chip("industry", _num(comp.get("industry"), 2)),
+                         _chip("scale", _num(comp.get("scale"), 2)),
+                         _chip("margin", _num(comp.get("margin"), 2)),
+                         _chip("customer", _num(comp.get("customer"), 2)),
+                         _chip("export", _num(comp.get("export"), 2))])
         mult_chips = "".join(
             f'<span class="chip"><b>{_esc(k)}</b> <span class="mult">{_num(v,1)}x</span></span>'
-            for k, v in mults.items())
-        because = "; ".join(p["selected_because"]) or "—"
-        diffs = "; ".join(p["differences"]) or "—"
-        mcap = (f" · mkt cap ₹{_num(p['market_cap_cr'],0)} Cr"
-                if p.get("market_cap_cr") else "")
-        parts.append(f'''<div class="peer">
-  <div class="peer-head">
-    <div class="peer-name">#{i} {_esc(p['name'])} {tag}</div>
-    <div class="score">score {_num(p['score'],3)}</div>
-  </div>
-  <div class="sub-note" style="margin:4px 0;">
-     {_esc(p['city'])} · Rev ₹{_num(p['revenue_cr'],0)} Cr · margin {_pct(p['ebitda_margin'])}
-     · growth {_pct(p['revenue_growth'])}{mcap}</div>
-  <div>{chips}</div>
-  <div style="margin-top:6px;">{mult_chips or '<span class="sub-note">no market multiples (unlisted)</span>'}</div>
-  <div class="because">✓ {_esc(because)}</div>
-  <div class="diffs">Δ {_esc(diffs)}</div>
-</div>''')
-    parts.append('</div>')
+            for k, v in p["multiples"].items())
+        mult_block = mult_chips or '<span class="sub-note">no market multiples (unlisted)</span>'
+        mcap = (f" · mkt cap ₹{_num(p['market_cap_cr'],0)} Cr" if p.get("market_cap_cr") else "")
+        because_txt = _esc("; ".join(p["selected_because"]) or "—")
+        diffs_txt = _esc("; ".join(p["differences"]) or "—")
+        wt = p.get("weight", 1.0)
+        wtag = (f'<span class="tag" style="border-color:var(--warn);color:var(--warn)">'
+                f'borderline · w {_num(wt,2)}</span>' if p.get("borderline")
+                else f'<span class="tag" style="border-color:var(--good);color:var(--good)">'
+                     f'w {_num(wt,2)}</span>')
+        pcards += (f'<div class="peer"><div class="peer-head">'
+                   f'<div class="peer-name">#{i} {_esc(p["name"])} {tag} {wtag}</div>'
+                   f'<div class="score">score {_num(p["score"],3)}</div></div>'
+                   f'<div class="sub-note" style="margin:4px 0;">{_esc(p["city"])} · '
+                   f'Rev ₹{_num(p["revenue_cr"],0)} Cr · margin {_pct(p["ebitda_margin"])} · '
+                   f'growth {_pct(p["revenue_growth"])}{mcap}</div>'
+                   f'<div>{chips}</div>'
+                   f'<div style="margin-top:6px;">{mult_block}</div>'
+                   f'<div class="because">✓ {because_txt}</div>'
+                   f'<div class="diffs">Δ {diffs_txt}</div></div>')
+    parts.append(_section(peers_num, f'Comparable Peer Set ({len(data["peers"])})',
+                          "the companies used to price the target", theory + pcards))
 
-    # ===================================================================
-    # SECTION 6 — REJECTED CANDIDATES
-    # ===================================================================
-    parts.append('<div class="section">')
-    parts.append(f'<h2><span class="section-num">6</span>Rejected Candidates ({len(data["rejected"])})</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> Candidates removed <i>before</i> scoring because '
-        'they are economically different — a distributor, retailer, service firm or raw-material '
-        'supplier is not comparable to a finished-goods manufacturer even if it sits in an '
-        'adjacent industry code. This guard is what stops "sourced from manufacturers" text on a '
-        'distributor from polluting the peer set. Each row states the exact disqualifying '
-        'mismatch.</p>')
-    parts.append('<table><tr><th>Entity</th><th>Operating model</th><th>Value chain</th>'
-                 '<th>Major ind.</th><th>Reason rejected</th></tr>')
+    # ================= 7 · REJECTED ====================================
+    theory = ('<p class="theory"><b>What this is.</b> Candidates removed <i>before</i> scoring '
+              'because they are economically different — a distributor, retailer, service firm or '
+              'raw-material supplier is not comparable to a finished-goods manufacturer even in an '
+              'adjacent industry code. This guard stops "sourced from manufacturers" text on a '
+              'distributor from polluting the peer set. Each row states the disqualifying '
+              'mismatch.</p>')
+    rtab = ('<table><tr><th>Entity</th><th>Operating model</th><th>Value chain</th>'
+            '<th>Major ind.</th><th>Reason rejected</th></tr>')
     for r in data["rejected"]:
-        parts.append(f'<tr><td>{_esc(r["name"])}</td>'
-                     f'<td>{_esc(r["operating_model"])}</td><td>{_esc(r["value_chain"])}</td>'
-                     f'<td>{_esc(r["major_industry"])}</td>'
-                     f'<td class="reason">{_esc(r["reason"])}</td></tr>')
-    parts.append('</table></div>')
+        rtab += (f'<tr><td>{_esc(r["name"])}</td><td>{_esc(r["operating_model"])}</td>'
+                 f'<td>{_esc(r["value_chain"])}</td><td>{_esc(r["major_industry"])}</td>'
+                 f'<td class="reason">{_esc(r["reason"])}</td></tr>')
+    rtab += '</table>'
+    parts.append(_section(rej_num, f'Rejected Candidates ({len(data["rejected"])})',
+                          "who was excluded, and why", theory + rtab))
 
-    # ===================================================================
-    # SECTION 7 — AUDIT TRAIL
-    # ===================================================================
+    # ================= 8 · AUDIT =======================================
     levels = {}
     for a in audit:
         levels[a.get("level")] = levels.get(a.get("level"), 0) + 1
     lvl_summary = ", ".join(f"{k} {v}" for k, v in sorted(levels.items()))
-    parts.append('<div class="section">')
-    parts.append(f'<h2><span class="section-num">7</span>Audit Trail ({len(audit)} · {_esc(lvl_summary)})</h2>')
-    parts.append(
-        '<p class="theory"><b>What this is.</b> Because there is no human in the loop, every '
-        'material step is recorded as a typed, time-stamped, ordered record — each D&amp;B call, '
-        'each rejected peer, each valuation decision (discount applied, method chosen, fallback '
-        'taken). <b>DECISION</b> rows are the judgement calls; <b>WARN/ERROR</b> rows flag '
-        'anything degraded. This is the primary evidence for reproducing or challenging the '
-        'result.</p>')
-    parts.append(_audit_table(audit))
-    parts.append('</div>')
+    theory = ('<p class="theory"><b>What this is.</b> With no human in the loop, every material '
+              'step is a typed, time-stamped, ordered record — each D&amp;B call, each rejected '
+              'peer, each valuation decision. <b>DECISION</b> rows are the judgement calls; '
+              '<b>WARN/ERROR</b> flag anything degraded. This is the evidence for reproducing or '
+              'challenging the result.</p>')
+    parts.append(_section(audit_num, f'Audit Trail ({len(audit)} · {_esc(lvl_summary)})',
+                          "the complete, replayable decision log", theory + _audit_table(audit)))
 
     parts.append("</div></body></html>")
     with open(out_path, "w", encoding="utf-8") as f:

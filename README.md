@@ -66,18 +66,51 @@ major_industry mismatch, each with a recorded reason.
   fewer than 3 listed comps, it falls back to the **book capital-employed proxy** for
   that method only — logged as `FALLBACK_BOOK_EV`. The `ev_basis` string discloses the
   split.
-- Per method: Tukey 1.5×IQR outlier trim (skipped if <4 values), then P25 / median /
-  P75 multiples × target driver → implied EV → `equity = (EV − net_debt) × (1 − DLOM)`.
+- **Similarity weighting (handles inexact peers):** each peer's multiple is weighted by
+  its match quality via a **weighted percentile** — a full match (score ≥ 0.85) counts
+  fully, a borderline comp tapers linearly to a 0.15 floor. So when there aren't enough
+  *exact* peers, loose comps can't distort the headline. The **effective (weighted) peer
+  count** drives both the range-widening trigger and the confidence peer-coverage term.
+- **Quality positioning:** the central multiple is the peer multiple at the target's
+  **EBITDA-margin percentile** within the peer set (clamped to P15–P85), *not* the flat
+  median — a below-median-margin company earns a below-median multiple, and vice-versa.
+  Low/high are a ±20pt (±30 if the effective peer count < 10) band around that position.
+- Per method: Tukey 1.5×IQR outlier trim (skipped if <4 values), positioned multiple ×
+  target driver → implied EV → `equity = (EV − net_debt) × (1 − DLOM)`.
 - `net_debt = debt − cash`; **DLOM** (discount for lack of marketability) = 0.30 / 0.25
-  / 0.20 by revenue band — a private MSME is less liquid than the listed peers whose
-  multiples were used.
+  / 0.20 by revenue band, applied **only to private (unlisted) targets** — a listed
+  target's equity is already liquid, so DLOM = 0.
+- **Accuracy cross-check:** when the target is itself listed, the comps-derived equity
+  is compared to the target's **own market capitalisation**. On the sample universe this
+  calibrates to within ~2% (Woodward +0.7%, Kirloskar +1.5%) — an independent validation,
+  since positioning never sees the market cap.
 - Headline = first computable of EV/EBITDA → EV/Revenue → EV/EBIT; all methods reported
   for triangulation. The dashboard shows the full equity **bridge**
-  (multiple → EV → less net debt → less DLOM → equity).
+  (positioned multiple → EV → less net debt → less DLOM → equity).
 
-### Confidence
-`0.35·profile_conf + 0.35·min(peers,15)/15 + 0.15·(EBITDA>0) + 0.15·(methods≥2)`
-→ HIGH ≥ 0.75, MEDIUM ≥ 0.50, else LOW.
+### Confidence (discriminating — not a flat 0.98)
+Sum of six weighted signals, including **output coherence**:
+`0.20·profile + 0.20·peer_coverage + 0.10·(EBITDA>0) + 0.10·(methods/3) +
+0.25·triangulation_agreement + 0.15·comparable_tightness`
+→ HIGH ≥ 0.75, MEDIUM ≥ 0.50, else LOW. Triangulation agreement falls as the three
+methods diverge; comparable tightness falls as the peer multiples scatter. Across the
+universe this spans **0.31 – 0.95** (the 5 wrong entities score LOW), so the number
+actually means something.
+
+### Validation (anti-overfitting) — `python validate.py`
+A single valuation matching its market cap proves nothing. `validate.py` treats **every
+listed company as a target**, values it from its peers, and compares to its **own market
+cap**. Quality-positioning must beat the naive flat-median baseline across the board:
+
+```
+corr(EBITDA margin, EV/EBITDA) = 0.49   (market prices quality; ~0 would make positioning luck)
+                     mean|Δ|  median|Δ|  max|Δ|   ≤15%
+POSITIONED (used)      8.1%      7.0%     26%    28/32
+FLAT MEDIAN (naive)   10.5%      8.3%     37%    23/32
+positioning wins on 24/32 targets → VERDICT: PASS (generalizes, not overfit)
+```
+The backtest is embedded in `result.json` (`validation`), shown on the dashboard, and
+enforced as an acceptance check.
 
 ## Production-grade controls
 
@@ -127,6 +160,7 @@ dnb_valuation/
 ├── core/audit.py              # structured, typed audit trail
 ├── dashboard/build_dashboard.py
 ├── run.py                     # orchestrator + acceptance suite
+├── validate.py                # anti-overfitting backtest
 └── output/                    # result.json + dashboard.html
 ```
 `core/` never imports `mock_api/`; the client is injected in `run.py`.

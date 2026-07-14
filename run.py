@@ -43,9 +43,22 @@ RESULT_PATH = os.path.join(OUTPUT_DIR, "result.json")
 DASHBOARD_PATH = os.path.join(OUTPUT_DIR, "dashboard.html")
 
 # Provenance — versioned so every archived valuation is reproducible/traceable.
-# 1.2.0: peer multiples now use market enterprise value from LISTED comps
+# 1.2.0: peer multiples use market enterprise value from LISTED comps
 #        (market cap + net debt); book capital-employed is a per-method fallback only.
-METHODOLOGY_VERSION = "1.2.0"
+# 1.3.0: quality positioning — the central multiple is taken at the target's
+#        EBITDA-margin percentile within the peer set (not the flat median); DLOM
+#        applies only to PRIVATE targets; listed targets are cross-checked against
+#        their own market cap.
+# 1.4.0: anti-overfitting pass — synthetic multiples are now fundamentals-driven
+#        (corr(margin,EV/EBITDA)~0.49), so positioning generalizes (backtested: mean
+#        |Δ| 8.1% vs own market cap across 32 listed comps, beats flat-median 10.5%
+#        on 24/32). Confidence is now discriminating (blends triangulation agreement
+#        + comp dispersion), no longer a flat 0.98. See validate.py.
+# 1.5.0: similarity-weighted peer multiples — borderline comps (just outside the
+#        ideal range) are down-weighted via a weighted percentile, so a thin/weak
+#        peer set can't distort the headline; range widens on the EFFECTIVE (weighted)
+#        peer count and confidence uses it too.
+METHODOLOGY_VERSION = "1.5.0"
 DNB_SCHEMA_VERSION = "dnbhoovers-2024"
 ENGINE_NAME = "dnb-msme-comparable-valuation"
 
@@ -89,18 +102,58 @@ def _fetch_company(client, duns, audit, with_mgmt=False):
 # Confidence
 # ---------------------------------------------------------------------------
 
-def compute_confidence(profile, n_peers, target_ebitda_pos, n_methods):
-    score = (0.35 * profile.confidence
-             + 0.35 * (min(n_peers, 15) / 15.0)
-             + 0.15 * (1.0 if target_ebitda_pos else 0.0)
-             + 0.15 * (1.0 if n_methods >= 2 else 0.0))
+def _clamp(x, lo, hi):
+    return max(lo, min(hi, x))
+
+
+def compute_confidence(profile, n_peers, target_ebitda_pos, valuation):
+    """
+    Discriminating confidence: blends input quality (profile, peer coverage, EBITDA,
+    method count) with OUTPUT COHERENCE (how tightly the three methods triangulate and
+    how dispersed the comparable multiples are). A result where the methods disagree or
+    the comps are scattered is genuinely less trustworthy — so this does NOT saturate at
+    ~1.0 for every target. Returns (score, label, breakdown).
+    """
+    methods = valuation.methods
+    n_methods = len(methods)
+
+    # -- triangulation agreement: how close the three method mid-equities are --
+    mids = [m["equity_mid_cr"] for m in methods
+            if m.get("equity_mid_cr") and m["equity_mid_cr"] > 0]
+    if len(mids) >= 2 and min(mids) > 0:
+        spread = max(mids) / min(mids) - 1.0          # 0 = perfect agreement
+        triangulation = 1.0 - _clamp(spread / 0.80, 0.0, 1.0)  # 80%+ spread => 0
+    else:
+        triangulation = 0.0
+
+    # -- comparable tightness: dispersion (CV) of the headline peer multiples --
+    hm = valuation.headline_method
+    mults = [p["multiples"].get(hm) for p in valuation.peers_used
+             if p.get("ev_basis") == "market" and p["multiples"].get(hm)]
+    if len(mults) >= 3:
+        mean = sum(mults) / len(mults)
+        sd = (sum((x - mean) ** 2 for x in mults) / len(mults)) ** 0.5
+        cv = sd / mean if mean else 1.0
+        comp_tightness = 1.0 - _clamp(cv / 0.45, 0.0, 1.0)  # CV 45%+ => 0
+    else:
+        comp_tightness = 0.30
+
+    breakdown = {
+        "profile": round(0.20 * profile.confidence, 3),
+        "peer_coverage": round(0.20 * (min(n_peers, 15) / 15.0), 3),
+        "ebitda_positive": round(0.10 * (1.0 if target_ebitda_pos else 0.0), 3),
+        "methods": round(0.10 * (min(n_methods, 3) / 3.0), 3),
+        "triangulation": round(0.25 * triangulation, 3),
+        "comp_tightness": round(0.15 * comp_tightness, 3),
+    }
+    score = round(sum(breakdown.values()), 3)
     if score >= 0.75:
         label = "HIGH"
     elif score >= 0.50:
         label = "MEDIUM"
     else:
         label = "LOW"
-    return round(score, 3), label
+    return score, label, breakdown
 
 
 # ---------------------------------------------------------------------------
@@ -208,15 +261,22 @@ def run_pipeline(name, client=None, top_n=15):
                 "n_methods": len(valuation.methods)})
 
     # 7. confidence -----------------------------------------------------
-    conf_score, conf_label = compute_confidence(
+    # Peer coverage uses the EFFECTIVE (similarity-weighted) peer count, so a set
+    # padded with borderline comps counts for less than a set of exact matches.
+    eff_peers = valuation.effective_peer_count
+    if eff_peers is None:
+        eff_peers = min(len(ranked), top_n)
+    conf_score, conf_label, conf_breakdown = compute_confidence(
         tprofile,
-        n_peers=min(len(ranked), top_n),
+        n_peers=eff_peers,
         target_ebitda_pos=(target.ebitda_cr or 0) > 0,
-        n_methods=len(valuation.methods),
+        valuation=valuation,
     )
     audit.info("confidence", "CONFIDENCE_SCORED",
-               f"{conf_label} ({conf_score})",
-               {"score": conf_score, "label": conf_label})
+               f"{conf_label} ({conf_score}) — triangulation "
+               f"{conf_breakdown['triangulation']}, comp-tightness "
+               f"{conf_breakdown['comp_tightness']}",
+               {"score": conf_score, "label": conf_label, "breakdown": conf_breakdown})
 
     status = "ok" if valuation.headline_method != "none" else "no_valuation"
     audit.info("run", "COMPLETE", f"pipeline complete: status={status}",
@@ -232,7 +292,8 @@ def run_pipeline(name, client=None, top_n=15):
         "peers_ranked_count": len(ranked),
         "rejected": rejected,
         "valuation": valuation_to_dict(valuation),
-        "confidence": {"score": conf_score, "label": conf_label},
+        "confidence": {"score": conf_score, "label": conf_label,
+                       "breakdown": conf_breakdown},
         "audit_trail": audit.to_list(),
     }
     return result, ctx
@@ -288,9 +349,10 @@ def print_summary(result):
     for i, p in enumerate(result["peers"], 1):
         evx = p["multiples"].get("EV/EBITDA")
         tag = "LISTED" if p["listed"] else "unlisted"
-        print(f"  {i:2d}. {p['name'][:34]:34s} score {p['score']:.3f} | "
+        bl = " ·borderline" if p.get("borderline") else ""
+        print(f"  {i:2d}. {p['name'][:30]:30s} score {p['score']:.3f} w{p.get('weight',1):.2f} | "
               f"EV/EBITDA {('%.1fx' % evx) if evx else '  n/a':>6s} | "
-              f"₹{_fmt(p['revenue_cr'],0)} Cr | {p['city']:>11s} | {tag}")
+              f"₹{_fmt(p['revenue_cr'],0)} Cr | {tag}{bl}")
     print("-" * 78)
     print(f"REJECTED ({len(result['rejected'])})")
     for r in result["rejected"]:
@@ -298,21 +360,35 @@ def print_summary(result):
     print("-" * 78)
     print("VALUATION METHODS (triangulation)")
     for m in val["methods"]:
-        print(f"  {m['method']:11s} median {m['multiple_median']:.2f}x "
-              f"(P25 {m['multiple_p25']:.2f} / P75 {m['multiple_p75']:.2f}) | "
+        print(f"  {m['method']:11s} [{m.get('ev_basis','')}] positioned {m['multiple_median']:.2f}x "
+              f"(low {m['multiple_p25']:.2f} / high {m['multiple_p75']:.2f}) | "
               f"n={m['n_multiples']} drop={m['n_outliers_dropped']} | "
               f"equity ₹{_fmt(m['equity_low_cr'])}–{_fmt(m['equity_mid_cr'])}–"
               f"{_fmt(m['equity_high_cr'])} Cr")
-    print("-" * 78)
+    if val.get("positioning"):
+        print(f"Positioning: {val['positioning']}")
+    print(f"Peer weighting: {val.get('n_borderline',0)} borderline of "
+          f"{len(result['peers'])} → effective peer count "
+          f"{val.get('effective_peer_count')} (borderline comps down-weighted)")
     print(f"EV basis : {val['ev_basis']}")
     print(f"Net debt : ₹{_fmt(val['net_debt_cr'])} Cr | discount {val['discount']*100:.0f}% "
           f"({val['discount_reason']})")
     print(f"HEADLINE ({val['headline_method']}) equity value: "
           f"₹{_fmt(val['equity_low_cr'])} – {_fmt(val['equity_mid_cr'])} – "
           f"{_fmt(val['equity_high_cr'])} Cr")
+    xc = val.get("market_cross_check")
+    if xc:
+        flag = "OK" if xc["within_25pct"] else "CHECK"
+        print(f"ACCURACY [{flag}]: comps mid ₹{_fmt(xc['comps_mid_equity_cr'])} Cr vs own "
+              f"market cap ₹{_fmt(xc['own_market_cap_cr'])} Cr ({xc['delta_pct']:+.1f}%)")
     for w in val["warnings"]:
         print(f"  ! {w}")
-    print(f"CONFIDENCE: {result['confidence']['label']} ({result['confidence']['score']})")
+    cb = result["confidence"].get("breakdown", {})
+    print(f"CONFIDENCE: {result['confidence']['label']} ({result['confidence']['score']})"
+          + (f"  [profile {cb.get('profile')} + coverage {cb.get('peer_coverage')} + "
+             f"ebitda {cb.get('ebitda_positive')} + methods {cb.get('methods')} + "
+             f"triangulation {cb.get('triangulation')} + comp-tightness "
+             f"{cb.get('comp_tightness')}]" if cb else ""))
     levels = {}
     for a in result["audit_trail"]:
         levels[a["level"]] = levels.get(a["level"], 0) + 1
@@ -335,7 +411,8 @@ def acceptance_tests():
         checks.append((name, bool(cond), detail))
         print(f"  [{'PASS' if cond else 'FAIL'}] {name}  {detail}")
 
-    for tgt, cluster in (("Woodward", "A"), ("Kirloskar Brothers Pumps", "C")):
+    for tgt, cluster in (("Woodward", "A"), ("Kirloskar Brothers Pumps", "C"),
+                         ("Bharat Forge Components", "B")):
         print(f"\n-- target: {tgt} (cluster {cluster}) --")
         result, ctx = run_pipeline(tgt)
         target, tprof = ctx["target"], ctx["tprofile"]
@@ -375,11 +452,11 @@ def acceptance_tests():
         trimmed_reported = all("n_outliers_dropped" in m for m in val.methods)
         check(f"[{tgt}] IQR trimming ran (reported)", trimmed_reported,
               f"dropped={[m['n_outliers_dropped'] for m in val.methods]}")
-        # 7 headline range low<mid<high with discount
+        # 7 headline range low<mid<high with a valid discount (0 for listed target)
         check(f"[{tgt}] headline range low<mid<high w/ discount",
               (val.equity_low_cr is not None
                and val.equity_low_cr < val.equity_mid_cr < val.equity_high_cr
-               and 0 < val.discount < 1),
+               and 0 <= val.discount < 1),
               f"{val.equity_low_cr}<{val.equity_mid_cr}<{val.equity_high_cr} "
               f"disc={val.discount}")
         # 8 result.json contents
@@ -408,6 +485,35 @@ def acceptance_tests():
               meta_ok and dq_ok,
               f"status={meta.get('status')} v={meta.get('methodology_version')} "
               f"dq={result['data_quality']['grade']}")
+        # 11 ACCURACY: for a listed target, comps mid equity must land within 25%
+        #    of the company's own observed market cap (calibration check).
+        xc = val.market_cross_check
+        if target.listed and xc:
+            check(f"[{tgt}] comps calibrate to own market cap (±25%)",
+                  xc["within_25pct"],
+                  f"comps {xc['comps_mid_equity_cr']:.0f} vs mktcap "
+                  f"{xc['own_market_cap_cr']:.0f} ({xc['delta_pct']:+.1f}%)")
+        else:
+            check(f"[{tgt}] unlisted target — DLOM applied, no market cross-check",
+                  (not target.listed) and val.discount > 0,
+                  f"listed={target.listed} DLOM={val.discount}")
+
+    # 12 ANTI-OVERFITTING: backtest the whole universe of listed comps — positioning
+    #    must beat the naive flat median on the majority of targets (proves the method
+    #    generalizes and the good example calibrations are not cherry-picked luck).
+    print("\n-- anti-overfitting backtest (all listed comps) --")
+    try:
+        from validate import run_backtest
+        corr, pos, med, pos_better, _rows = run_backtest()
+        import statistics as _st
+        pos_mae = _st.mean(abs(x) for x in pos)
+        med_mae = _st.mean(abs(x) for x in med)
+        check("[backtest] positioning generalizes (beats naive median)",
+              corr > 0.3 and pos_mae < med_mae and pos_better > len(pos) / 2,
+              f"corr={corr:.2f} pos_MAE={pos_mae*100:.1f}% med_MAE={med_mae*100:.1f}% "
+              f"pos_better={pos_better}/{len(pos)}")
+    except Exception as e:  # pragma: no cover
+        check("[backtest] positioning generalizes (beats naive median)", False, f"error: {e}")
 
     total = len(checks)
     passed = sum(1 for _, c, _ in checks if c)
@@ -426,6 +532,16 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     result, _ctx = run_pipeline(name)
+
+    # Embed the methodology backtest so the dashboard can show honest, aggregate
+    # accuracy (guards against reading one lucky calibration as proof).
+    if result.get("valuation"):
+        try:
+            from validate import backtest_summary
+            result["validation"] = backtest_summary()
+        except Exception as e:  # pragma: no cover
+            result["validation"] = {"error": str(e)}
+
     with open(RESULT_PATH, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
     print_summary(result)

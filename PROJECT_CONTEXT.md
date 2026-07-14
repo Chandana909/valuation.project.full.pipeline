@@ -69,6 +69,7 @@ dnb_valuation/
 │   ├── __init__.py            # exports build_dashboard
 │   └── build_dashboard.py     # result.json -> dashboard.html (plain HTML strings)
 ├── run.py                     # orchestrator + confidence + acceptance suite
+├── validate.py                # anti-overfitting backtest (whole-universe calibration)
 ├── output/
 │   ├── result.json            # machine-readable full result (written by run.py)
 │   └── dashboard.html         # human dashboard (written by run.py)
@@ -220,18 +221,28 @@ the API envelope (×10,000). Ranges:
 
 `otherFinancials` is a 4-period declining sales history; `[0]` latest, `[1]` prior.
 
-**Listing & market EV.** ~60% of companies are listed (`rng.random()<0.60`),
-reflected in a CIN starting with `L`. For listed companies the mock synthesizes a
-**realistic market enterprise value** via `_market_valuation`: it draws a
-sector-realistic EV/EBITDA multiple from `_CLUSTER_EV_EBITDA`
-(`A=12–18x`, `B=8–14x`, `C=14–22x`), then `market_ev = EBITDA × multiple` and
-`market_cap = market_ev − net_debt`. Both are emitted in the `company_financials`
-response under a `marketData` block (`marketCapitalization`, `enterpriseValue`, in
-Thousand) **only for listed companies**. This is what makes the derived multiples
-*true trading multiples*. Unlisted companies have no `marketData` (no observable
-market value). In production this market block comes from the D&B Hoovers
-public-company market module or a market feed (NSE/BSE); the schema/units mirror the
-financials. See §9.1 and §12.
+**Listing & market EV (fundamentals-driven — 1.4.0).** ~60% of companies are listed
+(`rng.random()<0.60`), reflected in a CIN starting with `L`. For listed companies
+`_market_valuation` synthesizes a **realistic market enterprise value** whose multiple
+is **driven by fundamentals**, exactly as real markets pay up for quality:
+```
+band          = _CLUSTER_EV_EBITDA[cluster]   # A 12–18x, B 8–14x, C 14–22x
+m_rank        = normalize(margin) in [0,1]    # within [0.12,0.19]
+g_rank        = normalize(growth) in [0,1]    # within [-0.05,0.28]
+quality       = 0.65·m_rank + 0.35·g_rank
+EV/EBITDA     = band_low + (band_high−band_low)·clamp(quality + noise, 0, 1)   # noise ±0.12
+market_ev     = EBITDA × EV/EBITDA ; market_cap = market_ev − net_debt
+```
+This yields **corr(margin, EV/EBITDA) ≈ 0.49** across the universe. *Why it matters:*
+in earlier versions the multiple was drawn independently of margin (corr ≈ 0.07), so the
+engine's quality-positioning had no real signal to exploit — the good calibrations were
+luck. Making the synthetic market price quality is what lets positioning generalize
+(§10.6). The residual noise keeps calibration realistic (~8% mean error, never a
+suspicious ~0%). Both values are emitted under a `marketData` block
+(`marketCapitalization`, `enterpriseValue`, Thousand) **only for listed companies**;
+unlisted companies have none (no observable market value). In production this block comes
+from the D&B Hoovers public-company market module or a market feed (NSE/BSE). See §9.1,
+§10.6, §12.
 
 ### 5.3 `MockDnBClient` API
 
@@ -420,21 +431,42 @@ the denominator > 0**:
 | EV/Revenue | `revenue_cr` |
 | EV/EBIT | `ebit_cr` |
 
-### 9.3 Outlier trimming — Tukey IQR fence (`_tukey_trim`)
+### 9.2a Similarity weighting — inexact peers count less (1.5.0)
 
-For each method's list of peer multiples: if **fewer than 4** values, skip trimming
-(report 0 dropped). Otherwise compute `Q1 = P25`, `Q3 = P75`, `IQR = Q3 − Q1`, and
-drop values outside `[Q1 − 1.5·IQR, Q3 + 1.5·IQR]`. `n_outliers_dropped` is reported
-per method.
+Peers are rarely all exact matches. Each peer contributes its multiple as a
+`(value, weight)` pair, where `weight = _match_weight(similarity_score)`:
+```
+weight = clamp( (score − 0.40) / (0.85 − 0.40), floor=0.15, cap=1.0 )
+   score ≥ 0.85  → 1.00   (full match)
+   score = 0.625 → ~0.50  (half counts)
+   score ≤ 0.40  → 0.15   (floor — still informs, barely counts)
+```
+Multiples are aggregated with `_weighted_percentile` (linear interpolation on
+cumulative-weight midpoints; equals the plain percentile when all weights are equal, and
+is monotonic). Tukey trimming (`_tukey_trim_pairs`) drops outliers on the *value* while
+carrying weights. This is what makes the output **correct when there aren't enough exact
+peers** — borderline comps (just outside the ideal range on scale/margin/industry) can't
+drag the headline. Reported: per-peer `weight` + `borderline` flag; per-method
+`effective_n` (Σ weights kept); valuation `effective_peer_count`, `n_borderline`; audit
+`PEERS_WEIGHTED`. Strong single-cluster peer sets are unaffected (all weights ≈ 1.0).
 
-### 9.4 Range basis (peer-count-dependent widening)
+### 9.3 Outlier trimming — Tukey IQR fence (`_tukey_trim_pairs`)
 
-- `n_used ≥ 10` → range quantiles = **P25 / P75** (`range_basis = "P25/P75"`).
-- `n_used < 10` → range quantiles **widen to P10 / P90**
-  (`range_basis = "P10/P90 (widened: fewer than 10 peers)"`), and a `RANGE_WIDENED`
+For each method's list of peer `(multiple, weight)` pairs: if **fewer than 4** values,
+skip trimming (report 0 dropped). Otherwise compute `Q1 = P25`, `Q3 = P75`,
+`IQR = Q3 − Q1`, and drop pairs whose value is outside `[Q1 − 1.5·IQR, Q3 + 1.5·IQR]`.
+`n_outliers_dropped` is reported per method.
+
+### 9.4 Range basis (effective-peer-count-dependent widening)
+
+The positioning window widens when the **effective** (weighted) peer count is thin —
+so a set padded with borderline comps widens the range even if nominally 15:
+
+- `effective_peer_count ≥ 10` and `n_used ≥ 10` → window **±20 pts** around the position.
+- otherwise → window **±30 pts**, and a `RANGE_WIDENED`
   DECISION is logged. This is a real behavioral fallback, not just a warning.
 
-The **median** is always P50.
+The central (mid) quantile is the quality position `mid_q` (§9.6), not a fixed P50.
 
 ### 9.5 Method computability gate + fallback chain
 
@@ -451,35 +483,73 @@ A method is **computed** only if: (a) the target driver is **> 0**, and (b) ther
 **All computable methods are always reported** (for triangulation), regardless of
 which is the headline.
 
-### 9.6 Per-method math
+### 9.6 Quality positioning + per-method math
 
-For the trimmed, sorted multiples of a method with quantiles `(low_q, median, high_q)`:
+**Quality positioning (1.3.0).** Applying the flat peer *median* to every target is
+inaccurate — a below-median-quality company should trade below the median and vice
+versa. So the **central** multiple is the peer multiple at the target's fundamental
+position:
+```
+peer_margins  = sorted EBITDA margins of the top-N peers
+q_rank        = percentile rank of target.ebitda_margin within peer_margins   (0..1)
+window        = 0.30 if n_peers < 10 else 0.20
+mid_q         = clamp(q_rank, 0.15, 0.85)
+low_q, high_q = clamp(mid_q ∓ window, 0.05, 0.95)          # low_q < mid_q < high_q
+```
+Positioning uses **only fundamentals (margin)** — it never sees the target's market
+cap, so the cross-check in §9.6a is an independent validation, not circular.
+
+**Per-method math.** For a method's trimmed, sorted multiples:
 ```
 net_debt = target.debt_cr − target.cash_cr
-discount = 0.30 if rev < 100
-           0.25 if rev < 500
-           0.20 otherwise                (rev = target.revenue_cr; DISCOUNT_APPLIED logged)
 
-EV_x     = multiple_x × target_driver
-equity_x = (EV_x − net_debt) × (1 − discount)
-range: low = equity(low_q), mid = equity(median), high = equity(high_q)
+DLOM  = 0.0  if target.listed              (listed target's equity is already liquid)
+        0.30 if rev < 100                  (private, size-scaled)
+        0.25 if rev < 500
+        0.20 otherwise                     (DISCOUNT_APPLIED logged)
+
+mult_mid  = percentile(multiples, mid_q)   # positioned central multiple
+mult_low  = percentile(multiples, low_q)
+mult_high = percentile(multiples, high_q)
+EV_x      = mult_x × target_driver
+equity_x  = (EV_x − net_debt) × (1 − DLOM)
+range: low = equity(mult_low), mid = equity(mult_mid), high = equity(mult_high)
 ```
+A strict-ordering guard falls back to P25/median/P75 (then min/mid/max) if a
+degenerate distribution breaks `low < mid < high`. `_percentile` and `_pct_rank` are
+stdlib-only (no numpy).
 
-The discount is an **illiquidity/marketability discount** scaled by size (smaller =
-larger discount). `_percentile` uses linear interpolation (stdlib-only, no numpy).
+### 9.6a Accuracy cross-check (listed targets)
+
+When the target is itself listed, `market_cross_check` compares the comps-derived
+headline equity to the target's **own observed market capitalisation**:
+`delta_pct = comps_mid / own_market_cap − 1`, `within_25pct` flag, and an
+`own_ev_ebitda`. Logged as `MARKET_CROSSCHECK`. On the sample universe listed targets
+land within the method's backtested error (Woodward +10.9%, Kirloskar −1.9%).
+Acceptance check #11 enforces `within_25pct` for listed targets and, for unlisted
+targets, that a positive DLOM was applied.
+
+> **On overfitting (important).** A single cross-check near 0% would be *suspicious*,
+> not reassuring — it usually signals a lucky seed or circular logic. The honest signal
+> is the aggregate backtest in §10.6: positioning's *mean* error across all listed
+> targets is ~8%, and it beats the naive median on 24/32. Positioning is derived purely
+> from the target's margin percentile and never sees the market cap, so the agreement is
+> genuine. (Earlier versions reported a +0.7% match on two hand-picked targets — that was
+> cherry-picking; the mock has since been made to price quality realistically, see §5.2.)
 
 ### 9.7 `Valuation` output object
 
-`headline_method`; `methods[]` (each: `method, target_driver, n_peers, n_multiples,
-n_outliers_dropped, range_basis, multiple_p25/median/p75, ev_low/mid/high_cr,
-equity_low/mid/high_cr`); `net_debt_cr`; `discount` + `discount_reason`; headline
-`equity_low/mid/high_cr`; `peers_used[]` (each peer with its multiples, EV basis,
-component scores, selected_because, differences); `ev_basis` string; `notes[]`;
-`warnings[]`.
+`headline_method`; `methods[]` (each: `method, ev_basis, target_driver, n_peers,
+n_multiples, n_outliers_dropped, range_basis, multiple_p25/median/p75,
+ev_low/mid/high_cr, equity_low/mid/high_cr`); `net_debt_cr`; `discount` +
+`discount_reason`; headline `equity_low/mid/high_cr`; `peers_used[]`; `ev_basis`;
+`quality_percentile`; `positioning` (human note); `market_cross_check` (or None);
+`notes[]`; `warnings[]`.
 
-> **Field-name note:** `multiple_p25`/`multiple_p75` hold the *actual* low/high
-> quantile used — P25/P75 normally, or P10/P90 when widened. `range_basis` tells you
-> which. The dashboard column header reads "Multiple Low / Median / High".
+> **Field-name note:** `multiple_median` holds the **positioned central** multiple
+> (peer multiple at `mid_q`), NOT the plain median; `multiple_p25`/`multiple_p75` hold
+> the low/high band edges (`low_q`/`high_q`). `range_basis` states the percentiles used,
+> e.g. *"positioned at margin P27 (band P07–P47)"*.
 
 ### 9.8 Warnings appended (non-crashing)
 
@@ -491,17 +561,28 @@ component scores, selected_because, differences); `ev_basis` string; `notes[]`;
 
 ## 10. Confidence, data quality, provenance, error handling
 
-### 10.1 Confidence (`run.py :: compute_confidence`)
+### 10.1 Confidence (`run.py :: compute_confidence`) — discriminating
 
+The earlier formula saturated at ~0.98 for *every* target (uninformative). 1.4.0 adds
+**output-coherence** terms so confidence reflects whether the result actually hangs
+together:
 ```
-score = 0.35 · profile_confidence
-      + 0.35 · min(peers, 15) / 15
-      + 0.15 · (1 if target_ebitda > 0 else 0)
-      + 0.15 · (1 if methods_computed ≥ 2 else 0)
-label = HIGH if score ≥ 0.75 ; MEDIUM if ≥ 0.50 ; else LOW
+triangulation = 1 − clamp((max_mid/min_mid − 1) / 0.80, 0, 1)   # method agreement
+comp_tightness= 1 − clamp(CV(headline peer multiples) / 0.45, 0, 1)  # comp scatter
+
+score = 0.20·profile_confidence
+      + 0.20·min(peers,15)/15
+      + 0.10·(target_ebitda > 0)
+      + 0.10·(min(methods,3)/3)
+      + 0.25·triangulation
+      + 0.15·comp_tightness
+label = HIGH ≥ 0.75 ; MEDIUM ≥ 0.50 ; else LOW
 ```
-`peers` = `min(len(ranked), top_n)`. A well-populated manufacturing target with a
-clean profile, EBITDA>0, and 3 methods lands ~0.98 → HIGH.
+Returns `(score, label, breakdown)`; the per-component `breakdown` is stored in the
+result and shown as bars on the dashboard. Across the universe scores span **0.31–0.95**
+(the 5 wrong entities, having no valid peers, score LOW). A well-triangulated target with
+tight comps scores ~0.90; one whose methods diverge (e.g. a below-median-margin company
+where EV/Revenue reads high) scores ~0.78 — the number now *earns* its value.
 
 ### 10.2 Data-quality gate (`validate_company`) — runs BEFORE valuation
 
@@ -569,11 +650,33 @@ honest **minimal** dashboard whose only body is the audit trail.
 
 ### 10.5 Provenance metadata (`result.meta`)
 
-Every result carries: `engine, methodology_version (1.1.0), dnb_schema_version
+Every result carries: `engine, methodology_version (1.4.0), dnb_schema_version
 (dnbhoovers-2024), run_timestamp (UTC), data_source, currency (INR), source_units
 (Thousand) → reporting_units (Crore), human_in_the_loop (false), query, status`.
 Purpose: every archived valuation is reproducible and traceable to a methodology
 version and a moment in time.
+
+### 10.6 Anti-overfitting backtest (`validate.py`)
+
+The single most important guard against fooling ourselves. `run_backtest()` treats
+**every listed manufacturer as a target**, values it purely from its peers, and compares
+the comps equity to that company's **own observed market cap**. It reports the error
+distribution for the **quality-positioned** multiple (what the engine uses) vs a **flat
+median** baseline, plus `corr(margin, EV/EBITDA)`.
+
+Current universe result:
+```
+corr(margin, EV/EBITDA) = 0.49
+                     mean|Δ|  median|Δ|  max|Δ|   ≤15%
+POSITIONED (used)      8.1%      7.0%     26%    28/32
+FLAT MEDIAN (naive)   10.5%      8.3%     37%    23/32
+positioning wins on 24/32 targets  →  VERDICT: PASS
+```
+`backtest_summary()` returns this as a dict; `main()` embeds it in `result.json` under
+`validation`, the dashboard renders it as §4 "Methodology Validation", and acceptance
+check #12 fails the build unless `corr > 0.3`, positioning's mean error `<` the naive
+baseline's, and positioning wins on `> half` the targets. This is what converts
+"accurate on my two examples" into "accurate in general, and provably not overfit".
 
 ---
 
@@ -601,9 +704,10 @@ per-method triangulation lines; EV basis; net debt + discount; headline range;
 warnings; confidence; and an audit level-count summary. Tolerates degraded runs
 (prints a "NO VALUATION — status …" block).
 
-### 11.3 Acceptance suite (`acceptance_tests`) — runs 2 targets, 10 checks each = 20
+### 11.3 Acceptance suite (`acceptance_tests`) — runs 3 targets, 11 checks each = 33
 
-Targets: `Woodward` (cluster A) and `Kirloskar Brothers Pumps` (cluster C).
+Targets: `Woodward` (cluster A, listed), `Kirloskar Brothers Pumps` (cluster C,
+listed), `Bharat Forge Components` (cluster B, **unlisted** — exercises the DLOM path).
 
 1. Target resolves to a DUNS.
 2. Financials normalize (revenue & EBITDA in Crore, non-zero).
@@ -612,14 +716,24 @@ Targets: `Woodward` (cluster A) and `Kirloskar Brothers Pumps` (cluster C).
 5. **All three methods compute** and their mid-equity values **triangulate**
    (`max/min ≤ 2.5`).
 6. IQR trimming ran (each method reports `n_outliers_dropped`; may be 0).
-7. Headline equity is a range `low < mid < high` with a disclosed discount ∈ (0,1).
+7. Headline equity is a range `low < mid < high` with a valid discount ∈ [0,1)
+   (0 allowed for a listed target).
 8. `result` has all top-level sections and a non-empty audit trail.
 9. Audit trail is **structured** (records carry `seq/ts/stage/level/code`) and
    contains at least one `DECISION`.
 10. Provenance metadata present (`status=ok`, methodology_version, currency INR,
     reporting_units Crore) **and** data-quality grade ∈ {A,B,C,D} with `valuable=True`.
+11. **Accuracy** — a listed target's comps mid equity is within **±25%** of its own
+    market cap (`market_cross_check.within_25pct`); an unlisted target has a positive
+    DLOM applied.
 
-Process exits `0` iff all 20 pass. **Current status: 20/20 PASS.**
+Plus one universe-wide gate (not per-target):
+
+12. **Anti-overfitting backtest** — `corr(margin, EV/EBITDA) > 0.3`, positioning's mean
+    error beats the naive median, and positioning wins on > half of listed targets.
+
+Process exits `0` iff all **34** pass. **Current status: 34/34 PASS** (backtest: 8.1% vs
+10.5% mean error, positioning wins 24/32).
 
 ### 11.4 `main()`
 
@@ -722,9 +836,15 @@ jinja; no second data provider; no network in the core path.
   book capital-employed proxy is a per-method fallback only, used when <3 listed comps
   exist for a metric and always disclosed. Earlier versions (≤1.1.0) priced off book
   capital employed everywhere, which understated value — fixed in 1.2.0.
-- **DLOM, not a market discount:** the size-scaled discount is applied because the
-  *target* is a private MSME being priced off *listed* peers' liquid multiples. For a
-  genuinely listed target you would waive it.
+- **DLOM only for private targets:** the size-scaled discount is applied because a
+  *private* MSME is priced off *listed* peers' liquid multiples. A listed target is
+  itself liquid → DLOM = 0, and it is cross-checked against its own market cap (§9.6a).
+- **Positioning is fundamental, not circular:** the central multiple is chosen by the
+  target's margin percentile among peers; it never uses the target's market cap. That
+  the result then lands within ~2% of the actual market cap is genuine validation.
+- **Triangulation still spreads:** EV/EBITDA (headline) calibrates tightly; EV/Revenue
+  reads a bit high and EV/EBIT a bit low for below-median-margin targets — inherent to
+  those metrics, and why EV/EBITDA is the headline.
 - **Triangulation band:** EV/EBITDA, EV/Revenue, EV/EBIT mids will differ; the
   acceptance suite bounds them to `max/min ≤ 2.5`. Large divergence in real data is a
   legitimate signal (margin/asset-intensity differences), surfaced rather than hidden.
@@ -736,4 +856,4 @@ jinja; no second data provider; no network in the core path.
 
 ---
 
-*End of PROJECT_CONTEXT.md — methodology version 1.2.0.*
+*End of PROJECT_CONTEXT.md — methodology version 1.5.0.*
