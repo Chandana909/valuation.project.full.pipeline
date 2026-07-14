@@ -5,18 +5,33 @@ multi-method valuation for Indian MSMEs, grounded entirely on the **Dun & Bradst
 `dnbhoovers`** API. Runs today on a mock D&B layer that returns the **exact real D&B
 response schema**; going live is a one-method swap.
 
-## Run
+## Run — live UI (recommended)
+
+```bash
+python server.py            # → http://localhost:8733
+```
+
+Type a company name in the browser (autocomplete over the universe), press **Run
+valuation**, and the full industry-style report renders in-page — tabbed
+(Overview | Filters | Peer Analysis | Valuation | Validation | Audit Trail), light-themed,
+with a football-field chart, the complete filter-chain documentation with live counts,
+and a **Download PDF** button (print-to-PDF, no dependencies). The server is pure
+stdlib `http.server` — no flask/fastapi, consistent with the dependency budget.
+
+## Run — CLI
 
 ```bash
 python run.py "Woodward"                 # or any company name
 python run.py "Kirloskar Brothers Pumps"
+python validate.py                       # calibration backtest + 5-seed robustness sweep
 ```
 
 Outputs:
 - `output/result.json` — target, peers, rejected, valuation (all methods), confidence, full audit trail
 - `output/dashboard.html` — self-contained dashboard (open in a browser)
 
-`run.py` also runs the §10 acceptance suite for two targets and prints a PASS summary.
+`run.py` also runs the acceptance suite (3 targets + anti-overfitting gate) and prints a
+PASS summary.
 
 ## Design
 
@@ -46,17 +61,28 @@ A manufacturing **verb** (`manufactures`, `manufacturer of`, `produces`, `produc
 not the bare noun `manufacturers`, triggers the *manufacturer* model — so distributor
 text like *"sourced from manufacturers"* is correctly classified as a **distributor**.
 
-### Discovery similarity (0–1)
-| dimension | weight | rule |
-|---|---|---|
-| industry | 0.40 | 1.0 same NAICS 3-digit subsector; 0.6 same Hoovers; else 0 |
-| scale | 0.20 | `1/(1+abs(log1p(rev_t)-log1p(rev_p)))` |
-| margin | 0.15 | `max(0, 1-5·abs(margin_t-margin_p))` |
-| customer | 0.15 | 1.0 if same customer_type else 0 |
-| export | 0.10 | 1.0 if same exporter flag else 0.3 |
+### The filter chain (complete — 14 controls in 4 stages)
 
-Peers are rejected **before** scoring on operating_model / value_chain /
-major_industry mismatch, each with a recorded reason.
+| # | stage | filter | rule / parameter |
+|---|---|---|---|
+| 1 | A eligibility | Geography | `countryISOAlpha2Code = "IN"` at search |
+| 2 | A eligibility | Self-exclusion | target's own DUNS removed from the pool |
+| 3 | B knock-out | Operating model | must equal target's (manufacturer/distributor/retailer/service) |
+| 4 | B knock-out | Value chain | finished_goods vs raw_material must match |
+| 5 | B knock-out | Major industry | D&B major code must match (D/F/G/I) |
+| 6 | C similarity | Industry proximity (0.40) | 1.0 same NAICS-3 subsector; 0.6 same Hoovers; else 0 |
+| 7 | C similarity | Scale proximity (0.20) | `1/(1+abs(log1p(rev_t)-log1p(rev_p)))` |
+| 8 | C similarity | Margin proximity (0.15) | `max(0, 1-5·abs(margin_t-margin_p))` |
+| 9 | C similarity | Customer type (0.15) | 1.0 if same B2B/B2C/mixed else 0 |
+| 10 | C similarity | Export profile (0.10) | 1.0 if same exporter flag else 0.3 |
+| 11 | D quality | Top-N cut | top 15 by score enter valuation |
+| 12 | D quality | Similarity weighting | score ≥ 0.85 → weight 1.0, tapering to 0.15 floor |
+| 13 | D quality | Multiple eligibility | listed/market-EV comps primary (book fallback if <3); driver > 0 |
+| 14 | D quality | Outlier trim | Tukey 1.5×IQR fence on each method's multiples |
+
+Stage-B rejections happen **before** scoring, each with a recorded reason
+(`PEER_REJECTED`). **Not used anywhere:** import data and per-capita metrics — they are
+not in the D&B financial payload; the only trade-related signal is the export flag (#10).
 
 ### Valuation (trading comps)
 - Peer multiples use **market enterprise value** of *listed* comps:
@@ -112,6 +138,13 @@ positioning wins on 24/32 targets → VERDICT: PASS (generalizes, not overfit)
 The backtest is embedded in `result.json` (`validation`), shown on the dashboard, and
 enforced as an acceptance check.
 
+**Seed-robustness (1.6.0).** The same backtest is re-run on **5 freshly drawn
+universes** (`validate.py :: seed_robustness` — every RNG seed shifted, so different
+financials, listings and market noise). Positioning beat the naive median on **5/5**
+(mean MAE 8.5% vs 10.7%), including a draw where corr collapsed to 0.04 and positioning
+still did no harm (6.9% vs 7.5%). The canonical result is not seed-luck. Also runnable
+live from the UI's Validation tab.
+
 ## Production-grade controls
 
 **Structured audit trail** ([core/audit.py](core/audit.py)). Every material step is a
@@ -160,7 +193,9 @@ dnb_valuation/
 ├── core/audit.py              # structured, typed audit trail
 ├── dashboard/build_dashboard.py
 ├── run.py                     # orchestrator + acceptance suite
-├── validate.py                # anti-overfitting backtest
+├── validate.py                # anti-overfitting backtest + seed-robustness sweep
+├── server.py                  # live UI server (stdlib http.server)
+├── ui/index.html              # single-file report app (tabs, charts, print-to-PDF)
 └── output/                    # result.json + dashboard.html
 ```
 `core/` never imports `mock_api/`; the client is injected in `run.py`.

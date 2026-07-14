@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MSME Valuation — Live Report</title>
+<style>
+/* ============ validated reference palette (dataviz) ============ */
+:root{
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hairline:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s2:#1baf7a; --s3:#eda100;              /* categorical 1-3, fixed order */
+  --seq250:#86b6ef; --seq350:#5598e7; --seq450:#2a78d6; --seq550:#1c5cab; /* ordinal ramp */
+  --good:#0ca30c; --warnst:#fab219; --serious:#ec835a; --crit:#d03b3b;   /* status (reserved) */
+  --goodtext:#006300;
+  --navy:#123a63; --accent:#2a78d6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14.5px;line-height:1.55}
+h1,h2,h3{margin:0;font-weight:700}
+button{font:inherit;cursor:pointer}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+
+/* ============ top bar ============ */
+.topbar{background:var(--navy);color:#fff;padding:12px 22px;display:flex;gap:14px;
+  align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:40}
+.topbar .brand{font-weight:800;font-size:15.5px;letter-spacing:.01em}
+.topbar .brand small{display:block;font-weight:400;font-size:11px;opacity:.75}
+.controls{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.controls input{font:inherit;padding:8px 12px;border-radius:8px;border:1px solid #ffffff40;
+  background:#ffffff14;color:#fff;min-width:280px;outline:none}
+.controls input::placeholder{color:#ffffffa0}
+.controls input:focus{background:#fff;color:var(--ink)}
+.btn{border:none;border-radius:8px;padding:8px 16px;font-weight:700}
+.btn-run{background:#fff;color:var(--navy)}
+.btn-pdf{background:transparent;color:#fff;border:1px solid #ffffff66}
+.btn:disabled{opacity:.5;cursor:wait}
+
+/* ============ tab nav ============ */
+nav.tabs{background:var(--surface);border-bottom:1px solid var(--grid);
+  padding:0 18px;display:flex;gap:2px;position:sticky;top:58px;z-index:39;overflow-x:auto}
+nav.tabs button{background:none;border:none;padding:11px 15px;color:var(--ink2);
+  font-weight:600;font-size:13.5px;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:hover{color:var(--ink)}
+
+.wrap{max-width:1120px;margin:0 auto;padding:20px 20px 80px}
+section.tab{display:none}
+section.tab.active{display:block}
+
+/* ============ report header (cover strip) ============ */
+.cover{background:var(--surface);border:1px solid var(--grid);border-radius:12px;
+  padding:18px 22px;margin-bottom:18px;display:flex;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;align-items:flex-start}
+.cover h1{font-size:21px}
+.cover .sub{color:var(--ink2);font-size:12.5px;margin-top:4px}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:18px;
+  padding:5px 13px;font-weight:700;font-size:12.5px;color:var(--ink)}
+.badge.b-good{background:#0ca30c1c;border:1px solid #0ca30c66}
+.badge.b-warn{background:#fab21926;border:1px solid #fab21980}
+.badge.b-crit{background:#d03b3b1a;border:1px solid #d03b3b66}
+.badge.b-info{background:#2a78d614;border:1px solid #2a78d64d}
+
+/* ============ cards / layout ============ */
+.card{background:var(--surface);border:1px solid var(--grid);border-radius:12px;
+  padding:18px 20px;margin-bottom:16px}
+.card h2{font-size:15.5px;margin-bottom:2px}
+.card .purpose{color:var(--muted);font-size:12px;margin-bottom:12px}
+.explain{border-left:3px solid var(--grid);padding:2px 0 2px 12px;color:var(--ink2);
+  font-size:13px;margin:0 0 14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+.tile{border:1px solid var(--grid);border-radius:10px;padding:12px 14px;background:#fff}
+.tile .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.tile .v{font-size:21px;font-weight:800;margin-top:3px}
+.tile .s{color:var(--ink2);font-size:12px;margin-top:2px}
+
+/* ============ tables ============ */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  border-bottom:2px solid var(--axis);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:#2a78d60d}
+tr.hl{background:#2a78d612}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:1px 9px}
+.tag-listed{background:#2a78d61a;color:#1c5cab;border:1px solid #2a78d64d}
+.tag-unl{background:#89878122;color:var(--ink2);border:1px solid var(--hairline)}
+.tag-bl{background:#fab21926;color:#6b4e00;border:1px solid #fab21980}
+.tag-rej{background:#d03b3b14;color:#8d2a2a;border:1px solid #d03b3b4d}
+.wbar{display:inline-block;height:8px;border-radius:4px;background:var(--seq250);vertical-align:middle}
+.wbar.full{background:var(--seq450)}
+.stagechip{display:inline-block;border-radius:8px;padding:2px 10px;font-size:11px;font-weight:700}
+.st-a{background:#86b6ef33;color:#123a63}.st-b{background:#d03b3b14;color:#8d2a2a}
+.st-c{background:#2a78d61a;color:#1c5cab}.st-d{background:#1baf7a1f;color:#0c5c3f}
+
+/* ============ charts ============ */
+.chart{margin:8px 0 4px}
+.axislab{fill:var(--muted);font-size:11px}
+.gridline{stroke:var(--grid);stroke-width:1}
+.baseline{stroke:var(--axis);stroke-width:1}
+.dlabel{fill:var(--ink2);font-size:11px}
+.dlabel.b{fill:var(--ink);font-weight:700}
+.tip{position:fixed;background:var(--ink);color:#fff;font-size:12px;border-radius:7px;
+  padding:6px 10px;pointer-events:none;z-index:90;display:none;max-width:280px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-top:6px}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* confidence bars */
+.cb{display:grid;grid-template-columns:170px 1fr 70px;gap:10px;align-items:center;
+  font-size:12.5px;margin:6px 0}
+.cb .lab{color:var(--ink2)} .cb .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.track{height:8px;background:#eceae4;border-radius:5px;overflow:hidden;border:1px solid var(--grid)}
+.fill{height:100%;background:linear-gradient(90deg,var(--seq350),var(--seq450))}
+
+/* callouts */
+.callout{border-radius:10px;padding:11px 15px;font-size:13px;margin:12px 0;border:1px solid}
+.co-good{background:#0ca30c10;border-color:#0ca30c55}
+.co-warn{background:#fab2191a;border-color:#fab21980}
+.co-info{background:#2a78d60d;border-color:#2a78d64d}
+
+/* empty / loading */
+.hero{text-align:center;padding:70px 20px;color:var(--ink2)}
+.hero h2{font-size:19px;color:var(--ink);margin-bottom:8px}
+.chips{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.chips button{background:var(--surface);border:1px solid var(--grid);border-radius:18px;
+  padding:7px 15px;font-size:13px;color:var(--accent);font-weight:600}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid #ffffff55;
+  border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ============ print / PDF ============ */
+@media print{
+  @page{margin:14mm}
+  body{background:#fff;font-size:12px}
+  .topbar,nav.tabs,.no-print{display:none !important}
+  .wrap{max-width:none;padding:0}
+  section.tab{display:block !important;page-break-before:always}
+  section.tab:first-of-type{page-break-before:avoid}
+  .card{border-color:#bbb;break-inside:avoid}
+  tbody tr:hover{background:none}
+  a{color:inherit;text-decoration:none}
+}
+.printhead{display:none}
+@media print{.printhead{display:block;font-size:11px;color:#555;border-bottom:1px solid #999;
+  padding-bottom:6px;margin-bottom:12px}}
+</style>
+</head>
+<body>
+
+<div class="topbar no-print">
+  <div class="brand">MSME Comparable Valuation<br><small>D&amp;B-grounded · deterministic · touchless</small></div>
+  <div class="controls">
+    <input id="q" list="companies" placeholder="Type a company name… e.g. Woodward" autocomplete="off">
+    <datalist id="companies"></datalist>
+    <button class="btn btn-run" id="runBtn" onclick="runValuation()">Run valuation</button>
+    <button class="btn btn-pdf no-print" id="pdfBtn" onclick="window.print()" disabled>Download PDF</button>
+  </div>
+</div>
+
+<nav class="tabs no-print" id="tabnav" style="display:none">
+  <button data-tab="overview" class="active" onclick="showTab('overview')">Overview</button>
+  <button data-tab="filters" onclick="showTab('filters')">Filters</button>
+  <button data-tab="peers" onclick="showTab('peers')">Peer Analysis</button>
+  <button data-tab="valuation" onclick="showTab('valuation')">Valuation</button>
+  <button data-tab="validation" onclick="showTab('validation')">Validation</button>
+  <button data-tab="audit" onclick="showTab('audit')">Audit Trail</button>
+</nav>
+
+<div class="wrap">
+  <div id="hero" class="hero">
+    <h2>Run a live comparable-company valuation</h2>
+    <p>Type an Indian MSME name above and press <b>Run valuation</b>. The engine resolves it via
+    D&amp;B, screens the whole universe through its filter chain, and produces a ranged,
+    audited equity valuation — right here, downloadable as PDF.</p>
+    <div class="chips">
+      <button onclick="quick('Woodward')">Woodward</button>
+      <button onclick="quick('Kirloskar Brothers Pumps')">Kirloskar Brothers Pumps</button>
+      <button onclick="quick('Bharat Forge Components')">Bharat Forge Components</button>
+      <button onclick="quick('Jash Fluid Systems')">Jash Fluid Systems</button>
+    </div>
+  </div>
+  <div id="report" style="display:none"></div>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+"use strict";
+let DATA=null, ROBUST=null;
+
+/* ---------------- utilities ---------------- */
+const $=s=>document.querySelector(s);
+const esc=x=>String(x==null?"":x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const num=(x,d=1)=>x==null?"n/a":Number(x).toLocaleString("en-IN",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(x,d=1)=>x==null?"n/a":(100*x).toFixed(d)+"%";
+const cr=(x,d=0)=>x==null?"n/a":"₹"+num(x,d)+" Cr";
+
+function showTab(id){
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("active",s.id==="tab-"+id));
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+}
+function quick(n){$("#q").value=n;runValuation();}
+
+const tip=$("#tip");
+function tipOn(ev,html){tip.innerHTML=html;tip.style.display="block";tipMove(ev);}
+function tipMove(ev){tip.style.left=(ev.clientX+14)+"px";tip.style.top=(ev.clientY+10)+"px";}
+function tipOff(){tip.style.display="none";}
+
+/* ---------------- boot ---------------- */
+fetch("/api/companies").then(r=>r.json()).then(j=>{
+  $("#companies").innerHTML=(j.companies||[]).map(c=>`<option value="${esc(c)}">`).join("");
+});
+$("#q").addEventListener("keydown",e=>{if(e.key==="Enter")runValuation();});
+
+/* ---------------- run ---------------- */
+async function runValuation(){
+  const name=$("#q").value.trim(); if(!name)return;
+  const btn=$("#runBtn"); btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span>&nbsp;Valuing…';
+  try{
+    const r=await fetch("/api/value?name="+encodeURIComponent(name));
+    DATA=await r.json();
+    render();
+  }catch(e){
+    $("#report").style.display="block";$("#hero").style.display="none";
+    $("#report").innerHTML=`<div class="card"><h2>Error</h2><p>${esc(e)}</p></div>`;
+  }
+  btn.disabled=false;btn.textContent="Run valuation";
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  $("#hero").style.display="none";
+  const rep=$("#report"); rep.style.display="block";
+  $("#tabnav").style.display="flex"; $("#pdfBtn").disabled=false;
+
+  if(DATA.error){rep.innerHTML=`<div class="card"><h2>Error</h2><p>${esc(DATA.error)}</p></div>`;return;}
+  const t=DATA.target, val=DATA.valuation, meta=DATA.meta||{};
+  if(!t||!val){
+    rep.innerHTML=cover()+`<section class="tab active" id="tab-overview">
+      <div class="card"><h2>No valuation produced</h2>
+      <p class="explain">Status <b>${esc(meta.status)}</b>. Nothing is fabricated — the audit trail records why.</p>
+      ${auditTable()}</div></section>`;
+    $("#tabnav").style.display="none"; return;
+  }
+  rep.innerHTML = cover()
+    + `<section class="tab active" id="tab-overview">${overviewTab()}</section>`
+    + `<section class="tab" id="tab-filters">${filtersTab()}</section>`
+    + `<section class="tab" id="tab-peers">${peersTab()}</section>`
+    + `<section class="tab" id="tab-valuation">${valuationTab()}</section>`
+    + `<section class="tab" id="tab-validation">${validationTab()}</section>`
+    + `<section class="tab" id="tab-audit"><div class="card"><h2>Audit Trail</h2>
+        <div class="purpose">every D&B call and engine decision — typed, ordered, replayable</div>
+        ${auditTable()}</div></section>`;
+  showTab("overview");
+  drawField(); drawFunnel();
+  const rb=$("#robustBtn"); if(rb&&ROBUST) renderRobust();
+}
+
+/* ---------------- cover strip ---------------- */
+function confBadge(){
+  const c=DATA.confidence||{}; const cls=c.label==="HIGH"?"b-good":(c.label==="MEDIUM"?"b-warn":"b-crit");
+  const ic=c.label==="HIGH"?"✓":(c.label==="MEDIUM"?"◐":"!");
+  return `<span class="badge ${cls}">${ic} Confidence ${esc(c.label)} · ${num(c.score,2)}</span>`;
+}
+function cover(){
+  const t=DATA.target||{}, meta=DATA.meta||{}, dq=DATA.data_quality||{};
+  const ref="DNB-VAL-"+(meta.run_timestamp||"").slice(0,10)+"-"+(t.duns||"");
+  const dqcls=(dq.grade==="A"||dq.grade==="B")?"b-good":(dq.grade==="C"?"b-warn":"b-crit");
+  return `
+  <div class="printhead">Comparable Company Analysis · ${esc(t.name||DATA.query)} · ${esc(meta.run_timestamp)} ·
+    ${esc(meta.engine)} v${esc(meta.methodology_version)} · ref ${esc(ref)}</div>
+  <div class="cover">
+    <div>
+      <h1>Comparable Company Analysis — ${esc(t.name||DATA.query)}</h1>
+      <div class="sub">DUNS ${esc(t.duns||"—")} · CIN ${esc(t.cin||"—")} · ${esc(t.city||"")} ·
+        ${t.listed?"Listed":"Unlisted (private)"} · NAICS ${esc(t.naics||"—")}</div>
+      <div class="sub mono">ref ${esc(ref)} · run ${esc(meta.run_timestamp)} · ${esc(meta.data_source)} ·
+        methodology v${esc(meta.methodology_version)} · units ${esc(meta.source_units)}→${esc(meta.reporting_units)} · touchless</div>
+    </div>
+    <div class="badges">
+      ${DATA.confidence?confBadge():""}
+      ${dq.grade?`<span class="badge ${dqcls}">◆ Data quality ${esc(dq.grade)} · ${num(dq.score,2)}</span>`:""}
+      <span class="badge b-info">${esc((meta.status||"").toUpperCase())}</span>
+    </div>
+  </div>`;
+}
+
+/* ---------------- overview tab ---------------- */
+function overviewTab(){
+  const t=DATA.target, tp=DATA.target_profile||{}, val=DATA.valuation;
+  const xc=val.market_cross_check;
+  return `
+  <div class="grid g4">
+    <div class="tile"><div class="k">Equity value (mid)</div><div class="v" style="color:var(--accent)">${cr(val.equity_mid_cr)}</div>
+      <div class="s">range ${cr(val.equity_low_cr)} – ${cr(val.equity_high_cr)}</div></div>
+    <div class="tile"><div class="k">Headline method</div><div class="v">${esc(val.headline_method)}</div>
+      <div class="s">triangulated with ${val.methods.length} methods</div></div>
+    <div class="tile"><div class="k">Peers used</div><div class="v">${DATA.peers.length}</div>
+      <div class="s">effective ${num(val.effective_peer_count,2)} · ${val.n_borderline} borderline</div></div>
+    <div class="tile"><div class="k">DLOM</div><div class="v">${pct(val.discount,0)}</div>
+      <div class="s">${esc(val.discount_reason)}</div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>Valuation summary — football field</h2>
+    <div class="purpose">the equity-value range each method implies; the dashed line is the company's own market value (listed targets)</div>
+    <p class="explain"><b>How to read it.</b> Each bar spans that method's low→high equity value; the thick tick is the
+      central (positioned) estimate. Tight overlap across bars means the methods corroborate one another.</p>
+    <div id="ffchart" class="chart"></div>
+    <div class="legend" id="fflegend"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><h2>Company profile</h2>
+      <div class="purpose">who is being valued (from D&amp;B)</div>
+      <table><tbody>
+        <tr><td>Economic profile</td><td class="num"><b>${esc(tp.operating_model)}</b> / ${esc(tp.value_chain)}</td></tr>
+        <tr><td>Customer / export</td><td class="num">${esc(tp.customer_type)} · ${t.is_exporter?"Exporter":"Domestic"}</td></tr>
+        <tr><td>Industry</td><td class="num">NAICS ${esc(t.naics)} (sub ${esc(tp.naics_subsector)})</td></tr>
+        <tr><td>Revenue</td><td class="num">${cr(t.revenue_cr)} <span style="color:var(--muted)">(growth ${pct(t.revenue_growth)})</span></td></tr>
+        <tr><td>EBITDA</td><td class="num">${cr(t.ebitda_cr)} <span style="color:var(--muted)">(margin ${pct(t.ebitda_margin)})</span></td></tr>
+        <tr><td>EBIT</td><td class="num">${cr(t.ebit_cr)}</td></tr>
+        <tr><td>Net debt</td><td class="num">${cr(val.net_debt_cr)}</td></tr>
+        ${t.market_cap_cr?`<tr><td>Own market cap</td><td class="num">${cr(t.market_cap_cr)}</td></tr>`:""}
+      </tbody></table>
+    </div>
+    <div class="card"><h2>Confidence breakdown</h2>
+      <div class="purpose">six weighted signals — includes whether the methods agree, so it is not always high</div>
+      ${confBars()}
+      ${xc?`<div class="callout ${xc.within_25pct?"co-good":"co-warn"}">
+        <b>${xc.within_25pct?"✓ Market sanity check — in range.":"⚠ Market sanity check — review."}</b>
+        Comps mid ${cr(xc.comps_mid_equity_cr)} vs own market cap ${cr(xc.own_market_cap_cr)}
+        (<b>${xc.delta_pct>0?"+":""}${num(xc.delta_pct,1)}%</b>). Positioning never sees the market cap — this is independent validation.</div>`:""}
+      ${val.warnings.map(w=>`<div class="callout co-warn">⚠ ${esc(w)}</div>`).join("")}
+    </div>
+  </div>`;
+}
+function confBars(){
+  const cb=(DATA.confidence||{}).breakdown||{};
+  const max={profile:.20,peer_coverage:.20,ebitda_positive:.10,methods:.10,triangulation:.25,comp_tightness:.15};
+  const lab={profile:"Profile clarity",peer_coverage:"Peer coverage (effective)",ebitda_positive:"EBITDA positive",
+             methods:"Methods computed",triangulation:"Triangulation agreement",comp_tightness:"Comparable tightness"};
+  return Object.keys(max).map(k=>{
+    const v=cb[k]||0, f=Math.min(1,v/max[k]);
+    return `<div class="cb"><div class="lab">${lab[k]}</div>
+      <div class="track"><div class="fill" style="width:${(f*100).toFixed(0)}%"></div></div>
+      <div class="val">${v.toFixed(2)} / ${max[k].toFixed(2)}</div></div>`;
+  }).join("");
+}
+
+/* ---------------- filters tab ---------------- */
+const FILTERS=[
+ ["A","1","Geography","Search is restricted to India (countryISOAlpha2Code = IN).","company_search request","—"],
+ ["A","2","Self-exclusion","The target's own DUNS is removed from the candidate pool.","run.py universe loop","—"],
+ ["B","3","Operating model","Peer must have the SAME classified model (manufacturer / distributor / retailer / service). Rejects traders, retailers, service firms.","PEER_REJECTED","hard knock-out"],
+ ["B","4","Value chain","finished_goods vs raw_material must match — rejects raw-material suppliers (e.g. steel billets).","PEER_REJECTED","hard knock-out"],
+ ["B","5","Major industry","D&B major code must match (D=Manufacturing, F=Wholesale, G=Retail, I=Services).","PEER_REJECTED","hard knock-out"],
+ ["C","6","Industry proximity","1.0 same NAICS 3-digit subsector · 0.6 same Hoovers class · else 0.","similarity score","weight 0.40"],
+ ["C","7","Scale proximity","1 / (1 + |log1p(rev_t) − log1p(rev_p)|) — closeness of revenue on a log scale.","similarity score","weight 0.20"],
+ ["C","8","Profitability proximity","max(0, 1 − 5·|margin_t − margin_p|) — EBITDA-margin closeness.","similarity score","weight 0.15"],
+ ["C","9","Customer type","B2B / B2C / mixed must match (1.0 else 0).","similarity score","weight 0.15"],
+ ["C","10","Export profile","Same exporter flag = 1.0, different = 0.3. (The ONLY trade-related filter — see note.)","similarity score","weight 0.10"],
+ ["D","11","Top-N cut","Only the 15 highest-scoring peers enter the valuation.","compute_valuation","top_n = 15"],
+ ["D","12","Similarity weighting","Borderline peers (score < 0.85) are down-weighted, tapering to a 0.15 floor — inexact comps cannot distort the answer.","PEERS_WEIGHTED","weighted percentile"],
+ ["D","13","Multiple eligibility","Only LISTED comps with market EV feed trading multiples (book capital-employed fallback if < 3 listed); the driver must be > 0.","FALLBACK_BOOK_EV","per method"],
+ ["D","14","Outlier trim","Tukey fence: multiples outside [Q1−1.5·IQR, Q3+1.5·IQR] are dropped.","METHOD_COMPUTED","1.5 × IQR"]];
+const STAGE={A:["st-a","Stage A — Universe & eligibility"],B:["st-b","Stage B — Hard knock-outs (reject before scoring)"],
+             C:["st-c","Stage C — Weighted similarity scoring (0–1)"],D:["st-d","Stage D — Post-scoring quality controls"]};
+function filtersTab(){
+  const rej=DATA.rejected||[];
+  let rows="",cur="";
+  FILTERS.forEach(f=>{
+    if(f[0]!==cur){cur=f[0];
+      rows+=`<tr><td colspan="5" style="background:#f4f6f2;border-bottom:1px solid var(--axis)">
+        <span class="stagechip ${STAGE[cur][0]}">${STAGE[cur][1]}</span></td></tr>`;}
+    rows+=`<tr><td class="num">${f[1]}</td><td><b>${esc(f[2])}</b></td><td>${esc(f[3])}</td>
+      <td class="mono">${esc(f[4])}</td><td>${esc(f[5])}</td></tr>`;
+  });
+  return `<div class="card">
+    <h2>The filter chain — how ${DATA.peers_ranked_count+rej.length} candidates become ${DATA.peers.length} priced peers</h2>
+    <div class="purpose">every screen applied between "all companies in the database" and the final peer list</div>
+    <p class="explain"><b>Four stages.</b> Eligibility (A) shapes the pool; knock-outs (B) reject economically
+      different businesses outright — each with a recorded reason; similarity scoring (C) ranks survivors on five
+      weighted dimensions; quality controls (D) decide how much each surviving peer actually influences the number.</p>
+    <div id="funnel" class="chart"></div>
+    <table style="margin-top:14px"><thead><tr><th>#</th><th>Filter</th><th>Rule</th><th>Where (audit code)</th><th>Parameter</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div class="callout co-info"><b>What is NOT used:</b> import data and per-capita metrics are not part of the
+      calculation — they are not in the D&amp;B financial payload. The only trade-related signal is the
+      <b>export flag</b> (filter&nbsp;10). Everything above is the complete list.</div>
+    <h3 style="margin-top:16px;font-size:14px">Rejected this run (${rej.length})</h3>
+    <table><thead><tr><th>Entity</th><th>Model</th><th>Value chain</th><th>Major</th><th>Reason</th></tr></thead>
+    <tbody>${rej.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.operating_model)}</td>
+      <td>${esc(r.value_chain)}</td><td>${esc(r.major_industry)}</td>
+      <td><span class="tag tag-rej">✕</span> ${esc(r.reason)}</td></tr>`).join("")}</tbody></table>
+  </div>`;
+}
+
+/* ---------------- peers tab ---------------- */
+function peersTab(){
+  const rows=DATA.peers.map((p,i)=>{
+    const m=p.multiples||{};
+    return `<tr>
+      <td class="num">${i+1}</td>
+      <td><b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:11.5px">${esc(p.city)}</span></td>
+      <td>${p.listed?'<span class="tag tag-listed">LISTED</span>':'<span class="tag tag-unl">unlisted</span>'}
+          ${p.borderline?'<br><span class="tag tag-bl">⚠ borderline</span>':""}</td>
+      <td class="num">${cr(p.revenue_cr)}</td>
+      <td class="num">${pct(p.ebitda_margin)}</td>
+      <td class="num">${pct(p.revenue_growth)}</td>
+      <td class="num">${m["EV/EBITDA"]?num(m["EV/EBITDA"],1)+"x":"—"}</td>
+      <td class="num">${m["EV/Revenue"]?num(m["EV/Revenue"],2)+"x":"—"}</td>
+      <td class="num">${m["EV/EBIT"]?num(m["EV/EBIT"],1)+"x":"—"}</td>
+      <td class="num">${num(p.score,3)}</td>
+      <td><span class="wbar ${p.weight>=1?"full":""}" style="width:${(46*p.weight).toFixed(0)}px"></span>
+          <span style="font-size:11.5px;color:var(--ink2)"> ${num(p.weight,2)}</span></td>
+    </tr>
+    <tr><td></td><td colspan="10" style="padding-top:0;color:var(--muted);font-size:11.5px;border-bottom:1px solid var(--grid)">
+      ✓ ${esc((p.selected_because||[]).join("; ")||"—")}${(p.differences||[]).length?` &nbsp;·&nbsp; Δ ${esc(p.differences.join("; "))}`:""}</td></tr>`;
+  }).join("");
+  return `<div class="card">
+    <h2>Comparable companies (${DATA.peers.length} of ${DATA.peers_ranked_count} ranked)</h2>
+    <div class="purpose">the peer set that prices the target — scores, weights and trading multiples</div>
+    <p class="explain"><b>Score</b> is the 5-dimension similarity (industry 40% · scale 20% · margin 15% ·
+      customer 15% · export 10%). <b>Weight</b> is how much the peer's multiple counts — full matches (≥0.85) count
+      fully, borderline comps taper toward 0.15 so they cannot distort the valuation. Only LISTED peers contribute
+      trading multiples.</p>
+    <div style="overflow-x:auto"><table><thead><tr>
+      <th>#</th><th>Company</th><th>Status</th><th class="num">Revenue</th><th class="num">EBITDA mgn</th>
+      <th class="num">Growth</th><th class="num">EV/EBITDA</th><th class="num">EV/Rev</th><th class="num">EV/EBIT</th>
+      <th class="num">Score</th><th>Weight</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </div>`;
+}
+
+/* ---------------- valuation tab ---------------- */
+function valuationTab(){
+  const val=DATA.valuation;
+  const rows=val.methods.map(m=>{
+    const hl=m.method===val.headline_method;
+    return `<tr class="${hl?"hl":""}">
+      <td><b>${esc(m.method)}</b>${hl?" ★":""}</td>
+      <td>${esc(m.ev_basis)}</td>
+      <td class="num">${m.n_multiples}<span style="color:var(--muted)"> (eff ${num(m.effective_n,1)})</span></td>
+      <td class="num">${m.n_outliers_dropped}</td>
+      <td class="num">${num(m.multiple_p25,2)} / <b>${num(m.multiple_median,2)}</b> / ${num(m.multiple_p75,2)}</td>
+      <td class="num">${cr(m.target_driver)}</td>
+      <td class="num">${cr(m.ev_mid_cr)}</td>
+      <td class="num"><b>${cr(m.equity_low_cr)} – <span style="color:var(--accent)">${cr(m.equity_mid_cr)}</span> – ${cr(m.equity_high_cr)}</b></td></tr>`;
+  }).join("");
+  const h=val.methods.find(m=>m.method===val.headline_method)||{};
+  return `<div class="card">
+    <h2>Valuation methods — triangulation</h2>
+    <div class="purpose">the same company valued three independent ways</div>
+    <p class="explain"><b>Recipe per method.</b> Take listed comps' multiples → drop statistical outliers
+      (Tukey 1.5×IQR) → read the multiple at the target's <b>quality position</b> (its EBITDA-margin percentile among
+      peers, so a weaker business earns a lower multiple) using similarity weights → × the target's driver = enterprise
+      value → − net debt → − DLOM (private targets only) = equity. A spread across methods is informative, not an error.</p>
+    <div style="overflow-x:auto"><table><thead><tr><th>Method</th><th>Basis</th><th class="num">Comps</th>
+      <th class="num">Outliers cut</th><th class="num">Multiple low/<b>pos</b>/high</th><th class="num">Driver</th>
+      <th class="num">EV (mid)</th><th class="num">Equity low–mid–high</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="callout co-info"><b>Equity bridge (headline).</b>
+      ${esc(val.headline_method)} ${num(h.multiple_median,2)}x × ${cr(h.target_driver)} =
+      EV ${cr(h.ev_mid_cr)} &nbsp;−&nbsp; net debt ${cr(val.net_debt_cr)} &nbsp;−&nbsp; DLOM ${pct(val.discount,0)}
+      &nbsp;=&nbsp; <b style="color:var(--accent)">equity ${cr(val.equity_mid_cr)}</b></div>
+    <p class="explain" style="margin-top:10px"><b>Positioning.</b> ${esc(val.positioning||"—")}<br>
+      <b>Range basis.</b> ${esc(h.range_basis||"")} · <b>EV basis.</b> ${esc(val.ev_basis)}</p>
+  </div>`;
+}
+
+/* ---------------- validation tab ---------------- */
+function validationTab(){
+  const v=DATA.validation;
+  let core="";
+  if(v&&v.positioned){
+    core=`<table><thead><tr><th>Approach</th><th class="num">Mean |err|</th><th class="num">Median |err|</th>
+      <th class="num">Max |err|</th><th class="num">within 15%</th></tr></thead><tbody>
+      <tr class="hl"><td><b>Quality-positioned + weighted (used)</b></td><td class="num"><b>${v.positioned.mean_abs_pct}%</b></td>
+        <td class="num">${v.positioned.median_abs_pct}%</td><td class="num">${v.positioned.max_abs_pct}%</td>
+        <td class="num">${v.positioned.within_15pct}/${v.positioned.n}</td></tr>
+      <tr><td>Flat median (naive baseline)</td><td class="num">${v.flat_median.mean_abs_pct}%</td>
+        <td class="num">${v.flat_median.median_abs_pct}%</td><td class="num">${v.flat_median.max_abs_pct}%</td>
+        <td class="num">${v.flat_median.within_15pct}/${v.flat_median.n}</td></tr></tbody></table>
+      <div class="callout ${v.verdict_ok?"co-good":"co-warn"}"><b>${v.verdict_ok?"✓ VERDICT: PASS":"⚠ VERDICT: REVIEW"}</b>
+        — corr(margin, EV/EBITDA) = ${v.margin_multiple_corr}; positioning closer on
+        ${v.positioning_wins}/${v.n_targets} targets. Positioning never sees the market cap it is checked against.</div>`;
+  }else{core=`<p class="explain">Validation summary not available for this run.</p>`;}
+  return `<div class="card">
+    <h2>Methodology validation — is it accurate in general, or just here?</h2>
+    <div class="purpose">every listed company in the universe is re-valued from its peers and compared to its OWN market cap</div>
+    <p class="explain"><b>Why this matters.</b> One good calibration can be luck. This backtest re-values
+      <b>every</b> listed comparable and measures the error against real market value — and the method must beat the
+      naive "just use the median" baseline across the board, not just on the demo company.</p>
+    ${core}
+    <h3 style="margin-top:18px;font-size:14px">Seed-robustness — 5 freshly drawn universes</h3>
+    <p class="explain">The same backtest re-run on universes generated with different random seeds (different
+      financials, listings, market noise). If positioning only won on the canonical universe, it was seed-luck.</p>
+    <div id="robustBox">
+      <button class="btn btn-run no-print" id="robustBtn" style="background:var(--accent);color:#fff"
+        onclick="loadRobust()">Run robustness sweep (≈20s)</button>
+    </div>
+  </div>`;
+}
+async function loadRobust(){
+  const b=$("#robustBtn"); b.disabled=true; b.innerHTML='<span class="spin"></span>&nbsp;Sweeping 5 universes…';
+  try{ROBUST=await(await fetch("/api/robustness")).json();renderRobust();}
+  catch(e){b.textContent="Failed: "+e;}
+}
+function renderRobust(){
+  const s=ROBUST; if(!s||!s.per_seed)return;
+  $("#robustBox").innerHTML=`<table><thead><tr><th>Seed</th><th class="num">n</th><th class="num">corr</th>
+    <th class="num">Positioned MAE</th><th class="num">Naive MAE</th><th class="num">Wins</th><th>Beats naive?</th></tr></thead>
+    <tbody>${s.per_seed.map(r=>`<tr><td class="mono">${r.seed_offset}</td><td class="num">${r.n}</td>
+      <td class="num">${r.corr.toFixed(2)}</td><td class="num">${r.pos_mae_pct}%</td><td class="num">${r.med_mae_pct}%</td>
+      <td class="num">${r.pos_wins}/${r.n}</td>
+      <td>${r.pos_beats_naive?'<span class="tag tag-listed">YES</span>':'<span class="tag tag-rej">no</span>'}</td></tr>`).join("")}
+    </tbody></table>
+    <div class="callout ${s.robust?"co-good":"co-warn"}"><b>${s.robust?"✓ ROBUST":"⚠ REVIEW"}</b> — positioning beats the
+      naive baseline on ${s.seeds_where_positioning_beats_naive}/${s.n_seeds} fresh universes
+      (mean MAE ${s.mean_pos_mae_pct}% vs ${s.mean_med_mae_pct}%). Not seed-luck.</div>`;
+}
+
+/* ---------------- audit ---------------- */
+function auditTable(){
+  const lv={INFO:["#89878122","var(--ink2)"],WARN:["#fab21926","#6b4e00"],
+            DECISION:["#4a3aa71a","#3a2f86"],ERROR:["#d03b3b14","#8d2a2a"]};
+  const rows=(DATA.audit_trail||[]).map(a=>{
+    const c=lv[a.level]||lv.INFO;
+    return `<tr><td class="num">${a.seq}</td><td class="mono">${esc((a.ts||"").slice(11,23))}</td>
+      <td class="mono">${esc(a.stage)}</td>
+      <td><span class="tag" style="background:${c[0]};color:${c[1]};border:1px solid var(--hairline)">${esc(a.level)}</span></td>
+      <td class="mono">${esc(a.code)}</td><td>${esc(a.detail)}</td></tr>`;}).join("");
+  return `<div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Time</th><th>Stage</th><th>Level</th>
+    <th>Code</th><th>Detail</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------------- charts (SVG, hover tooltips) ---------------- */
+function drawField(){
+  const el=$("#ffchart"); if(!el)return;
+  const val=DATA.valuation, t=DATA.target;
+  const series=[["EV/EBITDA","var(--s1)","#1c5cab"],["EV/Revenue","var(--s2)","#0c5c3f"],["EV/EBIT","var(--s3)","#7a5300"]];
+  const ms=val.methods;
+  const lows=ms.map(m=>m.equity_low_cr), highs=ms.map(m=>m.equity_high_cr);
+  let dom=[Math.min(...lows),Math.max(...highs)];
+  if(t.market_cap_cr){dom[0]=Math.min(dom[0],t.market_cap_cr);dom[1]=Math.max(dom[1],t.market_cap_cr);}
+  const pad=(dom[1]-dom[0])*0.08; dom=[Math.max(0,dom[0]-pad),dom[1]+pad];
+  const W=Math.min(el.clientWidth||900,980), H=54*ms.length+46, L=104, R=24;
+  const x=v=>L+(v-dom[0])/(dom[1]-dom[0])*(W-L-R);
+  let g="";
+  const ticks=5;
+  for(let i=0;i<=ticks;i++){const v=dom[0]+(dom[1]-dom[0])*i/ticks;
+    g+=`<line class="gridline" x1="${x(v)}" y1="8" x2="${x(v)}" y2="${H-30}"/>
+        <text class="axislab" x="${x(v)}" y="${H-14}" text-anchor="middle">${Math.round(v).toLocaleString("en-IN")}</text>`;}
+  ms.forEach((m,i)=>{
+    const s=series.find(z=>z[0]===m.method)||series[0];
+    const y=18+i*54, bh=16;
+    const lo=x(m.equity_low_cr),hi=x(m.equity_high_cr),mid=x(m.equity_mid_cr);
+    g+=`<text class="dlabel b" x="${L-8}" y="${y+bh/2+4}" text-anchor="end">${m.method}${m.method===val.headline_method?" ★":""}</text>
+      <rect x="${lo}" y="${y}" width="${Math.max(2,hi-lo)}" height="${bh}" rx="4" fill="${s[1]}" opacity="0.85"
+        data-tip="<b>${m.method}</b><br>low ${cr(m.equity_low_cr)}<br>mid ${cr(m.equity_mid_cr)}<br>high ${cr(m.equity_high_cr)}"/>
+      <rect x="${mid-2}" y="${y-3}" width="4" height="${bh+6}" rx="1.5" fill="${s[2]}"/>
+      <text class="dlabel" x="${lo-5}" y="${y+bh/2+4}" text-anchor="end">${Math.round(m.equity_low_cr).toLocaleString("en-IN")}</text>
+      <text class="dlabel" x="${hi+5}" y="${y+bh/2+4}">${Math.round(m.equity_high_cr).toLocaleString("en-IN")}</text>
+      <text class="dlabel b" x="${mid}" y="${y-7}" text-anchor="middle">${Math.round(m.equity_mid_cr).toLocaleString("en-IN")}</text>`;
+  });
+  if(t.market_cap_cr){
+    const mx=x(t.market_cap_cr);
+    g+=`<line x1="${mx}" y1="6" x2="${mx}" y2="${H-30}" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <text class="dlabel b" x="${mx}" y="${H-32}" text-anchor="middle" transform="translate(0,-2)"></text>`;
+  }
+  g+=`<line class="baseline" x1="${L}" y1="${H-30}" x2="${W-R}" y2="${H-30}"/>`;
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Equity value range by method">${g}</svg>`;
+  $("#fflegend").innerHTML=series.filter(s=>ms.some(m=>m.method===s[0]))
+    .map(s=>`<span><span class="sw" style="background:${s[1]}"></span>${s[0]}</span>`).join("")
+    +(t.market_cap_cr?`<span><span class="sw" style="background:var(--ink);height:2px;width:14px;border-radius:0"></span>own market cap ${cr(t.market_cap_cr)}</span>`:"")
+    +`<span style="color:var(--muted)">axis: equity value, ₹ Cr</span>`;
+  attachTips(el);
+}
+function drawFunnel(){
+  const el=$("#funnel"); if(!el)return;
+  const val=DATA.valuation;
+  const total=DATA.peers_ranked_count+(DATA.rejected||[]).length;
+  const stages=[["Candidates screened (universe − target)",total,"var(--seq250)"],
+                ["Survive hard knock-outs (B)",DATA.peers_ranked_count,"var(--seq350)"],
+                ["Top-15 by similarity (C)",DATA.peers.length,"var(--seq450)"],
+                ["Effective after weighting (D)",val.effective_peer_count,"var(--seq550)"]];
+  const W=Math.min(el.clientWidth||900,980),BH=26,GAP=12,L=6,R=90,H=(BH+GAP)*stages.length+6;
+  const maxv=stages[0][1];
+  let g="";
+  stages.forEach((s,i)=>{
+    const y=4+i*(BH+GAP), w=Math.max(8,(W-L-R)*(s[1]/maxv));
+    g+=`<rect x="${L}" y="${y}" width="${w}" height="${BH}" rx="4" fill="${s[2]}"
+        data-tip="<b>${esc(s[0])}</b><br>${num(s[1],s[1]%1?2:0)} companies"/>
+      <text class="dlabel b" x="${L+w+8}" y="${y+BH/2+4}">${num(s[1],s[1]%1?2:0)}</text>
+      <text x="${L+10}" y="${y+BH/2+4}" style="fill:#fff;font-size:12px;font-weight:600">${esc(s[0])}</text>`;
+  });
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Peer filter funnel">${g}</svg>`;
+  attachTips(el);
+}
+function attachTips(root){
+  root.querySelectorAll("[data-tip]").forEach(n=>{
+    n.addEventListener("mousemove",e=>{tipOn(e,n.getAttribute("data-tip"));});
+    n.addEventListener("mouseleave",tipOff);
+  });
+}
+</script>
+</body>
+</html>

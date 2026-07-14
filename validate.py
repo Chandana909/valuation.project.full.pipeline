@@ -118,6 +118,43 @@ def backtest_summary():
     }
 
 
+def seed_robustness(n_seeds=5):
+    """
+    The strongest anti-overfitting test: rebuild the ENTIRE universe with shifted
+    RNG seeds (different companies' financials, listings, market noise) and re-run
+    the calibration backtest on each. If quality-positioning only beat the naive
+    median on the canonical seed, it was seed-luck; if it wins across fresh draws,
+    the method is structurally sound. Restores the canonical universe afterwards.
+    """
+    from mock_api.dnb_mock import rebuild_universe
+    results = []
+    try:
+        for k in range(1, n_seeds + 1):
+            rebuild_universe(seed_offset=k * 1000)
+            corr, pos, med, pos_better, _rows = run_backtest()
+            ps, ms = _summ(pos), _summ(med)
+            results.append({
+                "seed_offset": k * 1000,
+                "n": ps["n"],
+                "corr": round(corr, 3),
+                "pos_mae_pct": ps["mean_abs_pct"],
+                "med_mae_pct": ms["mean_abs_pct"],
+                "pos_wins": pos_better,
+                "pos_beats_naive": ps["mean_abs_pct"] < ms["mean_abs_pct"],
+            })
+    finally:
+        rebuild_universe(seed_offset=0)   # ALWAYS restore the canonical universe
+    n_beat = sum(1 for r in results if r["pos_beats_naive"])
+    return {
+        "n_seeds": len(results),
+        "seeds_where_positioning_beats_naive": n_beat,
+        "mean_pos_mae_pct": round(sum(r["pos_mae_pct"] for r in results) / len(results), 1),
+        "mean_med_mae_pct": round(sum(r["med_mae_pct"] for r in results) / len(results), 1),
+        "per_seed": results,
+        "robust": n_beat > len(results) / 2,   # strict majority of fresh universes
+    }
+
+
 def main():
     corr, pos, med, pos_better, rows = run_backtest()
     print("=" * 74)
@@ -145,7 +182,22 @@ def main():
     for nm, mgn, pd, md in sorted(rows, key=lambda r: -abs(r[2]))[:12]:
         print(f"  {nm[:30]:30s} margin {mgn*100:4.1f}%  positioned {pd*100:+6.1f}%  "
               f"(naive median {md*100:+6.1f}%)")
-    return 0 if verdict_ok else 1
+
+    # ---- seed-robustness sweep (was it just this universe?) --------------
+    print("\n" + "=" * 74)
+    print("SEED-ROBUSTNESS SWEEP — same test on 5 freshly drawn universes")
+    print("=" * 74)
+    sw = seed_robustness(n_seeds=5)
+    print(f"{'seed':>6s} {'n':>4s} {'corr':>6s} {'pos MAE':>9s} {'naive MAE':>10s} {'wins':>7s}  beats naive?")
+    for r in sw["per_seed"]:
+        print(f"{r['seed_offset']:>6d} {r['n']:>4d} {r['corr']:>6.2f} "
+              f"{r['pos_mae_pct']:>8.1f}% {r['med_mae_pct']:>9.1f}% "
+              f"{r['pos_wins']:>4d}/{r['n']:<3d} {'YES' if r['pos_beats_naive'] else 'no'}")
+    print(f"\nPositioning beats naive on {sw['seeds_where_positioning_beats_naive']}/"
+          f"{sw['n_seeds']} fresh universes "
+          f"(mean MAE {sw['mean_pos_mae_pct']}% vs {sw['mean_med_mae_pct']}%).")
+    print("ROBUSTNESS:", "PASS — not seed-luck." if sw["robust"] else "REVIEW — seed-dependent.")
+    return 0 if (verdict_ok and sw["robust"]) else 1
 
 
 if __name__ == "__main__":

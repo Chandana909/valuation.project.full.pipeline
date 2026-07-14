@@ -279,13 +279,15 @@ def _make_financials_cr(rng: random.Random) -> dict:
     return fin
 
 
-def _build_universe() -> dict:
-    """Return {duns: record}. Deterministic via seeded RNG."""
+def _build_universe(seed_offset: int = 0) -> dict:
+    """Return {duns: record}. Deterministic via seeded RNG. `seed_offset` shifts
+    every seed — used ONLY by validate.py's robustness sweep to prove results are
+    not seed-luck. Default 0 keeps the canonical universe byte-identical."""
     universe = {}
     seq = 1
 
     for cluster in ("A", "B", "C"):
-        rng = random.Random({"A": 101, "B": 202, "C": 303}[cluster])
+        rng = random.Random({"A": 101, "B": 202, "C": 303}[cluster] + seed_offset)
         names = _CLUSTER_NAMES[cluster]
         cities = _CLUSTER_CITIES[cluster]
         hoovers = _CLUSTER_HOOVERS[cluster]
@@ -337,7 +339,7 @@ def _build_universe() -> dict:
             seq += 1
 
     # ---- the 5 wrong entities -------------------------------------------
-    rng = random.Random(909)
+    rng = random.Random(909 + seed_offset)
     for w in _WRONG_ENTITIES:
         fin_cr = _make_financials_cr(rng)
         year = rng.randint(1990, 2015)
@@ -374,6 +376,15 @@ def _build_universe() -> dict:
 
 # Build once at import — deterministic.
 _UNIVERSE = _build_universe()
+
+
+def rebuild_universe(seed_offset: int = 0) -> None:
+    """VALIDATION-ONLY helper: swap the module-level universe for one built with
+    shifted seeds. validate.py uses this to re-run the calibration backtest on
+    freshly drawn universes (seed-robustness). Always restore with
+    rebuild_universe(0) afterwards — offset 0 is the canonical universe."""
+    global _UNIVERSE
+    _UNIVERSE = _build_universe(seed_offset)
 
 
 # ---------------------------------------------------------------------------

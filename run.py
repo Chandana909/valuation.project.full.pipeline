@@ -58,7 +58,13 @@ DASHBOARD_PATH = os.path.join(OUTPUT_DIR, "dashboard.html")
 #        ideal range) are down-weighted via a weighted percentile, so a thin/weak
 #        peer set can't distort the headline; range widens on the EFFECTIVE (weighted)
 #        peer count and confidence uses it too.
-METHODOLOGY_VERSION = "1.5.0"
+# 1.6.0: valuation math UNCHANGED. Added (a) seed-robustness sweep — the calibration
+#        backtest re-run on 5 freshly drawn universes (validate.py seed_robustness;
+#        positioning beat the naive median on 5/5, mean MAE 8.5% vs 10.7% — not
+#        seed-luck), and (b) a live UI (server.py + ui/, stdlib http.server): browser
+#        input, tabbed industry-style report, filter-chain documentation, football-
+#        field chart, print-to-PDF.
+METHODOLOGY_VERSION = "1.6.0"
 DNB_SCHEMA_VERSION = "dnbhoovers-2024"
 ENGINE_NAME = "dnb-msme-comparable-valuation"
 

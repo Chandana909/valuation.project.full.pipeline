@@ -69,7 +69,10 @@ dnb_valuation/
 │   ├── __init__.py            # exports build_dashboard
 │   └── build_dashboard.py     # result.json -> dashboard.html (plain HTML strings)
 ├── run.py                     # orchestrator + confidence + acceptance suite
-├── validate.py                # anti-overfitting backtest (whole-universe calibration)
+├── validate.py                # anti-overfitting backtest + seed-robustness sweep
+├── server.py                  # live UI server (stdlib http.server, port 8733)
+├── ui/
+│   └── index.html             # single-file report app (tabs, charts, print-to-PDF)
 ├── output/
 │   ├── result.json            # machine-readable full result (written by run.py)
 │   └── dashboard.html         # human dashboard (written by run.py)
@@ -678,6 +681,29 @@ check #12 fails the build unless `corr > 0.3`, positioning's mean error `<` the 
 baseline's, and positioning wins on `> half` the targets. This is what converts
 "accurate on my two examples" into "accurate in general, and provably not overfit".
 
+**Seed-robustness sweep (1.6.0)** — `validate.py :: seed_robustness(n_seeds=5)` rebuilds
+the ENTIRE universe with shifted RNG seeds (`mock_api.dnb_mock.rebuild_universe`,
+validation-only; always restored to offset 0 in a `finally`) and re-runs the backtest on
+each fresh draw. Current result: positioning beats the naive median on **5/5** universes
+(mean MAE 8.5% vs 10.7%), including one draw with corr ≈ 0.04 where positioning still did
+no harm. This answers "is the canonical universe just a lucky seed?" — no. Exposed live
+at `/api/robustness` and as a button in the UI's Validation tab.
+
+### 10.7 Live UI (`server.py` + `ui/index.html`) — 1.6.0
+
+Stdlib-only demo server (`http.server`, port 8733; **no flask/fastapi**):
+`GET /` (single-file app) · `/api/companies` (autocomplete) · `/api/value?name=` (full
+result JSON incl. cached backtest) · `/api/robustness` (lazy, cached seed sweep).
+The UI is a light-themed, industry-style tabbed report — Overview (KPI tiles,
+football-field chart with the target's own market cap as a reference line, confidence
+breakdown bars) · Filters (the 14-control chain with live funnel counts + rejected
+table) · Peer Analysis (scores, weights, borderline flags, multiples) · Valuation
+(triangulation + equity bridge) · Validation (backtest + on-demand robustness sweep) ·
+Audit Trail. **Download PDF** = print stylesheet + `window.print()` (all tabs render
+sequentially with page breaks). Colors follow the validated data-viz reference palette;
+identity is never color-alone (direct labels + legend). The valuation engine is
+untouched — the UI reads the same `result` dict the CLI writes.
+
 ---
 
 ## 11. `run.py` orchestration & the acceptance suite
@@ -856,4 +882,4 @@ jinja; no second data provider; no network in the core path.
 
 ---
 
-*End of PROJECT_CONTEXT.md — methodology version 1.5.0.*
+*End of PROJECT_CONTEXT.md — methodology version 1.6.0.*

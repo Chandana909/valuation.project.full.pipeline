@@ -1,9 +1,9 @@
 {
   "meta": {
     "engine": "dnb-msme-comparable-valuation",
-    "methodology_version": "1.5.0",
+    "methodology_version": "1.6.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-14T01:14:22+00:00",
+    "run_timestamp": "2026-07-14T16:50:37+00:00",
     "data_source": "Dun & Bradstreet (dnbhoovers)",
     "currency": "INR",
     "reporting_units": "Crore",
@@ -1334,18 +1334,18 @@
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-14T01:14:22.662+00:00",
+      "ts": "2026-07-14T16:50:37.358+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
       "detail": "pipeline start for query 'Woodward'",
       "data": {
-        "methodology_version": "1.5.0"
+        "methodology_version": "1.6.0"
       }
     },
     {
       "seq": 2,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.358+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
@@ -1354,7 +1354,7 @@
     },
     {
       "seq": 3,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "resolve",
       "level": "DECISION",
       "code": "TARGET_RESOLVED",
@@ -1367,7 +1367,7 @@
     },
     {
       "seq": 4,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1376,7 +1376,7 @@
     },
     {
       "seq": 5,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1385,7 +1385,7 @@
     },
     {
       "seq": 6,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_MANAGEMENT",
@@ -1394,7 +1394,7 @@
     },
     {
       "seq": 7,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
@@ -1407,7 +1407,7 @@
     },
     {
       "seq": 8,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1421,7 +1421,7 @@
     },
     {
       "seq": 9,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1430,7 +1430,7 @@
     },
     {
       "seq": 10,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1439,7 +1439,7 @@
     },
     {
       "seq": 11,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1448,7 +1448,7 @@
     },
     {
       "seq": 12,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1457,7 +1457,7 @@
     },
     {
       "seq": 13,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1466,7 +1466,7 @@
     },
     {
       "seq": 14,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1475,7 +1475,7 @@
     },
     {
       "seq": 15,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1484,7 +1484,7 @@
     },
     {
       "seq": 16,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1493,7 +1493,7 @@
     },
     {
       "seq": 17,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1502,7 +1502,7 @@
     },
     {
       "seq": 18,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.359+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1511,7 +1511,7 @@
     },
     {
       "seq": 19,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1520,7 +1520,7 @@
     },
     {
       "seq": 20,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1529,7 +1529,7 @@
     },
     {
       "seq": 21,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1538,7 +1538,7 @@
     },
     {
       "seq": 22,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1547,7 +1547,7 @@
     },
     {
       "seq": 23,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1556,7 +1556,7 @@
     },
     {
       "seq": 24,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1565,7 +1565,7 @@
     },
     {
       "seq": 25,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1574,7 +1574,7 @@
     },
     {
       "seq": 26,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1583,7 +1583,7 @@
     },
     {
       "seq": 27,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1592,7 +1592,7 @@
     },
     {
       "seq": 28,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1601,7 +1601,7 @@
     },
     {
       "seq": 29,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1610,7 +1610,7 @@
     },
     {
       "seq": 30,
-      "ts": "2026-07-14T01:14:22.663+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1619,7 +1619,7 @@
     },
     {
       "seq": 31,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1628,7 +1628,7 @@
     },
     {
       "seq": 32,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1637,7 +1637,7 @@
     },
     {
       "seq": 33,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1646,7 +1646,7 @@
     },
     {
       "seq": 34,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.360+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1655,7 +1655,7 @@
     },
     {
       "seq": 35,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1664,7 +1664,7 @@
     },
     {
       "seq": 36,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1673,7 +1673,7 @@
     },
     {
       "seq": 37,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1682,7 +1682,7 @@
     },
     {
       "seq": 38,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1691,7 +1691,7 @@
     },
     {
       "seq": 39,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1700,7 +1700,7 @@
     },
     {
       "seq": 40,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1709,7 +1709,7 @@
     },
     {
       "seq": 41,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1718,7 +1718,7 @@
     },
     {
       "seq": 42,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1727,7 +1727,7 @@
     },
     {
       "seq": 43,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1736,7 +1736,7 @@
     },
     {
       "seq": 44,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1745,7 +1745,7 @@
     },
     {
       "seq": 45,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1754,7 +1754,7 @@
     },
     {
       "seq": 46,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1763,7 +1763,7 @@
     },
     {
       "seq": 47,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1772,7 +1772,7 @@
     },
     {
       "seq": 48,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1781,7 +1781,7 @@
     },
     {
       "seq": 49,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1790,7 +1790,7 @@
     },
     {
       "seq": 50,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.361+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1799,7 +1799,7 @@
     },
     {
       "seq": 51,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1808,7 +1808,7 @@
     },
     {
       "seq": 52,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1817,7 +1817,7 @@
     },
     {
       "seq": 53,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1826,7 +1826,7 @@
     },
     {
       "seq": 54,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1835,7 +1835,7 @@
     },
     {
       "seq": 55,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1844,7 +1844,7 @@
     },
     {
       "seq": 56,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1853,7 +1853,7 @@
     },
     {
       "seq": 57,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1862,7 +1862,7 @@
     },
     {
       "seq": 58,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1871,7 +1871,7 @@
     },
     {
       "seq": 59,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1880,7 +1880,7 @@
     },
     {
       "seq": 60,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1889,7 +1889,7 @@
     },
     {
       "seq": 61,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1898,7 +1898,7 @@
     },
     {
       "seq": 62,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1907,7 +1907,7 @@
     },
     {
       "seq": 63,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1916,7 +1916,7 @@
     },
     {
       "seq": 64,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.362+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1925,7 +1925,7 @@
     },
     {
       "seq": 65,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1934,7 +1934,7 @@
     },
     {
       "seq": 66,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1943,7 +1943,7 @@
     },
     {
       "seq": 67,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1952,7 +1952,7 @@
     },
     {
       "seq": 68,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1961,7 +1961,7 @@
     },
     {
       "seq": 69,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1970,7 +1970,7 @@
     },
     {
       "seq": 70,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1979,7 +1979,7 @@
     },
     {
       "seq": 71,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1988,7 +1988,7 @@
     },
     {
       "seq": 72,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1997,7 +1997,7 @@
     },
     {
       "seq": 73,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2006,7 +2006,7 @@
     },
     {
       "seq": 74,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2015,7 +2015,7 @@
     },
     {
       "seq": 75,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2024,7 +2024,7 @@
     },
     {
       "seq": 76,
-      "ts": "2026-07-14T01:14:22.664+00:00",
+      "ts": "2026-07-14T16:50:37.363+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2033,7 +2033,7 @@
     },
     {
       "seq": 77,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2042,7 +2042,7 @@
     },
     {
       "seq": 78,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2051,7 +2051,7 @@
     },
     {
       "seq": 79,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2060,7 +2060,7 @@
     },
     {
       "seq": 80,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2069,7 +2069,7 @@
     },
     {
       "seq": 81,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2078,7 +2078,7 @@
     },
     {
       "seq": 82,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2087,7 +2087,7 @@
     },
     {
       "seq": 83,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2096,7 +2096,7 @@
     },
     {
       "seq": 84,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2105,7 +2105,7 @@
     },
     {
       "seq": 85,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2114,7 +2114,7 @@
     },
     {
       "seq": 86,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2123,7 +2123,7 @@
     },
     {
       "seq": 87,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.364+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2132,7 +2132,7 @@
     },
     {
       "seq": 88,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2141,7 +2141,7 @@
     },
     {
       "seq": 89,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2150,7 +2150,7 @@
     },
     {
       "seq": 90,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2159,7 +2159,7 @@
     },
     {
       "seq": 91,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2168,7 +2168,7 @@
     },
     {
       "seq": 92,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2177,7 +2177,7 @@
     },
     {
       "seq": 93,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2186,7 +2186,7 @@
     },
     {
       "seq": 94,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.365+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2195,7 +2195,7 @@
     },
     {
       "seq": 95,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2204,7 +2204,7 @@
     },
     {
       "seq": 96,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2213,7 +2213,7 @@
     },
     {
       "seq": 97,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2222,7 +2222,7 @@
     },
     {
       "seq": 98,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2231,7 +2231,7 @@
     },
     {
       "seq": 99,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2240,7 +2240,7 @@
     },
     {
       "seq": 100,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2249,7 +2249,7 @@
     },
     {
       "seq": 101,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2258,7 +2258,7 @@
     },
     {
       "seq": 102,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2267,7 +2267,7 @@
     },
     {
       "seq": 103,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2276,7 +2276,7 @@
     },
     {
       "seq": 104,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.366+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2285,7 +2285,7 @@
     },
     {
       "seq": 105,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2294,7 +2294,7 @@
     },
     {
       "seq": 106,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2303,7 +2303,7 @@
     },
     {
       "seq": 107,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2312,7 +2312,7 @@
     },
     {
       "seq": 108,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2321,7 +2321,7 @@
     },
     {
       "seq": 109,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2330,7 +2330,7 @@
     },
     {
       "seq": 110,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2339,7 +2339,7 @@
     },
     {
       "seq": 111,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2348,7 +2348,7 @@
     },
     {
       "seq": 112,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2357,7 +2357,7 @@
     },
     {
       "seq": 113,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2366,7 +2366,7 @@
     },
     {
       "seq": 114,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2375,7 +2375,7 @@
     },
     {
       "seq": 115,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2384,7 +2384,7 @@
     },
     {
       "seq": 116,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.367+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2393,7 +2393,7 @@
     },
     {
       "seq": 117,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.368+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2402,7 +2402,7 @@
     },
     {
       "seq": 118,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.368+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2411,7 +2411,7 @@
     },
     {
       "seq": 119,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.368+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2420,7 +2420,7 @@
     },
     {
       "seq": 120,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.368+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2429,7 +2429,7 @@
     },
     {
       "seq": 121,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.368+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2438,7 +2438,7 @@
     },
     {
       "seq": 122,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.368+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2447,7 +2447,7 @@
     },
     {
       "seq": 123,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.369+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -2456,7 +2456,7 @@
     },
     {
       "seq": 124,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.369+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -2465,7 +2465,7 @@
     },
     {
       "seq": 125,
-      "ts": "2026-07-14T01:14:22.665+00:00",
+      "ts": "2026-07-14T16:50:37.369+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
@@ -2476,7 +2476,7 @@
     },
     {
       "seq": 126,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.370+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2488,7 +2488,7 @@
     },
     {
       "seq": 127,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.370+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2500,7 +2500,7 @@
     },
     {
       "seq": 128,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.370+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2512,7 +2512,7 @@
     },
     {
       "seq": 129,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.370+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2524,7 +2524,7 @@
     },
     {
       "seq": 130,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.370+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2536,7 +2536,7 @@
     },
     {
       "seq": 131,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.370+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -2548,7 +2548,7 @@
     },
     {
       "seq": 132,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.371+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "QUALITY_POSITIONED",
@@ -2561,7 +2561,7 @@
     },
     {
       "seq": 133,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.371+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
@@ -2574,7 +2574,7 @@
     },
     {
       "seq": 134,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2590,7 +2590,7 @@
     },
     {
       "seq": 135,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2606,7 +2606,7 @@
     },
     {
       "seq": 136,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2622,7 +2622,7 @@
     },
     {
       "seq": 137,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -2633,7 +2633,7 @@
     },
     {
       "seq": 138,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "MARKET_CROSSCHECK",
@@ -2648,7 +2648,7 @@
     },
     {
       "seq": 139,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -2660,7 +2660,7 @@
     },
     {
       "seq": 140,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
@@ -2680,7 +2680,7 @@
     },
     {
       "seq": 141,
-      "ts": "2026-07-14T01:14:22.666+00:00",
+      "ts": "2026-07-14T16:50:37.372+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",
