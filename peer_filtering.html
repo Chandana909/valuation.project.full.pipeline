@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peer Filtering — Full Flow &amp; Detailed Checks</title>
+<style>
+:root{
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hairline:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s1d:#1c5cab; --s2:#1baf7a; --s3:#eda100;
+  --good:#0ca30c; --goodbg:#0ca30c14; --warnc:#8a6100; --warnbg:#fab21926;
+  --crit:#d03b3b; --critbg:#d03b3b14; --navy:#123a63;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.6}
+a{color:var(--s1);text-decoration:none} a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:30;background:var(--navy);color:#fff;padding:14px 26px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.top h1{font-size:16.5px;margin:0;font-weight:700}
+.top .ver{background:#fff;color:var(--navy);font-weight:800;border-radius:14px;padding:3px 12px;font-size:12.5px}
+nav{display:flex;gap:3px;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--grid);
+  padding:8px 20px;position:sticky;top:50px;z-index:29;overflow-x:auto}
+nav a{font-size:12.5px;color:var(--ink2);padding:5px 10px;border-radius:7px;white-space:nowrap}
+nav a:hover{background:#2a78d612;text-decoration:none;color:var(--s1)}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+section{background:var(--surface);border:1px solid var(--grid);border-radius:14px;
+  padding:24px 26px;margin:20px 0;box-shadow:0 1px 3px rgba(20,30,50,.04)}
+h2{font-size:19px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+h2 .n{background:var(--s1);color:#fff;width:27px;height:27px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.lead{color:var(--ink2);font-size:13.5px;margin:2px 0 16px}
+h3{font-size:14.5px;margin:20px 0 8px;color:var(--navy)}
+p{margin:8px 0}
+.explain{border-left:3px solid var(--grid);padding:3px 0 3px 13px;color:var(--ink2);font-size:13px;margin:10px 0}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:#2a78d614;
+  padding:1px 6px;border-radius:5px;color:var(--s1d)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+th,td{padding:8px 10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  border-bottom:2px solid var(--axis);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:#2a78d60a}
+tr.rej td{background:#d03b3b0a}
+tr.hl td{background:#2a78d612}
+.stagechip{display:inline-block;border-radius:8px;padding:3px 12px;font-size:11.5px;font-weight:700;margin-bottom:8px}
+.st-a{background:#86b6ef33;color:#123a63}.st-b{background:#d03b3b14;color:#8d2a2a}
+.st-c{background:#2a78d61a;color:#1c5cab}.st-d{background:#1baf7a1f;color:#0c5c3f}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:1px 9px}
+.tag-pass{background:#0ca30c14;color:#0a6b0a;border:1px solid #0ca30c55}
+.tag-fail{background:#d03b3b14;color:#8d2a2a;border:1px solid #d03b3b55}
+.tag-bl{background:#fab21926;color:#6b4e00;border:1px solid #fab21980}
+.tag-full{background:#2a78d61a;color:#1c5cab;border:1px solid #2a78d64d}
+.callout{border-radius:10px;padding:12px 16px;font-size:13px;margin:14px 0;border:1px solid}
+.co-good{background:var(--goodbg);border-color:#0ca30c55}
+.co-warn{background:var(--warnbg);border-color:#fab21980}
+.co-info{background:#2a78d60d;border-color:#2a78d64d}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g2,.g4{grid-template-columns:1fr 1fr}}
+.tile{border:1px solid var(--grid);border-radius:10px;padding:12px 14px;background:#fff}
+.tile .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.tile .v{font-size:20px;font-weight:800;margin-top:3px}
+.tile .s{color:var(--ink2);font-size:12px;margin-top:2px}
+.chart{margin:10px 0}
+.dlabel{fill:var(--ink2);font-size:11px}
+.dlabel.b{fill:var(--ink);font-weight:700}
+.wbar{display:inline-block;height:8px;border-radius:4px;background:#5598e7;vertical-align:middle}
+.wbar.full{background:var(--s1)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-top:8px}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1.5px}
+.flow{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step .rail{display:flex;flex-direction:column;align-items:center;flex:none;width:32px}
+.step .dot{width:28px;height:28px;border-radius:50%;background:var(--s1);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px}
+.step .dot.b{background:var(--crit)}
+.step .line{width:2px;flex:1;background:var(--axis);min-height:16px}
+.step .body{padding-bottom:18px;flex:1}
+.step .body h4{margin:2px 0 3px;font-size:14px}
+.step .body p{margin:0;font-size:12.5px;color:var(--ink2)}
+.formula{background:#0f1b2d;color:#dbe7f5;border-radius:10px;padding:12px 15px;margin:10px 0;
+  font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;white-space:pre}
+.formula .c{color:#7fd08a}.formula .k{color:#79b8ff}.formula .m{color:#f0b57a}
+.printhead{display:none}
+@media print{
+  @page{margin:14mm}
+  body{background:#fff;font-size:12px}
+  .top,nav{display:none!important}
+  .wrap{max-width:none;padding:0}
+  section{border-color:#bbb;break-inside:avoid}
+  .printhead{display:block;font-size:11px;color:#555;border-bottom:1px solid #999;padding-bottom:6px;margin-bottom:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <h1>Peer Filtering — Full Flow &amp; Detailed Checks</h1>
+  <span class="ver">v1.6.0</span>
+</div>
+<nav>
+  <a href="#summary">Summary</a>
+  <a href="#flow">End-to-end flow</a>
+  <a href="#stageA">Stage A</a>
+  <a href="#stageB">Stage B</a>
+  <a href="#stageC">Stage C</a>
+  <a href="#stageD">Stage D</a>
+  <a href="#worked">Worked example</a>
+  <a href="#contrast">Weighting contrast</a>
+  <a href="#notused">What is NOT used</a>
+</nav>
+
+<div class="wrap">
+<div class="printhead">DNB MSME Comparable Valuation · Peer Filtering — Full Flow &amp; Detailed Checks · methodology v1.6.0</div>
+
+<!-- ============================================================ SUMMARY -->
+<section id="summary">
+  <h2><span class="n">0</span>Summary</h2>
+  <p class="lead">How "every company in the database" becomes the 15 peers actually priced against the target —
+    every check, in the order it runs, with the exact rule and a real worked example.</p>
+  <div class="grid g4">
+    <div class="tile"><div class="k">Total controls</div><div class="v">14</div><div class="s">across 4 stages</div></div>
+    <div class="tile"><div class="k">Hard knock-outs</div><div class="v">3</div><div class="s">reject before any scoring</div></div>
+    <div class="tile"><div class="k">Similarity dimensions</div><div class="v">5</div><div class="s">weighted, sum to 1.00</div></div>
+    <div class="tile"><div class="k">Post-score controls</div><div class="v">4</div><div class="s">cut, weight, eligibility, trim</div></div>
+  </div>
+  <div class="callout co-info"><b>The one-line version:</b> a candidate first survives 3 yes/no knock-outs
+    (identical to being economically comparable at all), then earns a 0–1 score on 5 weighted dimensions, then the
+    top 15 scores are kept but <b>weighted by how close the match actually is</b> — so a borderline peer counts for
+    less than an exact one, rather than being treated as equal or thrown away.</div>
+</section>
+
+<!-- ============================================================ FLOW -->
+<section id="flow">
+  <h2><span class="n">1</span>End-to-end flow</h2>
+  <p class="lead">From the full candidate universe to the priced peer set, in order.</p>
+  <div class="flow">
+    <div class="step"><div class="rail"><div class="dot">1</div><div class="line"></div></div>
+      <div class="body"><h4>Universe load</h4><p>Every company in the database except the target itself is
+        fetched and normalized into a <code>Company</code> record, then classified into an
+        <code>EconomicProfile</code> (operating model, value chain, customer type).</p></div></div>
+    <div class="step"><div class="rail"><div class="dot b">2</div><div class="line"></div></div>
+      <div class="body"><h4>Stage B — hard knock-outs</h4><p>Each candidate is checked against 3 yes/no rules.
+        Any mismatch = immediate rejection, with a logged reason. No scoring happens for a rejected candidate.</p></div></div>
+    <div class="step"><div class="rail"><div class="dot">3</div><div class="line"></div></div>
+      <div class="body"><h4>Stage C — similarity scoring</h4><p>Survivors are scored 0–1 on 5 weighted dimensions.
+        Scores are summed and the list is sorted descending.</p></div></div>
+    <div class="step"><div class="rail"><div class="dot">4</div><div class="line"></div></div>
+      <div class="body"><h4>Stage D — post-scoring controls</h4><p>The top 15 scores are kept. Each peer's
+        contribution is then <b>weighted</b> by match quality, its multiple made eligible only if listed/market-priced,
+        and outlier multiples trimmed before the final valuation math runs.</p></div></div>
+    <div class="step"><div class="rail"><div class="dot">5</div></div>
+      <div class="body"><h4>Priced peer set</h4><p>What remains is the peer set — with a per-peer weight — that
+        the valuation engine actually uses.</p></div></div>
+  </div>
+  <div id="funnel" class="chart"></div>
+  <div class="legend" id="funnelLegend"></div>
+</section>
+
+<!-- ============================================================ STAGE A -->
+<section id="stageA">
+  <span class="stagechip st-a">STAGE A · ELIGIBILITY</span>
+  <h2><span class="n">2</span>Who even enters the pool</h2>
+  <p class="lead">Two checks shape the candidate pool before any comparison begins.</p>
+  <table><thead><tr><th>#</th><th>Check</th><th>Rule</th><th>Why</th></tr></thead><tbody>
+    <tr><td class="num">1</td><td><b>Geography</b></td>
+      <td class="mono">countryISOAlpha2Code = "IN"</td>
+      <td>The search is scoped to India at the D&amp;B <code>company_search</code> call — the universe never
+        contains a foreign company to begin with.</td></tr>
+    <tr><td class="num">2</td><td><b>Self-exclusion</b></td>
+      <td class="mono">peer.duns != target.duns</td>
+      <td>The target cannot be its own comparable. Removed before the universe loop runs.</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ============================================================ STAGE B -->
+<section id="stageB">
+  <span class="stagechip st-b">STAGE B · HARD KNOCK-OUTS</span>
+  <h2><span class="n">3</span>Reject before scoring</h2>
+  <p class="lead">Three checks, evaluated <b>in this order</b>, in <code>core/pipeline.py :: discover_peers</code>.
+    The first one that fails produces the rejection reason — the rest are not even checked once one fails.</p>
+  <p class="explain"><b>Why hard knock-outs at all, instead of just scoring everything?</b> A distributor, retailer,
+    or service firm is not a manufacturing comparable no matter how similar its revenue or margin look — comparing a
+    manufacturer to a wholesaler on "5% weaker scale-match" would be nonsensical, not just imprecise. These three
+    checks encode that judgment as a hard rule rather than a soft penalty.</p>
+  <table><thead><tr><th>#</th><th>Check</th><th>Passes when</th><th>Real rejection (Woodward run)</th></tr></thead><tbody>
+    <tr><td class="num">3</td><td><b>Operating model</b></td>
+      <td class="mono">peer.operating_model == target.operating_model</td>
+      <td><span class="tag tag-fail">✕ reject</span> Metro Wholesale Distributors — <i>distributor</i> vs
+        <i>manufacturer</i></td></tr>
+    <tr><td class="num">4</td><td><b>Value chain</b></td>
+      <td class="mono">peer.value_chain == target.value_chain</td>
+      <td><span class="tag tag-fail">✕ reject</span> Sterling Steel Billets — <i>raw_material</i> vs
+        <i>finished_goods</i> (it IS a manufacturer, but of the wrong value-chain position)</td></tr>
+    <tr><td class="num">5</td><td><b>Major industry</b></td>
+      <td class="mono">peer.major_industry == target.major_industry</td>
+      <td>D&amp;B major code: D = Manufacturing, F = Wholesale Trade, G = Retail Trade, I = Services</td></tr>
+  </tbody></table>
+  <h3>All 5 rejections from a real run (target: Woodward India Controls, manufacturer)</h3>
+  <table><thead><tr><th>Entity</th><th>Classified model</th><th>Value chain</th><th>Major</th><th>Failed on</th></tr></thead>
+  <tbody>
+    <tr class="rej"><td>Metro Wholesale Distributors</td><td>distributor</td><td>finished_goods</td><td>F</td>
+      <td><span class="tag tag-fail">operating_model</span></td></tr>
+    <tr class="rej"><td>Prime Industrial Traders</td><td>distributor</td><td>finished_goods</td><td>F</td>
+      <td><span class="tag tag-fail">operating_model</span></td></tr>
+    <tr class="rej"><td>Sterling Steel Billets</td><td>manufacturer</td><td>raw_material</td><td>D</td>
+      <td><span class="tag tag-fail">value_chain</span></td></tr>
+    <tr class="rej"><td>UrbanMart Retail Stores</td><td>retailer</td><td>finished_goods</td><td>G</td>
+      <td><span class="tag tag-fail">operating_model</span></td></tr>
+    <tr class="rej"><td>Insight Engineering Consulting</td><td>service</td><td>finished_goods</td><td>I</td>
+      <td><span class="tag tag-fail">operating_model</span></td></tr>
+  </tbody></table>
+  <div class="callout co-info">Note Sterling Steel Billets: its <code>operating_model</code> and
+    <code>major_industry</code> both match a manufacturer (it genuinely manufactures something) — it is caught by the
+    <b>value_chain</b> check specifically, because it makes raw material (steel billets) rather than finished goods.
+    This is exactly the case the 3-check order is designed to catch.</div>
+</section>
+
+<!-- ============================================================ STAGE C -->
+<section id="stageC">
+  <span class="stagechip st-c">STAGE C · WEIGHTED SIMILARITY SCORE</span>
+  <h2><span class="n">4</span>How survivors are ranked (0–1 score)</h2>
+  <p class="lead">Every candidate that survives Stage B gets a score — five dimensions, each independently rated
+    0–1 and multiplied by a fixed weight. The weights sum to exactly 1.00.</p>
+  <div class="formula"><span class="c"># dimension = raw(0..1) × weight</span>
+industry  <span class="m">0.40</span>  <span class="k">=</span> 1.0 if same NAICS 3-digit subsector
+                 0.6 if same D&amp;B Hoovers class (subsector differs)
+                 0.0 otherwise
+scale     <span class="m">0.20</span>  <span class="k">=</span> 1 / (1 + |log1p(rev_target) − log1p(rev_peer)|)
+margin    <span class="m">0.15</span>  <span class="k">=</span> max(0, 1 − 5 × |margin_target − margin_peer|)
+customer  <span class="m">0.15</span>  <span class="k">=</span> 1.0 if same customer_type (B2B/B2C/mixed) else 0.0
+export    <span class="m">0.10</span>  <span class="k">=</span> 1.0 if same exporter flag else 0.3
+                                                            <span class="c">(never 0 — a shared industry still counts)</span>
+<span class="k">score = Σ(dimension)</span>                                          <span class="c"># range 0.0 – 1.0</span></div>
+  <table><thead><tr><th>#</th><th>Dimension</th><th>Weight</th><th>What it checks</th></tr></thead><tbody>
+    <tr><td class="num">6</td><td><b>Industry proximity</b></td><td class="num">0.40</td>
+      <td>Same NAICS 3-digit subsector scores highest; falling back to the same broader Hoovers class scores partial
+        credit; otherwise zero. Heaviest weight — the single biggest driver of the final score.</td></tr>
+    <tr><td class="num">7</td><td><b>Scale proximity</b></td><td class="num">0.20</td>
+      <td>Revenue closeness on a <i>log</i> scale, so a ₹200 Cr vs ₹400 Cr gap counts more than a ₹5,000 Cr vs
+        ₹5,200 Cr gap of the same absolute size — matches how investors actually think about scale.</td></tr>
+    <tr><td class="num">8</td><td><b>Profitability proximity</b></td><td class="num">0.15</td>
+      <td>EBITDA-margin closeness; the 5× multiplier means a 20-point margin gap already zeroes this dimension out.</td></tr>
+    <tr><td class="num">9</td><td><b>Customer type</b></td><td class="num">0.15</td>
+      <td>B2B vs B2C vs mixed — binary match, no partial credit.</td></tr>
+    <tr><td class="num">10</td><td><b>Export profile</b></td><td class="num">0.10</td>
+      <td>Same exporter/domestic status; a mismatch still scores 0.3, not 0 — the lightest-weight, softest check.
+        <b>This is the only trade-related signal in the entire system.</b></td></tr>
+  </tbody></table>
+</section>
+
+<!-- ============================================================ STAGE D -->
+<section id="stageD">
+  <span class="stagechip st-d">STAGE D · POST-SCORING QUALITY CONTROLS</span>
+  <h2><span class="n">5</span>What happens to the ranked list before it reaches the math</h2>
+  <p class="lead">Being in the top 15 by score is not the end of the filtering — what happens next determines
+    how much each surviving peer actually influences the final number.</p>
+  <table><thead><tr><th>#</th><th>Control</th><th>Rule</th><th>Effect</th></tr></thead><tbody>
+    <tr><td class="num">11</td><td><b>Top-N cut</b></td>
+      <td class="mono">top_n = 15</td>
+      <td>Only the 15 highest-scoring survivors are carried into valuation (the full ranked list is still recorded,
+        for transparency — e.g. "15 of 53 ranked").</td></tr>
+    <tr><td class="num">12</td><td><b>Similarity weighting</b></td>
+      <td class="mono">weight = clamp((score−0.40)/(0.85−0.40), 0.15, 1.0)</td>
+      <td>Score ≥ 0.85 → full weight 1.0. Below that it tapers linearly to a 0.15 floor. A peer that barely made the
+        top 15 (say score 0.62) still counts, but at roughly half strength — it cannot swing the answer as much as an
+        exact match. <b>This is the direct answer to "what if there aren't enough exact peers":</b> the borderline
+        ones are automatically down-weighted rather than either excluded or treated as equal.</td></tr>
+    <tr><td class="num">13</td><td><b>Multiple eligibility</b></td>
+      <td class="mono">listed + market EV preferred; book capital-employed fallback if &lt;3 listed comps; driver &gt; 0</td>
+      <td>Only <i>listed</i> peers with an observable market enterprise value feed a true trading multiple. Unlisted
+        peers still inform the similarity scoring but contribute no multiple unless the book-value fallback triggers.</td></tr>
+    <tr><td class="num">14</td><td><b>Outlier trim</b></td>
+      <td class="mono">Tukey fence: drop values outside [Q1 − 1.5·IQR, Q3 + 1.5·IQR]</td>
+      <td>Applied per valuation method on the (weighted) peer multiples, before they are read at the target's quality
+        position. Removes freak multiples without a manual override.</td></tr>
+  </tbody></table>
+  <div class="callout co-good"><b>Net effect of Stage D:</b> the headline number is protected on two independent
+    fronts — weighting softens the influence of imperfect matches, and trimming removes statistical outliers. Neither
+    alone would be enough; together they mean a thin or imperfect peer set degrades the estimate's precision (wider
+    range, lower confidence) rather than silently distorting it.</div>
+</section>
+
+<!-- ============================================================ WORKED EXAMPLE -->
+<section id="worked">
+  <h2><span class="n">6</span>Worked example — target: Woodward India Controls</h2>
+  <p class="lead">The complete run, numbers as produced by the engine.</p>
+  <div class="grid g4">
+    <div class="tile"><div class="k">Universe (ex-target)</div><div class="v">58</div></div>
+    <div class="tile"><div class="k">Survive Stage B</div><div class="v">53</div><div class="s">5 rejected</div></div>
+    <div class="tile"><div class="k">Kept (top-N)</div><div class="v">15</div></div>
+    <div class="tile"><div class="k">Effective (weighted)</div><div class="v">15.00</div><div class="s">0 borderline</div></div>
+  </div>
+  <h3>Top &amp; bottom of the ranked peer set (all full-weight here — a well-populated cluster)</h3>
+  <table><thead><tr><th>Rank</th><th>Company</th><th class="num">Score</th><th>Weight</th><th>Match quality</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td>Bharat Turbine Controls</td><td class="num">0.966</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+    <tr><td class="num">2</td><td>Mather Platt Fluid</td><td class="num">0.950</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+    <tr><td class="num">3</td><td>Greaves Governor Systems</td><td class="num">0.948</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+    <tr><td>…</td><td class="mono">(11 more, all full weight)</td><td></td><td></td><td></td></tr>
+    <tr><td class="num">13</td><td>Sanghvi Engine Equipment</td><td class="num">0.869</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+    <tr><td class="num">14</td><td>Apex Engine Controls</td><td class="num">0.865</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+    <tr><td class="num">15</td><td>Shakti Engine Governors</td><td class="num">0.861</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+  </tbody></table>
+  <div class="callout co-good">All 15 score above 0.85, so every peer counts at full weight — this happens when
+    the sector is well-populated with close comparables, which is the ideal case.</div>
+</section>
+
+<!-- ============================================================ CONTRAST ============================================================ -->
+<section id="contrast">
+  <h2><span class="n">7</span>Contrast — target with a thinner peer set</h2>
+  <p class="lead">Target: <b>Jash Fluid Systems</b>. Here the sector is more mixed (pumps and valves both qualify but
+    aren't identical), so weighting actually does work — this is the "not enough exact peers" case in action.</p>
+  <div class="grid g4">
+    <div class="tile"><div class="k">Kept (top-N)</div><div class="v">15</div></div>
+    <div class="tile"><div class="k">Borderline (score &lt; 0.85)</div><div class="v" style="color:var(--warnc)">14</div></div>
+    <div class="tile"><div class="k">Effective (weighted)</div><div class="v" style="color:var(--s1)">10.68</div>
+      <div class="s">vs 15.00 nominal</div></div>
+    <div class="tile"><div class="k">Range impact</div><div class="v">±30pt</div><div class="s">widened (effective &lt; 10)</div></div>
+  </div>
+  <table><thead><tr><th>Rank</th><th>Company</th><th class="num">Score</th><th>Weight</th><th>Match quality</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td>Leader Valves Industrial</td><td class="num">0.859</td>
+      <td><span class="wbar full" style="width:46px"></span> 1.00</td><td><span class="tag tag-full">full match</span></td></tr>
+    <tr><td class="num">2</td><td>Audco Valves India</td><td class="num">0.788</td>
+      <td><span class="wbar" style="width:40px"></span> 0.86</td><td><span class="tag tag-bl">borderline</span></td></tr>
+    <tr><td class="num">5</td><td>IVC Valves Machinery</td><td class="num">0.756</td>
+      <td><span class="wbar" style="width:36px"></span> 0.79</td><td><span class="tag tag-bl">borderline</span></td></tr>
+    <tr><td class="num">7</td><td>Kirloskar Brothers Pumps</td><td class="num">0.729</td>
+      <td><span class="wbar" style="width:34px"></span> 0.73</td><td><span class="tag tag-bl">borderline</span></td></tr>
+    <tr><td class="num">9</td><td>KSB Pumps India</td><td class="num">0.688</td>
+      <td><span class="wbar" style="width:29px"></span> 0.64</td><td><span class="tag tag-bl">borderline</span></td></tr>
+    <tr><td class="num">12</td><td>Shakti Pumps Industrial</td><td class="num">0.681</td>
+      <td><span class="wbar" style="width:29px"></span> 0.62</td><td><span class="tag tag-bl">borderline</span></td></tr>
+    <tr><td class="num">15</td><td>Aqua Pump Industries</td><td class="num">0.619</td>
+      <td><span class="wbar" style="width:23px"></span> 0.49</td><td><span class="tag tag-bl">borderline</span></td></tr>
+  </tbody></table>
+  <div class="callout co-warn"><b>This is the mechanism the user asked about, in action.</b> 14 of the 15 kept peers
+    are borderline (score under the 0.85 full-match line). None are excluded — they still inform the answer — but
+    the weakest (Aqua Pump Industries, score 0.619) counts at only <b>0.49</b> of a full peer's influence.
+    The <b>effective peer count drops from a nominal 15 to 10.68</b>, which automatically:
+    <br>1. widens the valuation range (±30pt positioning band instead of ±20pt), and
+    <br>2. lowers the confidence score's peer-coverage component —
+    so the output stays honest about how exact the match actually was, instead of quietly reporting the same
+    precision as a perfect peer set.</div>
+</section>
+
+<!-- ============================================================ NOT USED -->
+<section id="notused">
+  <h2><span class="n">8</span>What is explicitly NOT used</h2>
+  <p class="lead">To prevent wasted effort or false assumptions about the model.</p>
+  <div class="callout co-info">
+    <b>Import data</b> — not used. Not present in the D&amp;B financial payload the engine reads.<br>
+    <b>Per-capita metrics</b> — not used. No population/regional data enters the pipeline at all.<br>
+    <b>The only trade-related signal</b> is the <b>export flag</b> (filter #10, weight 0.10, soft mismatch = 0.3
+    not 0). That is the complete list — nothing else related to trade or geography beyond the India-only search
+    scope (filter #1) feeds the filtering or scoring.
+  </div>
+</section>
+
+</div>
+<script>
+(function(){
+  const el=document.getElementById('funnel'); if(!el) return;
+  const stages=[["Universe (ex-target)",58,"#86b6ef"],["Survive Stage B knock-outs",53,"#5598e7"],
+                ["Kept — top 15 by score",15,"#2a78d6"],["Effective after weighting",15.0,"#1c5cab"]];
+  const W=980,BH=28,GAP=13,L=6,R=170,H=(BH+GAP)*stages.length+6;
+  const maxv=stages[0][1];
+  let g="";
+  stages.forEach((s,i)=>{
+    const y=4+i*(BH+GAP), w=Math.max(10,(W-L-R)*(s[1]/maxv));
+    g+=`<rect x="${L}" y="${y}" width="${w}" height="${BH}" rx="5" fill="${s[2]}"/>
+      <text class="dlabel b" x="${L+w+10}" y="${y+BH/2+4}">${s[1]%1?s[1].toFixed(2):s[1]}</text>
+      <text x="${L+12}" y="${y+BH/2+4}" style="fill:#fff;font-size:12.5px;font-weight:600">${s[0]}</text>`;
+  });
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Peer filter funnel">${g}</svg>`;
+  document.getElementById('funnelLegend').innerHTML=
+    `<span style="color:var(--muted)">Worked example: Woodward India Controls run · counts left→right show the funnel narrowing</span>`;
+})();
+</script>
+</body>
+</html>
