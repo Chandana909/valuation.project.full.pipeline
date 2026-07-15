@@ -56,6 +56,8 @@ class Company:
     market_cap_cr: Optional[float] = None  # market capitalisation (listed only)
     market_ev_cr: Optional[float] = None   # market enterprise value (listed only)
     listing_status: str = "unlisted"       # "listed" | "unlisted"
+    debt_known: bool = True                # False when the source omitted borrowings
+    cash_known: bool = True                # False when the source omitted cash
     directors: List[str] = field(default_factory=list)
 
 
@@ -259,7 +261,9 @@ def normalize_company(info_resp, fin_resp, mgmt_resp=None) -> Company:
         capital_employed_cr=capital_employed_cr, net_worth_cr=net_worth_cr,
         total_assets_cr=total_assets_cr, working_capital_cr=working_capital_cr,
         market_cap_cr=market_cap_cr, market_ev_cr=market_ev_cr,
-        listing_status=listing_status, directors=directors,
+        listing_status=listing_status,
+        debt_known=(debt_cr is not None), cash_known=(cash_cr is not None),
+        directors=directors,
     )
 
 
@@ -410,6 +414,14 @@ def validate_company(company: Company, audit=None) -> DataQuality:
     add("cin", cin_ok, "LOW",
         "CIN present" if cin_ok else "no CIN on record", 0.01)
 
+    add("debt", company.debt_known, "MEDIUM",
+        "borrowings present" if company.debt_known
+        else "borrowings absent from source (net debt assumes 0)", 0.04)
+
+    add("cash", company.cash_known, "LOW",
+        "cash & liquid assets present" if company.cash_known
+        else "cash absent from source (net debt assumes 0)", 0.03)
+
     score = max(0.0, round(1.0 - penalty, 3))
     if score >= 0.85:
         grade = "A"
@@ -528,7 +540,10 @@ def discover_peers(target: Company, tprofile: EconomicProfile, universe, audit=N
                 "value_chain": pprof.value_chain,
                 "major_industry": peer.major_industry,
             })
-            if audit is not None:
+            # On a large real universe thousands of candidates are rejected — logging
+            # each one would drown the audit trail, so detail the first 20 and roll
+            # the rest into one summary DECISION (counts by reason kind, below).
+            if audit is not None and len(rejected) <= 20:
                 audit.decision("discover", "PEER_REJECTED",
                                f"reject {peer.name}: {reason}",
                                {"duns": peer.duns, "reason": reason})
@@ -546,6 +561,16 @@ def discover_peers(target: Company, tprofile: EconomicProfile, universe, audit=N
 
     ranked.sort(key=lambda r: r["score"], reverse=True)
     if audit is not None:
+        if len(rejected) > 20:
+            by_kind = {}
+            for r in rejected:
+                kind = r["reason"].split(" mismatch")[0]
+                by_kind[kind] = by_kind.get(kind, 0) + 1
+            audit.decision("discover", "PEERS_REJECTED_SUMMARY",
+                           f"{len(rejected)} candidates rejected in total "
+                           f"(first 20 detailed above); by check: " +
+                           ", ".join(f"{k} {v}" for k, v in sorted(by_kind.items())),
+                           {"total": len(rejected), "by_check": by_kind})
         audit.info("discover", "PEERS_RANKED",
                    f"{len(ranked)} peers passed the mismatch filter and were ranked; "
                    f"{len(rejected)} rejected",
@@ -704,6 +729,16 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
 
     # Net debt bridges enterprise value to equity value.
     net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
+    if not (target.debt_known and target.cash_known):
+        warnings.append(
+            "net debt unknown (borrowings/cash absent from the data source): equity "
+            "assumes net debt = 0 — supply borrowings & cash to refine the bridge")
+        if audit is not None:
+            audit.warn("value", "NET_DEBT_UNKNOWN",
+                       "borrowings/cash absent from source; EV→equity bridge assumes "
+                       "net debt = 0",
+                       {"debt_known": target.debt_known,
+                        "cash_known": target.cash_known})
     # DLOM — Discount for Lack of Marketability — applies ONLY to a PRIVATE target,
     # because it is priced off *listed* peers whose equity is liquid. A listed target
     # is itself liquid, so no DLOM. For private targets the DLOM is size-scaled.

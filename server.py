@@ -27,28 +27,62 @@ except Exception:
     pass
 
 from mock_api import MockDnBClient
-from run import run_pipeline
+from run import run_pipeline, make_client, get_universe
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 UI_PATH = os.path.join(BASE, "ui", "index.html")
 PORT = int(os.environ.get("PORT", "8733"))
 
-_lock = threading.Lock()
-_cache = {"validation": None, "robustness": None, "companies": None}
+# ---- data source: real (realdata.db) when available, else mock -------------
+DATA_SOURCE = os.environ.get("DATA_SOURCE")
+if "--data" in sys.argv:
+    DATA_SOURCE = sys.argv[sys.argv.index("--data") + 1]
+if DATA_SOURCE is None:
+    DATA_SOURCE = "real" if os.path.exists(os.path.join(BASE, "realdata.db")) else "mock"
+
+# RLock: _companies() calls _client() while holding the lock — a plain Lock
+# would self-deadlock (observed: whole server froze on the first page load).
+_lock = threading.RLock()
+_cache = {"validation": None, "robustness": None, "companies": None,
+          "client": None, "warm": False}
+
+
+def _client():
+    with _lock:
+        if _cache["client"] is None:
+            _cache["client"] = make_client(DATA_SOURCE)
+    return _cache["client"]
+
+
+def _warm():
+    """Build the (cached) universe once in the background so the first user
+    valuation doesn't pay the 14k-company normalization cost."""
+    try:
+        get_universe(_client())
+        _cache["warm"] = True
+        print(f"[warm] universe ready ({DATA_SOURCE})", flush=True)
+    except Exception as e:                       # pragma: no cover
+        print(f"[warm] failed: {e}", flush=True)
 
 
 def _companies():
-    """Sorted list of company names in the universe (for the search box)."""
+    """Company-name list for the search box (mock: full 59; real: count only —
+    the UI uses /api/suggest for the 14k-name universe)."""
     with _lock:
         if _cache["companies"] is None:
-            client = MockDnBClient()
-            names = []
-            for duns in client.universe_duns():
-                org = client.request("company_information", {"duns": duns})
-                nm = org.get("data", {}).get("organization", {}).get("primaryName")
-                if nm:
-                    names.append(nm)
-            _cache["companies"] = sorted(names)
+            client = _client()
+            if DATA_SOURCE == "real":
+                _cache["companies"] = {"count": len(client.universe_duns()),
+                                       "companies": []}
+            else:
+                names = []
+                for duns in client.universe_duns():
+                    org = client.request("company_information", {"duns": duns})
+                    nm = org.get("data", {}).get("organization", {}).get("primaryName")
+                    if nm:
+                        names.append(nm)
+                _cache["companies"] = {"count": len(names),
+                                       "companies": sorted(names)}
     return _cache["companies"]
 
 
@@ -109,8 +143,26 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/health":
             return self._json({"ok": True})
 
+        if path == "/api/status":
+            return self._json({"data_source": DATA_SOURCE,
+                               "data_source_label": getattr(
+                                   _client(), "DATA_SOURCE_LABEL", DATA_SOURCE),
+                               "universe": len(_client().universe_duns()),
+                               "warm": _cache["warm"]})
+
         if path == "/api/companies":
-            return self._json({"companies": _companies()})
+            return self._json(_companies())
+
+        if path == "/api/suggest":
+            qs = parse_qs(parsed.query)
+            q = unquote(qs.get("q", [""])[0])
+            client = _client()
+            if hasattr(client, "search_names"):
+                return self._json({"suggestions": client.search_names(q, limit=15)})
+            comp = _companies().get("companies", [])
+            ql = q.strip().lower()
+            return self._json({"suggestions":
+                               [n for n in comp if ql in n.lower()][:15]})
 
         if path == "/api/value":
             qs = parse_qs(parsed.query)
@@ -118,7 +170,7 @@ class Handler(BaseHTTPRequestHandler):
             if not name:
                 return self._json({"error": "missing ?name="}, 400)
             try:
-                result, _ctx = run_pipeline(name)
+                result, _ctx = run_pipeline(name, client=_client())
                 if result.get("valuation"):
                     result["validation"] = _validation()
                 return self._json(result)
@@ -137,6 +189,8 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"valuation UI on http://localhost:{PORT}  (Ctrl+C to stop)")
+    print(f"data source: {DATA_SOURCE}")
+    threading.Thread(target=_warm, daemon=True).start()
     srv.serve_forever()
 
 

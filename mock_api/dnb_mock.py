@@ -378,13 +378,19 @@ def _build_universe(seed_offset: int = 0) -> dict:
 _UNIVERSE = _build_universe()
 
 
+_SEED_OFFSET = 0
+
+
 def rebuild_universe(seed_offset: int = 0) -> None:
     """VALIDATION-ONLY helper: swap the module-level universe for one built with
     shifted seeds. validate.py uses this to re-run the calibration backtest on
     freshly drawn universes (seed-robustness). Always restore with
-    rebuild_universe(0) afterwards — offset 0 is the canonical universe."""
-    global _UNIVERSE
+    rebuild_universe(0) afterwards — offset 0 is the canonical universe.
+    _SEED_OFFSET feeds MockDnBClient.cache_key so run.py's universe cache is
+    invalidated whenever the universe actually changes."""
+    global _UNIVERSE, _SEED_OFFSET
     _UNIVERSE = _build_universe(seed_offset)
+    _SEED_OFFSET = seed_offset
 
 
 # ---------------------------------------------------------------------------
@@ -559,8 +565,17 @@ class MockDnBClient:
     Nothing else in the codebase changes: response paths are identical.
     """
 
+    DATA_SOURCE_LABEL = "Synthetic mock universe (59 companies, real D&B schema)"
+
     def __init__(self, audit=None):
         self._audit = audit
+
+    def set_audit(self, audit):
+        self._audit = audit
+
+    @property
+    def cache_key(self):
+        return f"mock:59:seed{_SEED_OFFSET}"
 
     def _log(self, datasource, detail, data=None):
         if self._audit is None:

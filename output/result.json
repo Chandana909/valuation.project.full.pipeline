@@ -1,10 +1,10 @@
 {
   "meta": {
     "engine": "dnb-msme-comparable-valuation",
-    "methodology_version": "1.6.0",
+    "methodology_version": "2.0.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-14T16:50:37+00:00",
-    "data_source": "Dun & Bradstreet (dnbhoovers)",
+    "run_timestamp": "2026-07-15T17:55:07+00:00",
+    "data_source": "Synthetic mock universe (59 companies, real D&B schema)",
     "currency": "INR",
     "reporting_units": "Crore",
     "source_units": "Thousand",
@@ -48,6 +48,8 @@
     "market_cap_cr": 10259.19,
     "market_ev_cr": 11589.57,
     "listing_status": "listed",
+    "debt_known": true,
+    "cash_known": true,
     "directors": [
       "Director Woodward A",
       "Director Woodward B",
@@ -62,6 +64,8 @@
     "major_industry": "D",
     "confidence": 0.95
   },
+  "target_lineage": {},
+  "source_caveats": [],
   "data_quality": {
     "score": 1.0,
     "grade": "A",
@@ -113,6 +117,18 @@
         "status": "pass",
         "level": "LOW",
         "detail": "CIN present"
+      },
+      {
+        "field": "debt",
+        "status": "pass",
+        "level": "MEDIUM",
+        "detail": "borrowings present"
+      },
+      {
+        "field": "cash",
+        "status": "pass",
+        "level": "LOW",
+        "detail": "cash & liquid assets present"
       }
     ],
     "missing_fields": [],
@@ -699,6 +715,7 @@
       "major_industry": "I"
     }
   ],
+  "rejected_total": 5,
   "valuation": {
     "headline_method": "EV/EBITDA",
     "methods": [
@@ -1334,18 +1351,19 @@
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-14T16:50:37.358+00:00",
+      "ts": "2026-07-15T17:55:07.715+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
       "detail": "pipeline start for query 'Woodward'",
       "data": {
-        "methodology_version": "1.6.0"
+        "methodology_version": "2.0.0",
+        "data_source": "Synthetic mock universe (59 companies, real D&B schema)"
       }
     },
     {
       "seq": 2,
-      "ts": "2026-07-14T16:50:37.358+00:00",
+      "ts": "2026-07-15T17:55:07.715+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
@@ -1354,7 +1372,7 @@
     },
     {
       "seq": 3,
-      "ts": "2026-07-14T16:50:37.359+00:00",
+      "ts": "2026-07-15T17:55:07.715+00:00",
       "stage": "resolve",
       "level": "DECISION",
       "code": "TARGET_RESOLVED",
@@ -1367,7 +1385,7 @@
     },
     {
       "seq": 4,
-      "ts": "2026-07-14T16:50:37.359+00:00",
+      "ts": "2026-07-15T17:55:07.715+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1376,7 +1394,7 @@
     },
     {
       "seq": 5,
-      "ts": "2026-07-14T16:50:37.359+00:00",
+      "ts": "2026-07-15T17:55:07.715+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1385,7 +1403,7 @@
     },
     {
       "seq": 6,
-      "ts": "2026-07-14T16:50:37.359+00:00",
+      "ts": "2026-07-15T17:55:07.715+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_MANAGEMENT",
@@ -1394,7 +1412,7 @@
     },
     {
       "seq": 7,
-      "ts": "2026-07-14T16:50:37.359+00:00",
+      "ts": "2026-07-15T17:55:07.716+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
@@ -1407,7 +1425,7 @@
     },
     {
       "seq": 8,
-      "ts": "2026-07-14T16:50:37.359+00:00",
+      "ts": "2026-07-15T17:55:07.716+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1421,1062 +1439,19 @@
     },
     {
       "seq": 9,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00020000 found=True",
-      "data": null
-    },
-    {
-      "seq": 10,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00020000 found=True",
-      "data": null
-    },
-    {
-      "seq": 11,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00030000 found=True",
-      "data": null
-    },
-    {
-      "seq": 12,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00030000 found=True",
-      "data": null
-    },
-    {
-      "seq": 13,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00040000 found=True",
-      "data": null
-    },
-    {
-      "seq": 14,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00040000 found=True",
-      "data": null
-    },
-    {
-      "seq": 15,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00050000 found=True",
-      "data": null
-    },
-    {
-      "seq": 16,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00050000 found=True",
-      "data": null
-    },
-    {
-      "seq": 17,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00060000 found=True",
-      "data": null
-    },
-    {
-      "seq": 18,
-      "ts": "2026-07-14T16:50:37.359+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00060000 found=True",
-      "data": null
-    },
-    {
-      "seq": 19,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00070000 found=True",
-      "data": null
-    },
-    {
-      "seq": 20,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00070000 found=True",
-      "data": null
-    },
-    {
-      "seq": 21,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00080000 found=True",
-      "data": null
-    },
-    {
-      "seq": 22,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00080000 found=True",
-      "data": null
-    },
-    {
-      "seq": 23,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00090000 found=True",
-      "data": null
-    },
-    {
-      "seq": 24,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00090000 found=True",
-      "data": null
-    },
-    {
-      "seq": 25,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00100000 found=True",
-      "data": null
-    },
-    {
-      "seq": 26,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00100000 found=True",
-      "data": null
-    },
-    {
-      "seq": 27,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00110000 found=True",
-      "data": null
-    },
-    {
-      "seq": 28,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00110000 found=True",
-      "data": null
-    },
-    {
-      "seq": 29,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00120000 found=True",
-      "data": null
-    },
-    {
-      "seq": 30,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00120000 found=True",
-      "data": null
-    },
-    {
-      "seq": 31,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00130000 found=True",
-      "data": null
-    },
-    {
-      "seq": 32,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00130000 found=True",
-      "data": null
-    },
-    {
-      "seq": 33,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00140000 found=True",
-      "data": null
-    },
-    {
-      "seq": 34,
-      "ts": "2026-07-14T16:50:37.360+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00140000 found=True",
-      "data": null
-    },
-    {
-      "seq": 35,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00150000 found=True",
-      "data": null
-    },
-    {
-      "seq": 36,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00150000 found=True",
-      "data": null
-    },
-    {
-      "seq": 37,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00160000 found=True",
-      "data": null
-    },
-    {
-      "seq": 38,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00160000 found=True",
-      "data": null
-    },
-    {
-      "seq": 39,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00170000 found=True",
-      "data": null
-    },
-    {
-      "seq": 40,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00170000 found=True",
-      "data": null
-    },
-    {
-      "seq": 41,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00180000 found=True",
-      "data": null
-    },
-    {
-      "seq": 42,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00180000 found=True",
-      "data": null
-    },
-    {
-      "seq": 43,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00190000 found=True",
-      "data": null
-    },
-    {
-      "seq": 44,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00190000 found=True",
-      "data": null
-    },
-    {
-      "seq": 45,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00200000 found=True",
-      "data": null
-    },
-    {
-      "seq": 46,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00200000 found=True",
-      "data": null
-    },
-    {
-      "seq": 47,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00210000 found=True",
-      "data": null
-    },
-    {
-      "seq": 48,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00210000 found=True",
-      "data": null
-    },
-    {
-      "seq": 49,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00220000 found=True",
-      "data": null
-    },
-    {
-      "seq": 50,
-      "ts": "2026-07-14T16:50:37.361+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00220000 found=True",
-      "data": null
-    },
-    {
-      "seq": 51,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00230000 found=True",
-      "data": null
-    },
-    {
-      "seq": 52,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00230000 found=True",
-      "data": null
-    },
-    {
-      "seq": 53,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00240000 found=True",
-      "data": null
-    },
-    {
-      "seq": 54,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00240000 found=True",
-      "data": null
-    },
-    {
-      "seq": 55,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00250000 found=True",
-      "data": null
-    },
-    {
-      "seq": 56,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00250000 found=True",
-      "data": null
-    },
-    {
-      "seq": 57,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00260000 found=True",
-      "data": null
-    },
-    {
-      "seq": 58,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00260000 found=True",
-      "data": null
-    },
-    {
-      "seq": 59,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00270000 found=True",
-      "data": null
-    },
-    {
-      "seq": 60,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00270000 found=True",
-      "data": null
-    },
-    {
-      "seq": 61,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00280000 found=True",
-      "data": null
-    },
-    {
-      "seq": 62,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00280000 found=True",
-      "data": null
-    },
-    {
-      "seq": 63,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00290000 found=True",
-      "data": null
-    },
-    {
-      "seq": 64,
-      "ts": "2026-07-14T16:50:37.362+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00290000 found=True",
-      "data": null
-    },
-    {
-      "seq": 65,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00300000 found=True",
-      "data": null
-    },
-    {
-      "seq": 66,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00300000 found=True",
-      "data": null
-    },
-    {
-      "seq": 67,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00310000 found=True",
-      "data": null
-    },
-    {
-      "seq": 68,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00310000 found=True",
-      "data": null
-    },
-    {
-      "seq": 69,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00320000 found=True",
-      "data": null
-    },
-    {
-      "seq": 70,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00320000 found=True",
-      "data": null
-    },
-    {
-      "seq": 71,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00330000 found=True",
-      "data": null
-    },
-    {
-      "seq": 72,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00330000 found=True",
-      "data": null
-    },
-    {
-      "seq": 73,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00340000 found=True",
-      "data": null
-    },
-    {
-      "seq": 74,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00340000 found=True",
-      "data": null
-    },
-    {
-      "seq": 75,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00350000 found=True",
-      "data": null
-    },
-    {
-      "seq": 76,
-      "ts": "2026-07-14T16:50:37.363+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00350000 found=True",
-      "data": null
-    },
-    {
-      "seq": 77,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INB00360000 found=True",
-      "data": null
-    },
-    {
-      "seq": 78,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INB00360000 found=True",
-      "data": null
-    },
-    {
-      "seq": 79,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00370000 found=True",
-      "data": null
-    },
-    {
-      "seq": 80,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00370000 found=True",
-      "data": null
-    },
-    {
-      "seq": 81,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00380000 found=True",
-      "data": null
-    },
-    {
-      "seq": 82,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00380000 found=True",
-      "data": null
-    },
-    {
-      "seq": 83,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00390000 found=True",
-      "data": null
-    },
-    {
-      "seq": 84,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00390000 found=True",
-      "data": null
-    },
-    {
-      "seq": 85,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00400000 found=True",
-      "data": null
-    },
-    {
-      "seq": 86,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00400000 found=True",
-      "data": null
-    },
-    {
-      "seq": 87,
-      "ts": "2026-07-14T16:50:37.364+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00410000 found=True",
-      "data": null
-    },
-    {
-      "seq": 88,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00410000 found=True",
-      "data": null
-    },
-    {
-      "seq": 89,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00420000 found=True",
-      "data": null
-    },
-    {
-      "seq": 90,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00420000 found=True",
-      "data": null
-    },
-    {
-      "seq": 91,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00430000 found=True",
-      "data": null
-    },
-    {
-      "seq": 92,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00430000 found=True",
-      "data": null
-    },
-    {
-      "seq": 93,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00440000 found=True",
-      "data": null
-    },
-    {
-      "seq": 94,
-      "ts": "2026-07-14T16:50:37.365+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00440000 found=True",
-      "data": null
-    },
-    {
-      "seq": 95,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00450000 found=True",
-      "data": null
-    },
-    {
-      "seq": 96,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00450000 found=True",
-      "data": null
-    },
-    {
-      "seq": 97,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00460000 found=True",
-      "data": null
-    },
-    {
-      "seq": 98,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00460000 found=True",
-      "data": null
-    },
-    {
-      "seq": 99,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00470000 found=True",
-      "data": null
-    },
-    {
-      "seq": 100,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00470000 found=True",
-      "data": null
-    },
-    {
-      "seq": 101,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00480000 found=True",
-      "data": null
-    },
-    {
-      "seq": 102,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00480000 found=True",
-      "data": null
-    },
-    {
-      "seq": 103,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00490000 found=True",
-      "data": null
-    },
-    {
-      "seq": 104,
-      "ts": "2026-07-14T16:50:37.366+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00490000 found=True",
-      "data": null
-    },
-    {
-      "seq": 105,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00500000 found=True",
-      "data": null
-    },
-    {
-      "seq": 106,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00500000 found=True",
-      "data": null
-    },
-    {
-      "seq": 107,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00510000 found=True",
-      "data": null
-    },
-    {
-      "seq": 108,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00510000 found=True",
-      "data": null
-    },
-    {
-      "seq": 109,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00520000 found=True",
-      "data": null
-    },
-    {
-      "seq": 110,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00520000 found=True",
-      "data": null
-    },
-    {
-      "seq": 111,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00530000 found=True",
-      "data": null
-    },
-    {
-      "seq": 112,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00530000 found=True",
-      "data": null
-    },
-    {
-      "seq": 113,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INC00540000 found=True",
-      "data": null
-    },
-    {
-      "seq": 114,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INC00540000 found=True",
-      "data": null
-    },
-    {
-      "seq": 115,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INW00550000 found=True",
-      "data": null
-    },
-    {
-      "seq": 116,
-      "ts": "2026-07-14T16:50:37.367+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00550000 found=True",
-      "data": null
-    },
-    {
-      "seq": 117,
-      "ts": "2026-07-14T16:50:37.368+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INW00560000 found=True",
-      "data": null
-    },
-    {
-      "seq": 118,
-      "ts": "2026-07-14T16:50:37.368+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00560000 found=True",
-      "data": null
-    },
-    {
-      "seq": 119,
-      "ts": "2026-07-14T16:50:37.368+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INW00570000 found=True",
-      "data": null
-    },
-    {
-      "seq": 120,
-      "ts": "2026-07-14T16:50:37.368+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00570000 found=True",
-      "data": null
-    },
-    {
-      "seq": 121,
-      "ts": "2026-07-14T16:50:37.368+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INW00580000 found=True",
-      "data": null
-    },
-    {
-      "seq": 122,
-      "ts": "2026-07-14T16:50:37.368+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00580000 found=True",
-      "data": null
-    },
-    {
-      "seq": 123,
-      "ts": "2026-07-14T16:50:37.369+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INW00590000 found=True",
-      "data": null
-    },
-    {
-      "seq": 124,
-      "ts": "2026-07-14T16:50:37.369+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INW00590000 found=True",
-      "data": null
-    },
-    {
-      "seq": 125,
-      "ts": "2026-07-14T16:50:37.369+00:00",
+      "ts": "2026-07-15T17:55:07.722+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
-      "detail": "loaded 58 candidate companies from D&B",
+      "detail": "loaded 59 candidate companies (audit-muted bulk build; per-company provenance available via lineage)",
       "data": {
-        "count": 58
+        "count": 59,
+        "cache_key": "mock:59:seed0"
       }
     },
     {
-      "seq": 126,
-      "ts": "2026-07-14T16:50:37.370+00:00",
+      "seq": 10,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2487,8 +1462,8 @@
       }
     },
     {
-      "seq": 127,
-      "ts": "2026-07-14T16:50:37.370+00:00",
+      "seq": 11,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2499,8 +1474,8 @@
       }
     },
     {
-      "seq": 128,
-      "ts": "2026-07-14T16:50:37.370+00:00",
+      "seq": 12,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2511,8 +1486,8 @@
       }
     },
     {
-      "seq": 129,
-      "ts": "2026-07-14T16:50:37.370+00:00",
+      "seq": 13,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2523,8 +1498,8 @@
       }
     },
     {
-      "seq": 130,
-      "ts": "2026-07-14T16:50:37.370+00:00",
+      "seq": 14,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2535,8 +1510,8 @@
       }
     },
     {
-      "seq": 131,
-      "ts": "2026-07-14T16:50:37.370+00:00",
+      "seq": 15,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -2547,8 +1522,8 @@
       }
     },
     {
-      "seq": 132,
-      "ts": "2026-07-14T16:50:37.371+00:00",
+      "seq": 16,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "QUALITY_POSITIONED",
@@ -2560,8 +1535,8 @@
       }
     },
     {
-      "seq": 133,
-      "ts": "2026-07-14T16:50:37.371+00:00",
+      "seq": 17,
+      "ts": "2026-07-15T17:55:07.723+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
@@ -2573,8 +1548,8 @@
       }
     },
     {
-      "seq": 134,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 18,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2589,8 +1564,8 @@
       }
     },
     {
-      "seq": 135,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 19,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2605,8 +1580,8 @@
       }
     },
     {
-      "seq": 136,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 20,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2621,8 +1596,8 @@
       }
     },
     {
-      "seq": 137,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 21,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -2632,8 +1607,8 @@
       }
     },
     {
-      "seq": 138,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 22,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "MARKET_CROSSCHECK",
@@ -2647,8 +1622,8 @@
       }
     },
     {
-      "seq": 139,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 23,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -2659,8 +1634,8 @@
       }
     },
     {
-      "seq": 140,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 24,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
@@ -2679,8 +1654,8 @@
       }
     },
     {
-      "seq": 141,
-      "ts": "2026-07-14T16:50:37.372+00:00",
+      "seq": 25,
+      "ts": "2026-07-15T17:55:07.724+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",

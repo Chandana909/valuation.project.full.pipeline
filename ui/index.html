@@ -212,10 +212,27 @@ function tipMove(ev){tip.style.left=(ev.clientX+14)+"px";tip.style.top=(ev.clien
 function tipOff(){tip.style.display="none";}
 
 /* ---------------- boot ---------------- */
+let STATUS=null;
+fetch("/api/status").then(r=>r.json()).then(j=>{STATUS=j;
+  $("#q").placeholder=`Search ${Number(j.universe).toLocaleString("en-IN")} companies… `+
+    (j.data_source==="real"?"e.g. 20 Microns":"e.g. Woodward");
+}).catch(()=>{});
 fetch("/api/companies").then(r=>r.json()).then(j=>{
   $("#companies").innerHTML=(j.companies||[]).map(c=>`<option value="${esc(c)}">`).join("");
 });
 $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")runValuation();});
+/* server-side suggestions — a 14k-name universe can't ship as a static datalist */
+let _sugTimer=null;
+$("#q").addEventListener("input",()=>{
+  if(!STATUS||STATUS.data_source!=="real")return;
+  clearTimeout(_sugTimer);
+  const q=$("#q").value.trim(); if(q.length<2)return;
+  _sugTimer=setTimeout(async()=>{
+    try{const j=await(await fetch("/api/suggest?q="+encodeURIComponent(q))).json();
+      $("#companies").innerHTML=(j.suggestions||[]).map(c=>`<option value="${esc(c)}">`).join("");
+    }catch(e){}
+  },160);
+});
 
 /* ---------------- run ---------------- */
 async function runValuation(){
@@ -287,6 +304,8 @@ function cover(){
       ${DATA.confidence?confBadge():""}
       ${dq.grade?`<span class="badge ${dqcls}">◆ Data quality ${esc(dq.grade)} · ${num(dq.score,2)}</span>`:""}
       <span class="badge b-info">${esc((meta.status||"").toUpperCase())}</span>
+      <span class="badge ${(meta.data_source||"").indexOf("real")>=0?"b-good":"b-warn"}">🗄 ${
+        (meta.data_source||"").indexOf("real")>=0?"REAL DATA":"SYNTHETIC MOCK"}</span>
     </div>
   </div>`;
 }
@@ -339,6 +358,24 @@ function overviewTab(){
         (<b>${xc.delta_pct>0?"+":""}${num(xc.delta_pct,1)}%</b>). Positioning never sees the market cap — this is independent validation.</div>`:""}
       ${val.warnings.map(w=>`<div class="callout co-warn">⚠ ${esc(w)}</div>`).join("")}
     </div>
+  </div>
+  ${lineageCard()}`;
+}
+function lineageCard(){
+  const lin=DATA.target_lineage||{}, cavs=DATA.source_caveats||[];
+  const keys=Object.keys(lin);
+  if(!keys.length && !cavs.length) return "";
+  const rows=keys.map(k=>{
+    const l=lin[k]||{};
+    return `<tr><td><b>${esc(k)}</b></td><td class="mono">${esc(l.file||"—")}</td>
+      <td class="num mono">${l.row!=null?esc(l.row):"—"}</td>
+      <td class="mono">${l.fy?esc(l.fy):"—"}${l.status?` · ${esc(l.status)}`:""}</td></tr>`;
+  }).join("");
+  return `<div class="card" style="margin-top:16px"><h2>Data lineage — where every number came from</h2>
+    <div class="purpose">each key figure traced to its exact source file and row (provenance recorded at ETL time)</div>
+    ${keys.length?`<table><thead><tr><th>Figure(s)</th><th>Source file</th><th class="num">Row</th><th>Fiscal yr / status</th></tr></thead>
+    <tbody>${rows}</tbody></table>`:""}
+    ${cavs.map(cv=>`<div class="callout co-warn">⚠ <b>Source caveat:</b> ${esc(cv)}</div>`).join("")}
   </div>`;
 }
 function confBars(){
@@ -382,8 +419,9 @@ function filtersTab(){
     rows+=`<tr><td class="num">${f[1]}</td><td><b>${esc(f[2])}</b></td><td>${esc(f[3])}</td>
       <td class="mono">${esc(f[4])}</td><td>${esc(f[5])}</td></tr>`;
   });
+  const rejTotal=DATA.rejected_total!=null?DATA.rejected_total:rej.length;
   return `<div class="card">
-    <h2>The filter chain — how ${DATA.peers_ranked_count+rej.length} candidates become ${DATA.peers.length} priced peers</h2>
+    <h2>The filter chain — how ${(DATA.peers_ranked_count+rejTotal).toLocaleString("en-IN")} candidates become ${DATA.peers.length} priced peers</h2>
     <div class="purpose">every screen applied between "all companies in the database" and the final peer list</div>
     <p class="explain"><b>Four stages.</b> Eligibility (A) shapes the pool; knock-outs (B) reject economically
       different businesses outright — each with a recorded reason; similarity scoring (C) ranks survivors on five
@@ -394,7 +432,7 @@ function filtersTab(){
     <div class="callout co-info"><b>What is NOT used:</b> import data and per-capita metrics are not part of the
       calculation — they are not in the D&amp;B financial payload. The only trade-related signal is the
       <b>export flag</b> (filter&nbsp;10). Everything above is the complete list.</div>
-    <h3 style="margin-top:16px;font-size:14px">Rejected this run (${rej.length})</h3>
+    <h3 style="margin-top:16px;font-size:14px">Rejected this run (${rejTotal.toLocaleString("en-IN")} total${rejTotal>rej.length?`, first ${rej.length} shown — full counts by check in the audit trail`:""})</h3>
     <table><thead><tr><th>Entity</th><th>Model</th><th>Value chain</th><th>Major</th><th>Reason</th></tr></thead>
     <tbody>${rej.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.operating_model)}</td>
       <td>${esc(r.value_chain)}</td><td>${esc(r.major_industry)}</td>
@@ -584,7 +622,7 @@ function drawField(){
 function drawFunnel(){
   const el=$("#funnel"); if(!el)return;
   const val=DATA.valuation;
-  const total=DATA.peers_ranked_count+(DATA.rejected||[]).length;
+  const total=DATA.peers_ranked_count+(DATA.rejected_total!=null?DATA.rejected_total:(DATA.rejected||[]).length);
   const stages=[["Candidates screened (universe − target)",total,"var(--seq250)"],
                 ["Survive hard knock-outs (B)",DATA.peers_ranked_count,"var(--seq350)"],
                 ["Top-15 by similarity (C)",DATA.peers.length,"var(--seq450)"],

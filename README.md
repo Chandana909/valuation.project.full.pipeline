@@ -5,10 +5,29 @@ multi-method valuation for Indian MSMEs, grounded entirely on the **Dun & Bradst
 `dnbhoovers`** API. Runs today on a mock D&B layer that returns the **exact real D&B
 response schema**; going live is a one-method swap.
 
+## Two data sources — real and mock
+
+| | source | companies | valuation basis |
+|---|---|---|---|
+| **real** | 9 uploaded Excel extracts → `python etl.py` → `realdata.db` (SQLite) | **13,906** valuation-grade (of 42,951) | book basis (extract has no market prices / borrowings / cash — caveats disclosed on every result) |
+| **mock** | synthetic 59-company universe generated in code | 59 | market trading multiples (used for methodology validation/backtests) |
+
+The core calculation is identical for both: `RealDnBClient` and `MockDnBClient` emit the
+same D&B-schema envelopes, so the engine never knows which database it's on. The ETL
+stores **per-row provenance** (source file + Excel row for every figure) and runs a
+**P&L reconciliation gate** (EBITDA + other income − interest ≈ PBDT; 99.1% reconcile);
+every valuation carries a per-field **lineage table** tracing each number to its cell.
+
+```bash
+python etl.py                        # one-time: build realdata.db from the 9 Excel files
+python run.py "20 Microns Ltd." --data real
+python server.py                     # UI auto-uses realdata.db when present
+```
+
 ## Run — live UI (recommended)
 
 ```bash
-python server.py            # → http://localhost:8733
+python server.py            # → http://localhost:8733  (real data if realdata.db exists)
 ```
 
 Type a company name in the browser (autocomplete over the universe), press **Run

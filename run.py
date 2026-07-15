@@ -64,7 +64,15 @@ DASHBOARD_PATH = os.path.join(OUTPUT_DIR, "dashboard.html")
 #        seed-luck), and (b) a live UI (server.py + ui/, stdlib http.server): browser
 #        input, tabbed industry-style report, filter-chain documentation, football-
 #        field chart, print-to-PDF.
-METHODOLOGY_VERSION = "1.6.0"
+# 2.0.0: REAL-DATA support. Architecture: 9 uploaded Excel extracts -> etl.py ->
+#        realdata.db (SQLite, stdlib) with per-row provenance + a P&L reconciliation
+#        gate (99.1% of rows reconcile) -> RealDnBClient emits the same D&B envelopes,
+#        so the calculation core is UNCHANGED. 13,906 valuation-grade real companies.
+#        Honesty on gaps: no market prices / borrowings / cash in the extract ->
+#        book-basis valuation with explicit caveats, net-debt-unknown warning, and
+#        debt/cash data-quality checks. Per-field lineage (file+row) in result + UI.
+#        Universe cached per data source; rejection logging capped (first 20 + summary).
+METHODOLOGY_VERSION = "2.0.0"
 DNB_SCHEMA_VERSION = "dnbhoovers-2024"
 ENGINE_NAME = "dnb-msme-comparable-valuation"
 
@@ -166,13 +174,15 @@ def compute_confidence(profile, n_peers, target_ebitda_pos, valuation):
 # Core run
 # ---------------------------------------------------------------------------
 
-def _metadata(name, status):
+def _metadata(name, status, client=None):
+    label = getattr(client, "DATA_SOURCE_LABEL", None) or \
+        "Dun & Bradstreet (dnbhoovers) — synthetic mock universe"
     return {
         "engine": ENGINE_NAME,
         "methodology_version": METHODOLOGY_VERSION,
         "dnb_schema_version": DNB_SCHEMA_VERSION,
         "run_timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "data_source": "Dun & Bradstreet (dnbhoovers)",
+        "data_source": label,
         "currency": "INR",
         "reporting_units": "Crore",
         "source_units": "Thousand",
@@ -182,16 +192,66 @@ def _metadata(name, status):
     }
 
 
-def run_pipeline(name, client=None, top_n=15):
+def make_client(data_source="mock", audit=None):
+    """Factory for the injected data client. 'real' serves realdata.db (run etl.py
+    first); 'mock' serves the synthetic 59-company universe."""
+    if data_source == "real":
+        from realdata import RealDnBClient
+        return RealDnBClient(audit=audit)
+    return MockDnBClient(audit=audit)
+
+
+# Universe cache: building (normalize + profile) 14k real companies takes seconds —
+# do it once per process per data source, not on every valuation request.
+_UNIVERSE_CACHE = {}
+
+
+def get_universe(client, audit=None):
+    """(Company, EconomicProfile) list for every universe DUNS, cached per client
+    cache_key. Per-company D&B calls are audit-MUTED during a bulk build (a 14k-row
+    build would drown the trail); the summary line is always logged."""
+    key = getattr(client, "cache_key", "mock-default")
+    if key in _UNIVERSE_CACHE:
+        if audit is not None:
+            audit.info("universe", "UNIVERSE_CACHE_HIT",
+                       f"universe cache hit ({len(_UNIVERSE_CACHE[key])} companies)",
+                       {"count": len(_UNIVERSE_CACHE[key]), "cache_key": key})
+        return _UNIVERSE_CACHE[key]
+    prev_audit = getattr(client, "_audit", None)
+    if hasattr(client, "set_audit"):
+        client.set_audit(None)
+    try:
+        universe = []
+        for d in client.universe_duns():
+            c = _fetch_company(client, d, audit=None, with_mgmt=False)
+            universe.append((c, build_profile(c)))
+    finally:
+        if hasattr(client, "set_audit"):
+            client.set_audit(prev_audit)
+    _UNIVERSE_CACHE[key] = universe
+    if audit is not None:
+        audit.info("universe", "UNIVERSE_LOADED",
+                   f"loaded {len(universe)} candidate companies (audit-muted bulk "
+                   f"build; per-company provenance available via lineage)",
+                   {"count": len(universe), "cache_key": key})
+    return universe
+
+
+def run_pipeline(name, client=None, top_n=15, data_source="mock"):
     """
     Returns (result_dict, ctx). `ctx` carries the live objects for callers/tests.
     Never raises on bad input — degraded runs return a structured result with a
     non-'ok' `status` and a complete audit trail explaining why.
     """
     audit = AuditTrail()
-    client = client or MockDnBClient(audit=audit)
+    if client is None:
+        client = make_client(data_source, audit=audit)
+    elif hasattr(client, "set_audit"):
+        # bind an externally-provided (e.g. server-shared) client to THIS run's trail
+        client.set_audit(audit)
     audit.info("run", "START", f"pipeline start for query '{name}'",
-               {"methodology_version": METHODOLOGY_VERSION})
+               {"methodology_version": METHODOLOGY_VERSION,
+                "data_source": getattr(client, "DATA_SOURCE_LABEL", "mock")})
     ctx = {"target": None, "tprofile": None, "ranked": [], "rejected": [],
            "valuation": None, "data_quality": None}
 
@@ -199,7 +259,7 @@ def run_pipeline(name, client=None, top_n=15):
     duns = _best_match(client, name, audit)
     if duns is None:
         result = {
-            "meta": _metadata(name, "no_match"),
+            "meta": _metadata(name, "no_match", client),
             "query": name, "target": None, "target_profile": None,
             "data_quality": None, "peers": [], "peers_ranked_count": 0,
             "rejected": [], "valuation": None,
@@ -229,7 +289,7 @@ def run_pipeline(name, client=None, top_n=15):
                     "target lacks revenue and a usable EV proxy; cannot value",
                     {"missing": dq.missing_fields})
         result = {
-            "meta": _metadata(name, "insufficient_data"),
+            "meta": _metadata(name, "insufficient_data", client),
             "query": name,
             "target": company_to_dict(target),
             "target_profile": profile_to_dict(tprofile),
@@ -241,16 +301,9 @@ def run_pipeline(name, client=None, top_n=15):
         }
         return result, ctx
 
-    # 4. build universe (fetch + normalize + profile each DUNS) ----------
-    universe = []
-    for d in client.universe_duns():
-        if d == duns:
-            continue
-        c = _fetch_company(client, d, audit, with_mgmt=False)
-        universe.append((c, build_profile(c)))
-    audit.info("universe", "UNIVERSE_LOADED",
-               f"loaded {len(universe)} candidate companies from D&B",
-               {"count": len(universe)})
+    # 4. build universe (cached per data source; audit-muted bulk build) --
+    universe_all = get_universe(client, audit)
+    universe = [(c, p) for (c, p) in universe_all if c.duns != duns]
 
     # 5. discover -------------------------------------------------------
     ranked, rejected = discover_peers(target, tprofile, universe, audit)
@@ -284,19 +337,37 @@ def run_pipeline(name, client=None, top_n=15):
                f"{conf_breakdown['comp_tightness']}",
                {"score": conf_score, "label": conf_label, "breakdown": conf_breakdown})
 
+    # 8. data-source caveats + per-field lineage (traceability) ----------
+    caveats = list(getattr(client, "source_caveats", []) or [])
+    for cv in caveats:
+        valuation.notes.append(f"data-source caveat: {cv}")
+        audit.warn("run", "SOURCE_CAVEAT", cv)
+    lineage = {}
+    if hasattr(client, "lineage"):
+        lineage = client.lineage(duns) or {}
+        if lineage:
+            audit.info("run", "SOURCE_LINEAGE",
+                       "per-field source lineage attached to result "
+                       "(file + row for every key figure)",
+                       {"fields": list(lineage.keys())})
+
     status = "ok" if valuation.headline_method != "none" else "no_valuation"
     audit.info("run", "COMPLETE", f"pipeline complete: status={status}",
                {"status": status})
 
     result = {
-        "meta": _metadata(name, status),
+        "meta": _metadata(name, status, client),
         "query": name,
         "target": company_to_dict(target),
         "target_profile": profile_to_dict(tprofile),
+        "target_lineage": lineage,
+        "source_caveats": caveats,
         "data_quality": dataquality_to_dict(dq),
         "peers": valuation.peers_used,
         "peers_ranked_count": len(ranked),
-        "rejected": rejected,
+        # a real 14k universe can reject thousands — carry a sample + the count
+        "rejected": rejected[:50],
+        "rejected_total": len(rejected),
         "valuation": valuation_to_dict(valuation),
         "confidence": {"score": conf_score, "label": conf_label,
                        "breakdown": conf_breakdown},
@@ -360,8 +431,11 @@ def print_summary(result):
               f"EV/EBITDA {('%.1fx' % evx) if evx else '  n/a':>6s} | "
               f"₹{_fmt(p['revenue_cr'],0)} Cr | {tag}{bl}")
     print("-" * 78)
-    print(f"REJECTED ({len(result['rejected'])})")
-    for r in result["rejected"]:
+    rej_total = result.get("rejected_total", len(result["rejected"]))
+    shown = result["rejected"][:10]
+    print(f"REJECTED ({rej_total} total"
+          + (f", first {len(shown)} shown" if rej_total > len(shown) else "") + ")")
+    for r in shown:
         print(f"  x {r['name'][:34]:34s} -> {r['reason']}")
     print("-" * 78)
     print("VALUATION METHODS (triangulation)")
@@ -521,6 +595,36 @@ def acceptance_tests():
     except Exception as e:  # pragma: no cover
         check("[backtest] positioning generalizes (beats naive median)", False, f"error: {e}")
 
+    # ---- REAL-DATA checks (only when realdata.db exists) -----------------
+    # The mock checks above validate the METHODOLOGY (they have market caps to
+    # cross-check against). These validate the REAL-DATA path end to end.
+    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "realdata.db")):
+        print("\n-- real-data path (realdata.db) --")
+        try:
+            r, c = run_pipeline("20 Microns Ltd.", data_source="real")
+            t, v = c["target"], c["valuation"]
+            check("[real] resolves + normalizes (revenue in Crore)",
+                  t is not None and (t.revenue_cr or 0) > 100,
+                  f"rev={t.revenue_cr if t else None}")
+            check("[real] valuation produced on book basis with ≥10 peers",
+                  v is not None and v.headline_method != "none"
+                  and len(r["peers"]) >= 10,
+                  f"headline={v.headline_method if v else None} "
+                  f"peers={len(r['peers'])}")
+            check("[real] net-debt-unknown warning surfaced (honesty)",
+                  v is not None and any("net debt unknown" in w for w in v.warnings),
+                  f"warnings={len(v.warnings) if v else 0}")
+            check("[real] source caveats + per-field lineage attached",
+                  bool(r.get("source_caveats")) and bool(r.get("target_lineage")),
+                  f"lineage fields={len(r.get('target_lineage') or {})}")
+            check("[real] rejected candidates recorded with reasons",
+                  len(r["rejected"]) >= 1 and all(x.get("reason")
+                                                  for x in r["rejected"][:50]),
+                  f"rejected={len(r['rejected'])}")
+        except Exception as e:  # pragma: no cover
+            check("[real] real-data pipeline runs", False, f"error: {e}")
+
     total = len(checks)
     passed = sum(1 for _, c, _ in checks if c)
     print("\n" + "#" * 78)
@@ -534,10 +638,19 @@ def acceptance_tests():
 # ---------------------------------------------------------------------------
 
 def main():
-    name = sys.argv[1] if len(sys.argv) > 1 else "Woodward"
+    argv = sys.argv[1:]
+    data_source = os.environ.get("DATA_SOURCE", "mock")
+    if "--data" in argv:
+        i = argv.index("--data")
+        if i + 1 < len(argv):
+            data_source = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]          # strip the flag + its value
+    args = [a for a in argv if not a.startswith("--")]
+    default_name = "20 Microns Ltd." if data_source == "real" else "Woodward"
+    name = args[0] if args else default_name
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    result, _ctx = run_pipeline(name)
+    result, _ctx = run_pipeline(name, data_source=data_source)
 
     # Embed the methodology backtest so the dashboard can show honest, aggregate
     # accuracy (guards against reading one lucky calibration as proof).

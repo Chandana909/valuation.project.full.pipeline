@@ -23,12 +23,16 @@ trail**. It is **touchless** (no human in the loop), **deterministic** (pure Pyt
 seeded), and runs today on a `MockDnBClient` that returns the *exact real D&B
 response schema*, so going live is a one-method swap.
 
-> **⚠ For any agent or engineer new to this repo:** the "company database" is a
-> **synthetic 59-company universe generated in code** (`mock_api/dnb_mock.py`),
-> not a live connection to real company data. Only 59 exact company names will
-> resolve to a result. **Read §3a before running anything or answering questions
-> about "what companies can I search."** Do not assume, invent, or look up real
-> companies as if they were connected to this system.
+> **⚠ For any agent or engineer new to this repo — TWO data sources exist (v2.0.0):**
+> **(1) REAL:** 9 uploaded Excel extracts (Accord-style bulk export of **42,951 real
+> Indian companies**) → `python etl.py` → `realdata.db` (SQLite) → `RealDnBClient`.
+> 13,906 companies are valuation-grade. The extract has NO market prices, borrowings,
+> cash or current liabilities — valuations on it are **book-basis** with explicit
+> caveats. See §3b. **(2) MOCK:** the synthetic 59-company universe generated in
+> `mock_api/dnb_mock.py` (see §3a) — it HAS synthetic market prices, so it is what
+> the methodology backtests/validation run on. `server.py` auto-selects real when
+> `realdata.db` exists; `run.py` takes `--data real|mock` (default mock). The
+> calculation core is identical for both — the clients emit the same D&B envelopes.
 
 ---
 
@@ -86,6 +90,9 @@ dnb_valuation/
 ├── docs/
 │   └── filter_chain_diagram.svg  # standalone image of the 14-filter peer-selection chain
 ├── sample_database.json       # POINT-IN-TIME JSON export of the mock universe — see §3a
+├── etl.py                     # 9 Excel extracts -> realdata.db (SQLite) with provenance — see §3b
+├── realdata/client.py         # RealDnBClient: realdata.db -> D&B envelopes (drop-in) — see §3b
+├── *.xlsx (9 files)           # the uploaded real bulk extract (source of realdata.db)
 ├── peer_filtering.html        # standalone doc: full filtering flow + every check in detail
 ├── architecture.html          # standalone doc: architecture overview + version comparison
 ├── parameters.xlsx            # exact calculation parameters (inputs/derived/constants)
@@ -211,6 +218,51 @@ UrbanMart Retail Stores · Insight Engineering Consulting
 - Never hardcode assumptions about *which* 59 names exist into new code — read
   from `client.universe_duns()` / `/api/companies` so the list stays a single
   source of truth if it's ever extended.
+
+---
+
+## 3b. THE REAL DATABASE (v2.0.0) — 9 Excel extracts → SQLite → same engine
+
+**Pipeline:** the 9 uploaded workbooks (`Basic Data.xlsx`, `PL data.xlsx`,
+`BS data.xlsx`, `Net worth.xlsx`, `Forex.xlsx`, `Segment.xlsx`, plus
+`Product/R&D/Shareholding` which are stored but not yet consumed) →
+[`etl.py`](etl.py) → **`realdata.db`** (SQLite, stdlib `sqlite3`; ~gitignored,
+regenerate with `python etl.py`, ~1 min) → [`realdata/client.py`](realdata/client.py)
+(`RealDnBClient`) emits the **same D&B envelopes** as the mock → unchanged core.
+
+**Robustness built into the ETL:** header VERIFICATION before reading any column
+(a stale column map aborts loudly instead of mis-mapping figures); a **P&L
+reconciliation gate** — `EBITDA(excl OI) + Other Income − Interest ≈ PBDT` within
+max(2%, ₹0.5 Cr) — **99.1%** of determinable rows reconcile; an `etl_report`
+(counts, join coverage, recon rate) stored in the DB (`python etl.py --report`).
+
+**Provenance/lineage:** every fin row stores its source file + Excel row. Each
+valuation result carries `target_lineage` (figure → file/row/fiscal-year) and it
+renders as the "Data lineage" card in the UI — any number can be traced to the
+exact cell range it came from.
+
+**Scale facts:** 42,951 companies; 26,317 P&L years; **13,906 valuation-grade**
+(revenue>0, EBITDA & net worth present, 12-month periods; latest + prior year
+kept). Industry: 137 `CD_Industry` categories → stable pseudo-NAICS per category
+(industry dimension 1.0) + ~20 keyword-derived sector groups (Hoovers level, 0.6)
++ group-derived major letters (D/F/G/I/N/T/C/U) for the stage-B knock-outs.
+Exporter flag = forex inflow > 0. Listing = CIN 'L' prefix.
+
+**HONEST GAPS (do not paper over):** the extract contains **no market prices, no
+borrowings, no cash, no current liabilities**. Consequences, all disclosed on
+every result: no trading multiples (book basis: capital employed ≈ segment CE
+when reported, else **Net Worth**); net debt assumed 0 with a `NET_DEBT_UNKNOWN`
+warning + debt/cash data-quality penalties; the market cross-check and the
+methodology backtest still run on the MOCK (which has synthetic market prices).
+When market cap + borrowings + cash columns are added to the extract, extend
+`etl.py`/`RealDnBClient` to emit `marketData`/`longTermDebt`/`cashAndLiquidAssets`
+and the full market-basis machinery activates with no core change.
+
+**Performance:** the normalized universe is cached per data source
+(`run.py :: get_universe`, key = client `cache_key`); first build ~4s, then ~2s
+per valuation. `server.py` warms the cache in a background thread on startup.
+Rejection logging is capped (first 20 detailed + one summary DECISION with counts
+by check); results carry `rejected[:50]` + `rejected_total`.
 
 ---
 
@@ -984,4 +1036,4 @@ jinja; no second data provider; no network in the core path.
 
 ---
 
-*End of PROJECT_CONTEXT.md — methodology version 1.6.0.*
+*End of PROJECT_CONTEXT.md — methodology version 2.0.0.*
