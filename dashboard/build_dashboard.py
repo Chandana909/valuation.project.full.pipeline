@@ -237,10 +237,9 @@ def _confidence_breakdown(cb):
     return "".join(rows)
 
 
-def build_dashboard(result_path, out_path):
-    with open(result_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+def render_dashboard(data):
+    """Render a result dict to a self-contained dashboard HTML string.
+    Used by the API's report endpoint (in-memory) and build_dashboard (file)."""
     meta = data.get("meta", {})
     audit = data.get("audit_trail", [])
     parts = [_head(f"MSME Valuation — {data.get('query')}")]
@@ -257,9 +256,7 @@ def build_dashboard(result_path, out_path):
                               f'audit trail below records exactly why the pipeline stopped.</p>'
                               + _audit_table(audit)))
         parts.append("</div></body></html>")
-        with open(out_path, "w", encoding="utf-8") as f:
-            f.write("".join(parts))
-        return out_path
+        return "".join(parts)
 
     t = data["target"]
     tp = data["target_profile"]
@@ -305,6 +302,28 @@ def build_dashboard(result_path, out_path):
               'applied to.</p>')
     parts.append(_section("1", "Target Profile & Financials",
                           "who is being valued", theory + f'<div class="facts">{facts}</div>'))
+
+    # ---- 1b · data lineage + source caveats (provenance) ----------------
+    lin = data.get("target_lineage") or {}
+    cavs = data.get("source_caveats") or []
+    if lin or cavs:
+        rows = "".join(
+            f'<tr><td><b>{_esc(k)}</b></td><td class="mono">{_esc((v or {}).get("file", "—"))}</td>'
+            f'<td class="mono">{_esc((v or {}).get("row")) if (v or {}).get("row") is not None else "—"}</td>'
+            f'<td class="mono">{_esc((v or {}).get("fy")) if (v or {}).get("fy") else "—"}'
+            f'{(" · " + _esc(v.get("status"))) if isinstance(v, dict) and v.get("status") else ""}</td></tr>'
+            for k, v in lin.items())
+        table = (f'<table><tr><th>Figure(s)</th><th>Source file</th><th>Row</th>'
+                 f'<th>Fiscal yr / status</th></tr>{rows}</table>') if lin else ""
+        cav_html = "".join(f'<div class="callout warn"><b>Source caveat.</b> '
+                           f'<span class="sub-note">{_esc(c)}</span></div>' for c in cavs)
+        theory = ('<p class="theory"><b>What this is.</b> Every key figure traced to the '
+                  'exact source file and row it came from (recorded at ETL time), or '
+                  'marked user-provided for guided-intake targets — plus every honesty '
+                  'caveat about what the data source does not contain. Any number in '
+                  'this report can be challenged back to its cell.</p>')
+        parts.append(_section("1b", "Data lineage & Source Caveats",
+                              "where every number came from", theory + table + cav_html))
 
     # ================= 2 · HEADLINE VALUATION ==========================
     hm = next((m for m in val["methods"] if m["method"] == val["headline_method"]), None)
@@ -355,8 +374,31 @@ def build_dashboard(result_path, out_path):
                    f'(see §4). Positioning never uses this market cap, so the agreement is a real '
                    f'validation, not circular.</span></div>')
     warns = "".join(f'<div class="note">⚠ {_esc(w)}</div>' for w in val["warnings"])
+    ca = val.get("comparability_adjustment")
+    ca_html = ""
+    if ca and ca.get("applied"):
+        arrow = "▼ marked DOWN" if ca["direction"] == "down" else "▲ marked UP"
+        ca_html = (f'<div class="callout warn"><b>Comparability adjustment — multiples '
+                   f'{arrow} {ca["pct"]:+.1f}%.</b><br><span class="sub-note">'
+                   f'{_esc(ca["reason"])}. <b>Why:</b> when no peer of comparable size '
+                   f'exists, peer multiples are not fully transferable — size-premium '
+                   f'evidence shows smaller companies trade at lower multiples than '
+                   f'larger ones. This explicit, audited penalty replaces silent '
+                   f'over/under-statement.</span></div>')
+    txn = val.get("transaction_analysis")
+    txn_html = ""
+    if txn:
+        txn_html = (
+            f'<div class="callout"><b>Comparable-transactions view (indicative) — '
+            f'what a control buyer might pay: ₹{_num(txn["acquisition_equity_low_cr"])} '
+            f'– {_num(txn["acquisition_equity_mid_cr"])} – '
+            f'{_num(txn["acquisition_equity_high_cr"])} Cr.</b><br><span class="sub-note">'
+            f'<b>Theory.</b> The range above is a MINORITY trading value. Acquirers of '
+            f'control pay a premium (synergies, control of cash flows) — empirical '
+            f'studies cluster at 20–30%. {_esc(txn["caveat"])}</span></div>')
     parts.append(_section("2", "Headline Valuation", "the answer, and the arithmetic behind it",
-                          theory + hv + bridge + pos_note + disc_note + xc_html + warns))
+                          theory + hv + bridge + pos_note + disc_note + ca_html
+                          + txn_html + xc_html + warns))
 
     # ================= 3 · CONFIDENCE & DATA QUALITY ===================
     theory = ('<p class="theory"><b>What this is.</b> How much to trust this specific result. '
@@ -516,8 +558,20 @@ def build_dashboard(result_path, out_path):
                  f'<td>{_esc(r["value_chain"])}</td><td>{_esc(r["major_industry"])}</td>'
                  f'<td class="reason">{_esc(r["reason"])}</td></tr>')
     rtab += '</table>'
+    guarantees = (
+        '<p class="theory" style="margin-top:14px"><b>What the filter chain guarantees.</b> '
+        'No peer of a different operating model, value chain or major industry can reach '
+        'the valuation (hard knock-outs, each with a recorded reason); no single outlier '
+        'multiple can move the answer (Tukey fence); borderline comps cannot dominate '
+        '(similarity weights taper to a 0.15 floor and the range widens on the effective '
+        'count); a size-mismatched peer set triggers an explicit, audited comparability '
+        'adjustment; and if nothing survives, the answer is honestly "none". '
+        '<b>What it cannot guarantee.</b> Filters compare what the data contains — a '
+        'misdescribed company misclassifies visibly, not silently; industry codes are '
+        'not product-level overlap; and on the real extract, multiples are book-basis '
+        'until market prices are added.</p>')
     parts.append(_section(rej_num, f'Rejected Candidates ({len(data["rejected"])})',
-                          "who was excluded, and why", theory + rtab))
+                          "who was excluded, and why", theory + rtab + guarantees))
 
     # ================= 8 · AUDIT =======================================
     levels = {}
@@ -533,8 +587,15 @@ def build_dashboard(result_path, out_path):
                           "the complete, replayable decision log", theory + _audit_table(audit)))
 
     parts.append("</div></body></html>")
+    return "".join(parts)
+
+
+def build_dashboard(result_path, out_path):
+    """result.json file -> dashboard.html file (CLI path, used by run.py)."""
+    with open(result_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
     with open(out_path, "w", encoding="utf-8") as f:
-        f.write("".join(parts))
+        f.write(render_dashboard(data))
     return out_path
 
 

@@ -3,7 +3,7 @@
     "engine": "dnb-msme-comparable-valuation",
     "methodology_version": "2.0.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-15T17:55:07+00:00",
+    "run_timestamp": "2026-07-17T01:56:09+00:00",
     "data_source": "Synthetic mock universe (59 companies, real D&B schema)",
     "currency": "INR",
     "reporting_units": "Crore",
@@ -1333,6 +1333,25 @@
     },
     "effective_peer_count": 15.0,
     "n_borderline": 0,
+    "comparability_adjustment": {
+      "applied": false,
+      "direction": "none",
+      "pct": 0.0,
+      "target_revenue_cr": 5874.35,
+      "peer_revenue_min_cr": 4556.73,
+      "peer_revenue_max_cr": 8588.67,
+      "reason": "target size within the peer scale band — no adjustment"
+    },
+    "transaction_analysis": {
+      "basis": "derived: trading-comps equity × control premium (no precedent-transaction database in the current data source)",
+      "control_premium_low": 0.2,
+      "control_premium_mid": 0.25,
+      "control_premium_high": 0.3,
+      "acquisition_equity_low_cr": 12484.97,
+      "acquisition_equity_mid_cr": 14176.71,
+      "acquisition_equity_high_cr": 15482.54,
+      "caveat": "Indicative only — what a CONTROL buyer might pay relative to the minority trading value above. Replace with observed precedent-transaction multiples when a deal database is integrated."
+    },
     "notes": [],
     "warnings": []
   },
@@ -1351,7 +1370,7 @@
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-15T17:55:07.715+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
@@ -1363,7 +1382,7 @@
     },
     {
       "seq": 2,
-      "ts": "2026-07-15T17:55:07.715+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
@@ -1372,7 +1391,7 @@
     },
     {
       "seq": 3,
-      "ts": "2026-07-15T17:55:07.715+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "resolve",
       "level": "DECISION",
       "code": "TARGET_RESOLVED",
@@ -1385,7 +1404,7 @@
     },
     {
       "seq": 4,
-      "ts": "2026-07-15T17:55:07.715+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1394,7 +1413,7 @@
     },
     {
       "seq": 5,
-      "ts": "2026-07-15T17:55:07.715+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1403,7 +1422,7 @@
     },
     {
       "seq": 6,
-      "ts": "2026-07-15T17:55:07.715+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_MANAGEMENT",
@@ -1412,7 +1431,7 @@
     },
     {
       "seq": 7,
-      "ts": "2026-07-15T17:55:07.716+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
@@ -1425,7 +1444,7 @@
     },
     {
       "seq": 8,
-      "ts": "2026-07-15T17:55:07.716+00:00",
+      "ts": "2026-07-17T01:56:09.526+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1439,7 +1458,7 @@
     },
     {
       "seq": 9,
-      "ts": "2026-07-15T17:55:07.722+00:00",
+      "ts": "2026-07-17T01:56:09.528+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
@@ -1451,7 +1470,7 @@
     },
     {
       "seq": 10,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1463,7 +1482,7 @@
     },
     {
       "seq": 11,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1475,7 +1494,7 @@
     },
     {
       "seq": 12,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1487,7 +1506,7 @@
     },
     {
       "seq": 13,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1499,7 +1518,7 @@
     },
     {
       "seq": 14,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1511,7 +1530,7 @@
     },
     {
       "seq": 15,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -1523,7 +1542,7 @@
     },
     {
       "seq": 16,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "QUALITY_POSITIONED",
@@ -1536,7 +1555,7 @@
     },
     {
       "seq": 17,
-      "ts": "2026-07-15T17:55:07.723+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
@@ -1549,7 +1568,7 @@
     },
     {
       "seq": 18,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -1565,7 +1584,7 @@
     },
     {
       "seq": 19,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -1581,7 +1600,7 @@
     },
     {
       "seq": 20,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -1597,7 +1616,7 @@
     },
     {
       "seq": 21,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -1608,7 +1627,21 @@
     },
     {
       "seq": 22,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "ts": "2026-07-17T01:56:09.529+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "TRANSACTION_VIEW",
+      "detail": "indicative acquisition range ₹12,485–14,177–15,483 Cr (control premium 20–30% over comps equity)",
+      "data": {
+        "premium_band": [
+          0.2,
+          0.3
+        ]
+      }
+    },
+    {
+      "seq": 23,
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "MARKET_CROSSCHECK",
@@ -1622,8 +1655,8 @@
       }
     },
     {
-      "seq": 23,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "seq": 24,
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -1634,8 +1667,8 @@
       }
     },
     {
-      "seq": 24,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "seq": 25,
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
@@ -1654,8 +1687,8 @@
       }
     },
     {
-      "seq": 25,
-      "ts": "2026-07-15T17:55:07.724+00:00",
+      "seq": 26,
+      "ts": "2026-07-17T01:56:09.529+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",
@@ -1670,7 +1703,7 @@
     "margin_multiple_corr": 0.487,
     "positioned": {
       "n": 32,
-      "mean_abs_pct": 8.1,
+      "mean_abs_pct": 8.3,
       "median_abs_pct": 7.5,
       "max_abs_pct": 26.1,
       "within_15pct": 28,

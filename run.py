@@ -270,6 +270,37 @@ def run_pipeline(name, client=None, top_n=15, data_source="mock"):
 
     # 2. target ---------------------------------------------------------
     target = _fetch_company(client, duns, audit, with_mgmt=True)
+    return _evaluate(name, target, client, audit, ctx, top_n)
+
+
+def run_pipeline_custom(target, client=None, top_n=15, data_source="mock",
+                        lineage=None):
+    """Value a USER-PROVIDED company (e.g. from the conversational intake)
+    against the database universe. Same engine, same audit, same result shape —
+    only the resolve step differs (there is nothing to resolve).
+    `target` is a core.Company; `lineage` an optional per-field provenance dict.
+    """
+    audit = AuditTrail()
+    if client is None:
+        client = make_client(data_source, audit=audit)
+    elif hasattr(client, "set_audit"):
+        client.set_audit(audit)
+    audit.info("run", "START", f"pipeline start for custom target '{target.name}'",
+               {"methodology_version": METHODOLOGY_VERSION, "mode": "custom_intake"})
+    audit.decision("resolve", "TARGET_CUSTOM",
+                   f"target '{target.name}' supplied via guided intake — no D&B "
+                   f"resolution; figures are user-provided",
+                   {"duns": target.duns})
+    ctx = {"target": None, "tprofile": None, "ranked": [], "rejected": [],
+           "valuation": None, "data_quality": None}
+    return _evaluate(target.name, target, client, audit, ctx, top_n,
+                     custom_lineage=lineage)
+
+
+def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None):
+    """Shared evaluation path: profile -> data-quality gate -> universe ->
+    discover -> value -> confidence -> result. Both entry points route here, so
+    any methodology change lands identically for database and custom targets."""
     ctx["target"] = target
     tprofile = build_profile(target)
     ctx["tprofile"] = tprofile
@@ -303,7 +334,7 @@ def run_pipeline(name, client=None, top_n=15, data_source="mock"):
 
     # 4. build universe (cached per data source; audit-muted bulk build) --
     universe_all = get_universe(client, audit)
-    universe = [(c, p) for (c, p) in universe_all if c.duns != duns]
+    universe = [(c, p) for (c, p) in universe_all if c.duns != target.duns]
 
     # 5. discover -------------------------------------------------------
     ranked, rejected = discover_peers(target, tprofile, universe, audit)
@@ -339,12 +370,23 @@ def run_pipeline(name, client=None, top_n=15, data_source="mock"):
 
     # 8. data-source caveats + per-field lineage (traceability) ----------
     caveats = list(getattr(client, "source_caveats", []) or [])
+    if custom_lineage is not None:
+        caveats.append(
+            "Target figures are user-provided via guided intake and unaudited — "
+            "the peer set and multiples come from the database, but the drivers "
+            "they are applied to are only as reliable as the inputs.")
     for cv in caveats:
         valuation.notes.append(f"data-source caveat: {cv}")
         audit.warn("run", "SOURCE_CAVEAT", cv)
     lineage = {}
-    if hasattr(client, "lineage"):
-        lineage = client.lineage(duns) or {}
+    if custom_lineage is not None:
+        lineage = custom_lineage
+        audit.info("run", "SOURCE_LINEAGE",
+                   "target figures are user-provided via guided intake — lineage "
+                   "records that explicitly for every answered field",
+                   {"fields": list(lineage.keys())})
+    elif hasattr(client, "lineage"):
+        lineage = client.lineage(target.duns) or {}
         if lineage:
             audit.info("run", "SOURCE_LINEAGE",
                        "per-field source lineage attached to result "

@@ -1,0 +1,5 @@
+# Delivery layer only — core/ is pure stdlib by design (see PROJECT_CONTEXT §1).
+fastapi>=0.110
+uvicorn[standard]>=0.29
+# ETL build tool only (never imported by the runtime core):
+openpyxl>=3.1

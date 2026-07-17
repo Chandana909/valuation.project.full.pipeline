@@ -23,6 +23,19 @@ trail**. It is **touchless** (no human in the loop), **deterministic** (pure Pyt
 seeded), and runs today on a `MockDnBClient` that returns the *exact real D&B
 response schema*, so going live is a one-method swap.
 
+> **⚠ v2.1.0 ADDENDUM (supersedes anything below that contradicts it).**
+> The delivery layer is now **`api.py` (FastAPI + uvicorn)** — `server.py` is deleted.
+> The core stays pure stdlib; FastAPI exists only at the HTTP boundary. New since 2.0.0:
+> **(1)** `intake.py` — deterministic conversational intake graph: value a company NOT
+> in the database against database peers (`run_pipeline_custom` in run.py; shared
+> `_evaluate` path). **(2)** `core/calibration.py` — sector trading anchors re-level
+> book multiples to market levels (audit code `SECTOR_CALIBRATED`); editable table,
+> replaced by a market feed when available. **(3)** Scale-mismatch penalty
+> (`COMPARABILITY_ADJUSTMENT`, filter #15) and an indicative comparable-transactions
+> view on every valuation. **(4)** `test_api.py` — 30-check live API integration suite.
+> **(5)** `make_parameter_dictionary.py` → the complete parameter dictionary
+> (`parameters_from_latest_report.xlsx`). See README.md for the endpoint catalog.
+
 > **⚠ For any agent or engineer new to this repo — TWO data sources exist (v2.0.0):**
 > **(1) REAL:** 9 uploaded Excel extracts (Accord-style bulk export of **42,951 real
 > Indian companies**) → `python etl.py` → `realdata.db` (SQLite) → `RealDnBClient`.

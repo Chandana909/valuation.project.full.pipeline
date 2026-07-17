@@ -117,6 +117,42 @@ tr.hl{background:#2a78d612}
 .track{height:8px;background:#eceae4;border-radius:5px;overflow:hidden;border:1px solid var(--grid)}
 .fill{height:100%;background:linear-gradient(90deg,var(--seq350),var(--seq450))}
 
+/* ============ peer detail cards (stacked) ============ */
+.pcard{background:var(--surface);border:1px solid var(--grid);border-radius:12px;
+  padding:14px 18px;margin-bottom:12px;break-inside:avoid}
+.pcard-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+  gap:8px;border-bottom:1px solid var(--grid);padding-bottom:9px;margin-bottom:12px}
+.pcard-head .rank{display:inline-flex;width:26px;height:26px;border-radius:50%;
+  background:var(--navy);color:#fff;font-weight:800;font-size:12px;align-items:center;
+  justify-content:center;margin-right:8px}
+.pcard-head .nm{font-size:15px;font-weight:700}
+.pcard-head .sub{color:var(--muted);font-size:11.5px;margin-top:1px}
+.matchpct{text-align:right}
+.matchpct .big{font-size:19px;font-weight:800;color:var(--accent)}
+.matchpct .s{font-size:11px;color:var(--muted)}
+.pcols{display:grid;grid-template-columns:1.05fr 1.25fr 1.05fr;gap:18px}
+@media(max-width:900px){.pcols{grid-template-columns:1fr}}
+.pcols h4{font-size:11px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;margin:0 0 7px;font-weight:700}
+.mini{width:100%;border-collapse:collapse;font-size:12.5px}
+.mini td{padding:3.5px 6px;border-bottom:1px solid var(--grid)}
+.mini td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.pchecks{font-size:12.3px;color:var(--ink2)}
+.pchecks div{margin:3px 0}
+.pk-pass{color:var(--goodtext);font-weight:700}
+.pk-warn{color:#6b4e00;font-weight:700}
+.pwhy{font-size:12px;color:var(--ink2);margin-top:9px;border-top:1px dashed var(--grid);padding-top:7px}
+
+/* ============ API tab ============ */
+.apirow td:first-child{white-space:nowrap}
+.method{display:inline-block;border-radius:6px;padding:1px 8px;font-size:10.5px;
+  font-weight:800;letter-spacing:.03em}
+.m-get{background:#1baf7a1f;color:#0c5c3f;border:1px solid #1baf7a55}
+.m-post{background:#2a78d61a;color:#1c5cab;border:1px solid #2a78d64d}
+.apiurl{font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all}
+a.apiurl{color:var(--accent);text-decoration:none}
+a.apiurl:hover{text-decoration:underline}
+
 /* callouts */
 .callout{border-radius:10px;padding:11px 15px;font-size:13px;margin:12px 0;border:1px solid}
 .co-good{background:#0ca30c10;border-color:#0ca30c55}
@@ -124,8 +160,44 @@ tr.hl{background:#2a78d612}
 .co-info{background:#2a78d60d;border-color:#2a78d64d}
 
 /* empty / loading */
-.hero{text-align:center;padding:70px 20px;color:var(--ink2)}
+.hero{text-align:center;padding:44px 20px 30px;color:var(--ink2)}
 .hero h2{font-size:19px;color:var(--ink);margin-bottom:8px}
+
+/* ============ intake option cards ============ */
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1020px;
+  margin:26px auto 0;text-align:left}
+@media(max-width:860px){.options{grid-template-columns:1fr}}
+.optcard{background:var(--surface);border:1px solid var(--grid);border-radius:12px;
+  padding:18px;display:flex;flex-direction:column}
+.optcard h3{font-size:15px;margin-bottom:6px}
+.optcard p{color:var(--ink2);font-size:12.5px;margin:0 0 14px;flex:1}
+.optcard .btn{background:var(--accent);color:#fff;align-self:flex-start}
+.optcard.muted{border-style:dashed}
+.optcard.muted .btn{background:#eceae4;color:var(--muted);cursor:not-allowed}
+.soon{display:inline-block;background:#fab21926;border:1px solid #fab21980;color:#6b4e00;
+  border-radius:10px;font-size:10.5px;font-weight:700;padding:1px 8px;margin-left:6px;
+  vertical-align:2px}
+
+/* ============ chat (guided intake) ============ */
+.chatwrap{max-width:760px;margin:0 auto}
+.iprog{height:6px;background:#eceae4;border-radius:4px;overflow:hidden;margin:14px 0 2px}
+.iprog .fill{height:100%;background:linear-gradient(90deg,var(--seq350),var(--seq450));
+  transition:width .3s}
+.iproglab{font-size:11.5px;color:var(--muted);text-align:right}
+.chatlog{display:flex;flex-direction:column;gap:10px;padding:14px 0}
+.bubble{max-width:84%;border-radius:14px;padding:10px 14px;font-size:13.5px;line-height:1.5}
+.b-agent{background:var(--surface);border:1px solid var(--grid);align-self:flex-start;
+  border-bottom-left-radius:4px}
+.b-agent .help{color:var(--muted);font-size:12px;margin-top:7px;
+  border-top:1px dashed var(--grid);padding-top:6px}
+.b-me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.b-err{background:#d03b3b10;border:1px solid #d03b3b4d;align-self:flex-start;color:#8d2a2a}
+.chatbar{display:flex;gap:8px;position:sticky;bottom:0;background:var(--page);
+  padding:10px 0 20px}
+.chatbar input{flex:1;font:inherit;padding:10px 14px;border-radius:10px;
+  border:1px solid var(--grid);outline:none;background:var(--surface)}
+.chatbar input:focus{border-color:var(--accent)}
+.chatbar .btn{background:var(--accent);color:#fff}
 .chips{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
 .chips button{background:var(--surface);border:1px solid var(--grid);border-radius:18px;
   padding:7px 15px;font-size:13px;color:var(--accent);font-weight:600}
@@ -158,6 +230,7 @@ tr.hl{background:#2a78d612}
     <input id="q" list="companies" placeholder="Type a company name… e.g. Woodward" autocomplete="off">
     <datalist id="companies"></datalist>
     <button class="btn btn-run" id="runBtn" onclick="runValuation()">Run valuation</button>
+    <button class="btn btn-pdf no-print" id="rptBtn" onclick="openReport()" disabled>Full report</button>
     <button class="btn btn-pdf no-print" id="pdfBtn" onclick="window.print()" disabled>Download PDF</button>
   </div>
 </div>
@@ -169,21 +242,49 @@ tr.hl{background:#2a78d612}
   <button data-tab="valuation" onclick="showTab('valuation')">Valuation</button>
   <button data-tab="validation" onclick="showTab('validation')">Validation</button>
   <button data-tab="audit" onclick="showTab('audit')">Audit Trail</button>
+  <button data-tab="api" onclick="showTab('api')">API &amp; Report</button>
 </nav>
 
 <div class="wrap">
   <div id="hero" class="hero">
-    <h2>Run a live comparable-company valuation</h2>
-    <p>Type an Indian MSME name above and press <b>Run valuation</b>. The engine resolves it via
-    D&amp;B, screens the whole universe through its filter chain, and produces a ranged,
-    audited equity valuation — right here, downloadable as PDF.</p>
-    <div class="chips">
-      <button onclick="quick('Woodward')">Woodward</button>
-      <button onclick="quick('Kirloskar Brothers Pumps')">Kirloskar Brothers Pumps</button>
-      <button onclick="quick('Bharat Forge Components')">Bharat Forge Components</button>
-      <button onclick="quick('Jash Fluid Systems')">Jash Fluid Systems</button>
+    <h2>Value an Indian MSME — audited, ranged, explained</h2>
+    <p>The engine screens the whole universe through a 15-control filter chain and produces a
+    ranged, confidence-scored equity valuation with a complete audit trail — downloadable as PDF.</p>
+    <div class="options">
+      <div class="optcard">
+        <h3>🔎 Search the database</h3>
+        <p>The company already exists in the universe — type its name in the search box above
+        and every figure comes with file-and-row lineage from the source extracts.</p>
+        <div class="chips" style="justify-content:flex-start;margin:0" id="heroChips"></div>
+      </div>
+      <div class="optcard">
+        <h3>💬 Describe your company</h3>
+        <p>Not in the database? A guided intake agent asks ~12 questions — each with the theory
+        of why it matters — then values your company against database peers, with an explicit
+        penalty when no exact match exists.</p>
+        <button class="btn" onclick="startIntake()">Start guided intake</button>
+      </div>
+      <div class="optcard muted">
+        <h3>📄 Upload financial PDFs<span class="soon">COMING SOON</span></h3>
+        <p>Drop annual-report PDFs and the figures will be extracted automatically into the
+        same intake flow. The extraction layer is not wired up yet — use the guided intake.</p>
+        <button class="btn" disabled>Upload PDFs</button>
+      </div>
     </div>
   </div>
+
+  <div id="chat" style="display:none" class="chatwrap no-print">
+    <div class="iprog"><div class="fill" id="iprogfill" style="width:0%"></div></div>
+    <div class="iproglab" id="iproglab">0 answered</div>
+    <div class="chatlog" id="chatlog"></div>
+    <div class="chatbar">
+      <input id="chatin" placeholder="Type your answer… ('skip' for optional questions)" autocomplete="off">
+      <button class="btn" onclick="sendIntake()">Send</button>
+      <button class="btn" style="background:transparent;color:var(--ink2);border:1px solid var(--grid)"
+        onclick="cancelIntake()">Cancel</button>
+    </div>
+  </div>
+
   <div id="report" style="display:none"></div>
 </div>
 
@@ -216,6 +317,10 @@ let STATUS=null;
 fetch("/api/status").then(r=>r.json()).then(j=>{STATUS=j;
   $("#q").placeholder=`Search ${Number(j.universe).toLocaleString("en-IN")} companies… `+
     (j.data_source==="real"?"e.g. 20 Microns":"e.g. Woodward");
+  const names=j.data_source==="real"
+    ?["20 Microns Ltd.","Aarti Industries Ltd.","Kirloskar Brothers Ltd."]
+    :["Woodward","Kirloskar Brothers Pumps","Bharat Forge Components"];
+  $("#heroChips").innerHTML=names.map(n=>`<button onclick="quick('${n.replace(/'/g,"\\'")}')">${esc(n)}</button>`).join("");
 }).catch(()=>{});
 fetch("/api/companies").then(r=>r.json()).then(j=>{
   $("#companies").innerHTML=(j.companies||[]).map(c=>`<option value="${esc(c)}">`).join("");
@@ -237,6 +342,7 @@ $("#q").addEventListener("input",()=>{
 /* ---------------- run ---------------- */
 async function runValuation(){
   const name=$("#q").value.trim(); if(!name)return;
+  cancelIntake();
   const btn=$("#runBtn"); btn.disabled=true;
   btn.innerHTML='<span class="spin"></span>&nbsp;Valuing…';
   try{
@@ -249,6 +355,67 @@ async function runValuation(){
   }
   btn.disabled=false;btn.textContent="Run valuation";
 }
+
+/* ---------------- guided intake (conversational agent) ---------------- */
+let INTAKE=null;
+async function startIntake(){
+  try{
+    const j=await(await fetch("/api/v1/intake/start",{method:"POST"})).json();
+    INTAKE={sid:j.session_id};
+    $("#hero").style.display="none";$("#report").style.display="none";
+    $("#tabnav").style.display="none";$("#chat").style.display="block";
+    $("#chatlog").innerHTML="";
+    bubble("agent",`Hi — I'll build your company's profile question by question, then value it against `+
+      (STATUS?`<b>${Number(STATUS.universe).toLocaleString("en-IN")}</b> companies in the database`
+             :`the database universe`)+
+      `. Every question explains <i>why</i> it matters. Optional ones can be skipped.`);
+    askQ(j.question,j.progress);
+  }catch(e){alert("Could not start intake: "+e);}
+}
+function cancelIntake(){
+  INTAKE=null;$("#chat").style.display="none";
+  if($("#report").innerHTML==="" || $("#report").style.display==="none")
+    $("#hero").style.display=DATA?"none":"block";
+}
+function bubble(kind,html){
+  const d=document.createElement("div");d.className="bubble b-"+kind;d.innerHTML=html;
+  $("#chatlog").appendChild(d);d.scrollIntoView({behavior:"smooth",block:"end"});
+}
+function askQ(q,prog){
+  if(!q)return;
+  INTAKE.q=q;
+  bubble("agent",`<b>${esc(q.prompt)}</b>${q.optional?' <span style="color:var(--muted)">(optional — type “skip”)</span>':""}
+    <div class="help">💡 ${esc(q.help)}</div>`);
+  if(prog){$("#iprogfill").style.width=prog.pct+"%";
+    $("#iproglab").textContent=`${prog.answered}/${prog.total} answered`;}
+  $("#chatin").focus();
+}
+async function sendIntake(){
+  if(!INTAKE)return;
+  const v=$("#chatin").value.trim(); if(!v)return;
+  bubble("me",esc(v)); $("#chatin").value="";
+  try{
+    const r=await fetch(`/api/v1/intake/${INTAKE.sid}/answer`,
+      {method:"POST",headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({value:v})});
+    const j=await r.json();
+    if(!j.ok&&j.error){bubble("err","⚠ "+esc(j.error)+" — try again.");return;}
+    if(j.done){
+      $("#iprogfill").style.width="100%";$("#iproglab").textContent="complete";
+      bubble("agent",'✅ That\'s everything. <span class="spin" style="border-color:#ccc;border-top-color:var(--accent)"></span> Screening the universe and valuing your company…');
+      const vr=await fetch(`/api/v1/intake/${INTAKE.sid}/value`,{method:"POST"});
+      DATA=await vr.json();
+      window.LAST_SID=INTAKE.sid;
+      $("#chat").style.display="none";INTAKE=null;
+      render();
+      return;
+    }
+    askQ(j.question,j.progress);
+  }catch(e){bubble("err","⚠ "+esc(e));}
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&document.activeElement===$("#chatin"))sendIntake();
+});
 
 /* ---------------- render ---------------- */
 function render(){
@@ -273,7 +440,9 @@ function render(){
     + `<section class="tab" id="tab-validation">${validationTab()}</section>`
     + `<section class="tab" id="tab-audit"><div class="card"><h2>Audit Trail</h2>
         <div class="purpose">every D&B call and engine decision — typed, ordered, replayable</div>
-        ${auditTable()}</div></section>`;
+        ${auditTable()}</div></section>`
+    + `<section class="tab" id="tab-api">${apiTab()}</section>`;
+  $("#rptBtn").disabled=false;
   showTab("overview");
   drawField(); drawFunnel();
   const rb=$("#robustBtn"); if(rb&&ROBUST) renderRobust();
@@ -406,7 +575,8 @@ const FILTERS=[
  ["D","11","Top-N cut","Only the 15 highest-scoring peers enter the valuation.","compute_valuation","top_n = 15"],
  ["D","12","Similarity weighting","Borderline peers (score < 0.85) are down-weighted, tapering to a 0.15 floor — inexact comps cannot distort the answer.","PEERS_WEIGHTED","weighted percentile"],
  ["D","13","Multiple eligibility","Only LISTED comps with market EV feed trading multiples (book capital-employed fallback if < 3 listed); the driver must be > 0.","FALLBACK_BOOK_EV","per method"],
- ["D","14","Outlier trim","Tukey fence: multiples outside [Q1−1.5·IQR, Q3+1.5·IQR] are dropped.","METHOD_COMPUTED","1.5 × IQR"]];
+ ["D","14","Outlier trim","Tukey fence: multiples outside [Q1−1.5·IQR, Q3+1.5·IQR] are dropped.","METHOD_COMPUTED","1.5 × IQR"],
+ ["D","15","Scale-mismatch penalty","Target outside the peer revenue band → all multiples adjusted (−7.5% per log-decade below the band, capped 15%; +5%/decade above, capped 10%). The explicit penalty for 'no exact-size peer exists'.","COMPARABILITY_ADJUSTMENT","disclosed ±%"]];
 const STAGE={A:["st-a","Stage A — Universe & eligibility"],B:["st-b","Stage B — Hard knock-outs (reject before scoring)"],
              C:["st-c","Stage C — Weighted similarity scoring (0–1)"],D:["st-d","Stage D — Post-scoring quality controls"]};
 function filtersTab(){
@@ -432,6 +602,17 @@ function filtersTab(){
     <div class="callout co-info"><b>What is NOT used:</b> import data and per-capita metrics are not part of the
       calculation — they are not in the D&amp;B financial payload. The only trade-related signal is the
       <b>export flag</b> (filter&nbsp;10). Everything above is the complete list.</div>
+    <div class="callout co-good"><b>What the chain guarantees (can never happen):</b>
+      a peer with a different operating model, value chain or major industry reaching the valuation ·
+      a single outlier multiple moving the answer · borderline comps dominating (weights taper to a
+      0.15 floor and the range widens on the effective count) · a size-mismatched peer set silently
+      inflating a small company's value · a fabricated number when nothing survives — the answer is
+      honestly "none" with the audit trail explaining why.</div>
+    <div class="callout co-warn"><b>What it cannot guarantee:</b> filters compare what the data contains —
+      a misdescribed company misclassifies <i>visibly</i> (in the audit trail), not silently · industry
+      codes approximate product overlap, they don't prove it · on the real extract, multiples are
+      book-basis (no market prices in the source) with disclosed caveats · precedent transactions are
+      derived from a control premium, not observed deals.</div>
     <h3 style="margin-top:16px;font-size:14px">Rejected this run (${rejTotal.toLocaleString("en-IN")} total${rejTotal>rej.length?`, first ${rej.length} shown — full counts by check in the audit trail`:""})</h3>
     <table><thead><tr><th>Entity</th><th>Model</th><th>Value chain</th><th>Major</th><th>Reason</th></tr></thead>
     <tbody>${rej.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.operating_model)}</td>
@@ -440,40 +621,77 @@ function filtersTab(){
   </div>`;
 }
 
-/* ---------------- peers tab ---------------- */
-function peersTab(){
-  const rows=DATA.peers.map((p,i)=>{
-    const m=p.multiples||{};
-    return `<tr>
-      <td class="num">${i+1}</td>
-      <td><b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:11.5px">${esc(p.city)}</span></td>
-      <td>${p.listed?'<span class="tag tag-listed">LISTED</span>':'<span class="tag tag-unl">unlisted</span>'}
-          ${p.borderline?'<br><span class="tag tag-bl">⚠ borderline</span>':""}</td>
-      <td class="num">${cr(p.revenue_cr)}</td>
-      <td class="num">${pct(p.ebitda_margin)}</td>
-      <td class="num">${pct(p.revenue_growth)}</td>
-      <td class="num">${m["EV/EBITDA"]?num(m["EV/EBITDA"],1)+"x":"—"}</td>
-      <td class="num">${m["EV/Revenue"]?num(m["EV/Revenue"],2)+"x":"—"}</td>
-      <td class="num">${m["EV/EBIT"]?num(m["EV/EBIT"],1)+"x":"—"}</td>
-      <td class="num">${num(p.score,3)}</td>
-      <td><span class="wbar ${p.weight>=1?"full":""}" style="width:${(46*p.weight).toFixed(0)}px"></span>
-          <span style="font-size:11.5px;color:var(--ink2)"> ${num(p.weight,2)}</span></td>
-    </tr>
-    <tr><td></td><td colspan="10" style="padding-top:0;color:var(--muted);font-size:11.5px;border-bottom:1px solid var(--grid)">
-      ✓ ${esc((p.selected_because||[]).join("; ")||"—")}${(p.differences||[]).length?` &nbsp;·&nbsp; Δ ${esc(p.differences.join("; "))}`:""}</td></tr>`;
+/* ---------------- peers tab (stacked detail cards) ---------------- */
+const DIMW={industry:.40,scale:.20,margin:.15,customer:.15,export:.10};
+const DIMLAB={industry:"Industry proximity",scale:"Scale proximity",margin:"Margin proximity",
+              customer:"Customer type",export:"Export profile"};
+function peerCard(p,i){
+  const m=p.multiples||{};
+  const dims=Object.keys(DIMW).map(k=>{
+    const v=(p.components||{})[k]||0, f=Math.min(1,v/DIMW[k]);
+    return `<div class="cb" style="grid-template-columns:126px 1fr 78px;margin:4px 0">
+      <div class="lab">${DIMLAB[k]}</div>
+      <div class="track"><div class="fill" style="width:${(f*100).toFixed(0)}%"></div></div>
+      <div class="val">${v.toFixed(2)}/${DIMW[k].toFixed(2)}</div></div>`;
   }).join("");
-  return `<div class="card">
-    <h2>Comparable companies (${DATA.peers.length} of ${DATA.peers_ranked_count} ranked)</h2>
-    <div class="purpose">the peer set that prices the target — scores, weights and trading multiples</div>
-    <p class="explain"><b>Score</b> is the 5-dimension similarity (industry 40% · scale 20% · margin 15% ·
-      customer 15% · export 10%). <b>Weight</b> is how much the peer's multiple counts — full matches (≥0.85) count
-      fully, borderline comps taper toward 0.15 so they cannot distort the valuation. Only LISTED peers contribute
-      trading multiples.</p>
-    <div style="overflow-x:auto"><table><thead><tr>
-      <th>#</th><th>Company</th><th>Status</th><th class="num">Revenue</th><th class="num">EBITDA mgn</th>
-      <th class="num">Growth</th><th class="num">EV/EBITDA</th><th class="num">EV/Rev</th><th class="num">EV/EBIT</th>
-      <th class="num">Score</th><th>Weight</th></tr></thead><tbody>${rows}</tbody></table></div>
+  const checks=[
+    ["Geography — India",1],["Not the target itself",1],
+    ["Operating model = target's",1],["Value chain = target's",1],
+    ["Major industry = target's",1],
+    [`Similarity rank #${i+1} → inside top-15 cut`,1],
+    [`Multiple basis: ${p.ev_basis}`,p.ev_basis!=="none"],
+    [p.borderline?`Borderline match — down-weighted to ${num(p.weight,2)}`
+                 :`Full-strength match (weight ${num(p.weight,2)})`,!p.borderline],
+  ];
+  const passed=checks.filter(c=>c[1]).length;
+  const checkRows=checks.map(c=>`<div><span class="${c[1]?"pk-pass":"pk-warn"}">${c[1]?"✓":"⚠"}</span> ${esc(c[0])}</div>`).join("");
+  return `<div class="pcard">
+    <div class="pcard-head">
+      <div style="display:flex;align-items:center">
+        <span class="rank">${i+1}</span>
+        <div><div class="nm">${esc(p.name)}
+          ${p.listed?'<span class="tag tag-listed">LISTED</span>':'<span class="tag tag-unl">unlisted</span>'}
+          ${p.borderline?'<span class="tag tag-bl">⚠ borderline</span>':""}</div>
+        <div class="sub">${esc(p.city||"")} · DUNS ${esc(p.duns)}</div></div>
+      </div>
+      <div class="matchpct"><div class="big">${(p.score*100).toFixed(1)}%</div>
+        <div class="s">match confidence · checks ${passed}/${checks.length}</div></div>
+    </div>
+    <div class="pcols">
+      <div><h4>Financial profile</h4>
+        <table class="mini"><tbody>
+          <tr><td>Revenue</td><td>${cr(p.revenue_cr)}</td></tr>
+          <tr><td>EBITDA margin</td><td>${pct(p.ebitda_margin)}</td></tr>
+          <tr><td>Revenue growth</td><td>${pct(p.revenue_growth)}</td></tr>
+          <tr><td>EV/EBITDA</td><td>${m["EV/EBITDA"]?num(m["EV/EBITDA"],1)+"x":"—"}</td></tr>
+          <tr><td>EV/Revenue</td><td>${m["EV/Revenue"]?num(m["EV/Revenue"],2)+"x":"—"}</td></tr>
+          <tr><td>EV/EBIT</td><td>${m["EV/EBIT"]?num(m["EV/EBIT"],1)+"x":"—"}</td></tr>
+          <tr><td>EV basis</td><td>${esc(p.ev_basis)} ${p.market_ev_cr?`(${cr(p.market_ev_cr)})`:(p.book_ev_cr?`(book ${cr(p.book_ev_cr)})`:"")}</td></tr>
+        </tbody></table>
+      </div>
+      <div><h4>Similarity — 5 weighted dimensions (Σ = ${num(p.score,3)})</h4>${dims}
+        <div style="font-size:11.5px;color:var(--muted);margin-top:5px">weight in the multiple math:
+        <span class="wbar ${p.weight>=1?"full":""}" style="width:${(46*p.weight).toFixed(0)}px"></span> ${num(p.weight,2)}</div>
+      </div>
+      <div><h4>Checks passed (${passed}/${checks.length})</h4>
+        <div class="pchecks">${checkRows}</div>
+      </div>
+    </div>
+    <div class="pwhy"><b>Why selected:</b> ${esc((p.selected_because||[]).join("; ")||"—")}
+      ${(p.differences||[]).length?`<br><b>Differences:</b> ${esc(p.differences.join("; "))}`:""}</div>
   </div>`;
+}
+function peersTab(){
+  return `<div class="card" style="margin-bottom:14px">
+    <h2>Comparable companies (${DATA.peers.length} of ${DATA.peers_ranked_count} ranked)</h2>
+    <div class="purpose">one detail card per peer — match confidence, every check it passed, all five similarity dimensions, and its multiples</div>
+    <p class="explain"><b>Match confidence</b> is the 5-dimension similarity score (industry 40% · scale 20% ·
+      margin 15% · customer 15% · export 10%). Every peer below already survived the hard knock-outs — a
+      company with a different operating model, value chain or major industry can never appear here.
+      <b>Weight</b> is how much the peer's multiple counts: full matches (≥ 85%) count fully, borderline
+      comps taper toward a 0.15 floor so they cannot distort the valuation.</p>
+  </div>
+  ${DATA.peers.map((p,i)=>peerCard(p,i)).join("")}`;
 }
 
 /* ---------------- valuation tab ---------------- */
@@ -506,9 +724,37 @@ function valuationTab(){
       ${esc(val.headline_method)} ${num(h.multiple_median,2)}x × ${cr(h.target_driver)} =
       EV ${cr(h.ev_mid_cr)} &nbsp;−&nbsp; net debt ${cr(val.net_debt_cr)} &nbsp;−&nbsp; DLOM ${pct(val.discount,0)}
       &nbsp;=&nbsp; <b style="color:var(--accent)">equity ${cr(val.equity_mid_cr)}</b></div>
+    ${compAdjBlock()}
+    ${txnBlock()}
     <p class="explain" style="margin-top:10px"><b>Positioning.</b> ${esc(val.positioning||"—")}<br>
       <b>Range basis.</b> ${esc(h.range_basis||"")} · <b>EV basis.</b> ${esc(val.ev_basis)}</p>
   </div>`;
+}
+function compAdjBlock(){
+  const ca=(DATA.valuation||{}).comparability_adjustment;
+  if(!ca)return "";
+  if(!ca.applied)
+    return `<div class="callout co-good"><b>✓ Comparability check — no scale mismatch.</b>
+      Target revenue ${cr(ca.target_revenue_cr)} sits inside the peer band
+      (${cr(ca.peer_revenue_min_cr)} – ${cr(ca.peer_revenue_max_cr)}), so no size adjustment
+      was needed.</div>`;
+  return `<div class="callout co-warn"><b>Comparability adjustment — multiples
+      ${ca.direction==="down"?"▼ marked DOWN":"▲ marked UP"} ${ca.pct>0?"+":""}${num(ca.pct,1)}%.</b>
+      ${esc(ca.reason)}.<br><span style="color:var(--ink2);font-size:12.5px"><b>Why.</b>
+      No peer of comparable size exists, and size-premium evidence shows smaller companies
+      trade at lower multiples than larger ones. This explicit, audited penalty
+      (<span class="mono">COMPARABILITY_ADJUSTMENT</span>) replaces silent over/under-statement.</span></div>`;
+}
+function txnBlock(){
+  const tx=(DATA.valuation||{}).transaction_analysis;
+  if(!tx)return "";
+  return `<div class="callout co-info"><b>Comparable-transactions view (indicative) —
+      what a control buyer might pay: ${cr(tx.acquisition_equity_low_cr)} –
+      <span style="color:var(--accent)">${cr(tx.acquisition_equity_mid_cr)}</span> –
+      ${cr(tx.acquisition_equity_high_cr)}.</b><br>
+      <span style="color:var(--ink2);font-size:12.5px"><b>Theory.</b> The headline range above is a
+      MINORITY trading value. Acquirers of control pay a premium (control of cash flows, synergies) —
+      empirical studies cluster at <b>20–30%</b>. ${esc(tx.caveat)}</span></div>`;
 }
 
 /* ---------------- validation tab ---------------- */
@@ -561,6 +807,71 @@ function renderRobust(){
     <div class="callout ${s.robust?"co-good":"co-warn"}"><b>${s.robust?"✓ ROBUST":"⚠ REVIEW"}</b> — positioning beats the
       naive baseline on ${s.seeds_where_positioning_beats_naive}/${s.n_seeds} fresh universes
       (mean MAE ${s.mean_pos_mae_pct}% vs ${s.mean_med_mae_pct}%). Not seed-luck.</div>`;
+}
+
+/* ---------------- API & Report tab ---------------- */
+function reportLinks(){
+  const t=DATA.target||{};
+  const isCustom=String(t.duns||"").startsWith("CUSTOM-");
+  if(isCustom&&window.LAST_SID){
+    const b=`/api/v1/intake/${window.LAST_SID}`;
+    return {json:[["GET",b,"intake session state (answers, progress)"],
+                  ["POST",b+"/value","re-run this valuation → full JSON"]],
+            report:b+"/report", print:b+"/report?print=1"};
+  }
+  const nm=encodeURIComponent(DATA.query||t.name||"");
+  return {json:[["GET","/api/v1/valuations?name="+nm,
+                 "this valuation → full JSON (peers, adjustments, audit, lineage)"]],
+          report:"/api/v1/valuations/report?name="+nm,
+          print:"/api/v1/valuations/report?name="+nm+"&print=1"};
+}
+function openReport(){ if(DATA) window.open(reportLinks().report,"_blank"); }
+function apiTab(){
+  const L=reportLinks();
+  const mine=[...L.json,
+    ["GET",L.report,"full HTML report (all sections + theory)"],
+    ["GET",L.print,"report that auto-opens the print-to-PDF dialog"]];
+  const mineRows=mine.map(r=>`<tr class="apirow">
+    <td><span class="method ${r[0]==="GET"?"m-get":"m-post"}">${r[0]}</span></td>
+    <td>${r[0]==="GET"?`<a class="apiurl" target="_blank" href="${r[1]}">${esc(r[1])}</a>`
+                      :`<span class="apiurl">${esc(r[1])}</span>`}</td>
+    <td>${esc(r[2])}</td></tr>`).join("");
+  const cat=[
+    ["GET","/api/v1/health","liveness + readiness (universe cache warm?)"],
+    ["GET","/api/v1/status","data source, universe size, versions, caveats"],
+    ["GET","/api/v1/companies/suggest?q=","company-name autocomplete"],
+    ["GET","/api/v1/valuations?name=","full valuation JSON · 404 no match · 422 insufficient data"],
+    ["GET","/api/v1/valuations/report?name=&print=1","HTML report; print=1 opens the PDF dialog"],
+    ["POST","/api/v1/intake/start","open a guided-intake conversation"],
+    ["POST","/api/v1/intake/{sid}/answer","answer or skip the current question"],
+    ["GET","/api/v1/intake/{sid}","intake session state"],
+    ["POST","/api/v1/intake/{sid}/value","value the intake company against the database"],
+    ["GET","/api/v1/intake/{sid}/report?print=1","intake valuation report (HTML/PDF)"],
+    ["GET","/api/v1/filters","complete filter chain + guarantees + limitations"],
+    ["GET","/api/v1/validation","anti-overfitting backtest (methodology proof)"],
+    ["GET","/api/v1/robustness","5-seed robustness sweep"],
+    ["GET","/api/v1/database/status","ETL provenance: counts, recon rate, source hashes, age"]];
+  const catRows=cat.map(r=>`<tr class="apirow">
+    <td><span class="method ${r[0]==="GET"?"m-get":"m-post"}">${r[0]}</span></td>
+    <td><span class="apiurl">${esc(r[1])}</span></td><td>${esc(r[2])}</td></tr>`).join("");
+  return `<div class="card">
+    <h2>This valuation, programmatically</h2>
+    <div class="purpose">every number on this page is served by the API — same JSON, same report</div>
+    <table><thead><tr><th style="width:70px">Method</th><th>Endpoint</th><th>Returns</th></tr></thead>
+    <tbody>${mineRows}</tbody></table>
+    <div style="margin-top:12px">
+      <button class="btn btn-run" style="background:var(--accent);color:#fff" onclick="openReport()">Open full report</button>
+      <button class="btn" style="border:1px solid var(--grid);background:var(--surface);margin-left:8px"
+        onclick="window.open(reportLinks().print,'_blank')">Report → PDF</button>
+      <a class="apiurl" style="margin-left:14px" target="_blank" href="/docs">interactive OpenAPI docs → /docs</a>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Full API catalog</h2>
+    <div class="purpose">every part of the pipeline has an endpoint — nothing on this page is UI-only</div>
+    <table><thead><tr><th style="width:70px">Method</th><th>Endpoint</th><th>Returns</th></tr></thead>
+    <tbody>${catRows}</tbody></table>
+  </div>`;
 }
 
 /* ---------------- audit ---------------- */

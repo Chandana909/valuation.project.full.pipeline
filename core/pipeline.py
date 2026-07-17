@@ -10,8 +10,10 @@ to INR Crore (÷10,000). All downstream math is in Crore.
 """
 
 from dataclasses import dataclass, field, asdict
-from math import log1p
+from math import log1p, log10
 from typing import Optional, List, Dict, Any
+
+from .calibration import anchor_for as _sector_anchor, describe as _sector_describe
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +99,8 @@ class Valuation:
     market_cross_check: Optional[Dict[str, Any]] = None  # listed target: comps vs own mkt cap
     effective_peer_count: Optional[float] = None    # similarity-weighted peer count
     n_borderline: int = 0                           # peers below the strong-match line
+    comparability_adjustment: Optional[Dict[str, Any]] = None  # scale-mismatch penalty
+    transaction_analysis: Optional[Dict[str, Any]] = None      # indicative M&A view
     notes: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
@@ -727,6 +731,50 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                            {"n_peers": n_used,
                             "effective_peer_count": effective_peer_count, "window": window})
 
+    # --- Comparability (scale-mismatch) adjustment -----------------------
+    # The similarity weights already down-weight borderline comps, but when the
+    # target's SIZE falls outside the scale band its peers actually span, even a
+    # weighted multiple is not fully transferable: size-premium studies show
+    # smaller companies systematically trade at lower multiples than larger
+    # peers (higher required returns), and vice-versa. So if the target's
+    # revenue is below the smallest used peer (with 20% tolerance) the positioned
+    # multiples are marked DOWN 7.5% per log10 decade of gap (capped at 15%);
+    # above the largest peer (25% tolerance) they are marked UP 5%/decade
+    # (capped at 10%). Inside the peer scale band → no adjustment. Always
+    # disclosed and audited; this is the explicit penalty for "no exact-size
+    # peer exists", separate from (and additive to) similarity weighting.
+    peer_revs = [r["company"].revenue_cr for r in used
+                 if (r["company"].revenue_cr or 0) > 0]
+    comp_adj = {"applied": False, "direction": "none", "pct": 0.0,
+                "target_revenue_cr": target.revenue_cr,
+                "peer_revenue_min_cr": round(min(peer_revs), 2) if peer_revs else None,
+                "peer_revenue_max_cr": round(max(peer_revs), 2) if peer_revs else None,
+                "reason": "target size within the peer scale band — no adjustment"}
+    scale_factor = 1.0
+    if peer_revs and (target.revenue_cr or 0) > 0:
+        lo_band, hi_band = min(peer_revs) * 0.8, max(peer_revs) * 1.25
+        if target.revenue_cr < lo_band:
+            gap_decades = log10(lo_band / target.revenue_cr)
+            adj = -min(0.15, 0.075 * gap_decades)
+            scale_factor = 1.0 + adj
+            comp_adj.update(applied=True, direction="down", pct=round(adj * 100, 1),
+                            reason=(f"target revenue ₹{target.revenue_cr:,.0f} Cr is below "
+                                    f"the smallest used peer (₹{min(peer_revs):,.0f} Cr): "
+                                    f"size-premium penalty {adj*100:.1f}% on all multiples"))
+        elif target.revenue_cr > hi_band:
+            gap_decades = log10(target.revenue_cr / hi_band)
+            adj = min(0.10, 0.05 * gap_decades)
+            scale_factor = 1.0 + adj
+            comp_adj.update(applied=True, direction="up", pct=round(adj * 100, 1),
+                            reason=(f"target revenue ₹{target.revenue_cr:,.0f} Cr exceeds "
+                                    f"the largest used peer (₹{max(peer_revs):,.0f} Cr): "
+                                    f"scale uplift +{adj*100:.1f}% on all multiples"))
+    if comp_adj["applied"]:
+        warnings.append(f"comparability adjustment: {comp_adj['reason']}")
+        if audit is not None:
+            audit.decision("value", "COMPARABILITY_ADJUSTMENT",
+                           comp_adj["reason"], comp_adj)
+
     # Net debt bridges enterprise value to equity value.
     net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
     if not (target.debt_known and target.cash_known):
@@ -827,6 +875,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
         "EV/EBIT": target.ebit_cr,
     }
 
+    calibrated_any = None
     for mname, _driver in _METHOD_SPEC:
         # market-primary, book-fallback selection of the peer multiple set
         if len(market_multiples[mname]) >= 3:
@@ -841,6 +890,29 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                                f"capital-employed multiples",
                                {"method": mname,
                                 "n_market": len(market_multiples[mname])})
+            # SECTOR CALIBRATION (see core/calibration.py): book capital employed
+            # is not enterprise value — its "multiples" sit 2–4x below trading
+            # levels. Re-level the peer distribution so its weighted median hits
+            # the sector's trading anchor; shape/dispersion/weights (and thus the
+            # target's quality positioning) are preserved exactly.
+            anchor = _sector_anchor(target.hoovers, mname, target.revenue_cr)
+            if anchor and raw:
+                med = _weighted_percentile(raw, 0.5)
+                if med and med > 0:
+                    factor = _clamp(anchor / med, 0.25, 25.0)
+                    raw = [(v * factor, w) for v, w in raw]
+                    method_basis = "sector-calibrated"
+                    calibrated_any = _sector_describe(target.hoovers,
+                                                      target.revenue_cr)
+                    if audit is not None:
+                        audit.decision(
+                            "value", "SECTOR_CALIBRATED",
+                            f"{mname}: book multiples re-levelled ×{factor:.2f} so "
+                            f"the peer median meets the sector trading anchor "
+                            f"{anchor}x (book median was {med:.2f}x)",
+                            {"method": mname, "anchor": anchor,
+                             "book_median": round(med, 3),
+                             "factor": round(factor, 3)})
         kept, dropped = _tukey_trim_pairs(raw)
         tdriver = target_drivers[mname]
         if tdriver is None or tdriver <= 0:
@@ -872,6 +944,9 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                 ks = sorted(v for v, _ in kept)
                 lo_v, hi_v = ks[0], ks[-1]
                 p_low, p_mid, p_high = lo_v, (lo_v + hi_v) / 2.0, hi_v
+        # scale-mismatch penalty/uplift (same positive factor → ordering preserved)
+        p_low, p_mid, p_high = (p_low * scale_factor, p_mid * scale_factor,
+                                p_high * scale_factor)
 
         def equity(mult):
             ev_x = mult * tdriver
@@ -902,6 +977,13 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                        {"method": mname, "multiple": round(p_mid, 4),
                         "ev_basis": method_basis, "effective_n": eff_n,
                         "n_multiples": len(kept), "n_outliers_dropped": dropped})
+
+    if calibrated_any:
+        note = (f"multiples are SECTOR-CALIBRATED — peer book distributions "
+                f"re-levelled to published trading anchors ({calibrated_any}); "
+                f"replace the anchor table with a live market feed for exact levels")
+        notes.append(note)
+        ev_basis += " " + note.capitalize() + "."
 
     # headline selection: EV/EBITDA -> EV/Revenue -> EV/EBIT
     order = ["EV/EBITDA", "EV/Revenue", "EV/EBIT"]
@@ -940,10 +1022,39 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             peers_used=peers_used_out, ev_basis=ev_basis,
             quality_percentile=round(q_rank, 3), positioning=positioning,
             effective_peer_count=effective_peer_count, n_borderline=n_borderline,
+            comparability_adjustment=comp_adj,
             notes=notes, warnings=warnings,
         )
 
     h = computed[headline_method]
+
+    # --- Comparable-transactions view (indicative, honestly derived) ------
+    # The data source has no M&A transaction database, so observed precedent-
+    # transaction multiples are unavailable. What CAN be stated defensibly:
+    # acquisitions of CONTROL price above minority trading value — empirical
+    # control-premium studies cluster around 20–30%. We therefore publish an
+    # indicative acquisition range = comps equity × (1 + premium band), clearly
+    # labelled as derived. When a transaction database is added, replace this
+    # with observed deal multiples (the block's shape stays the same).
+    transaction_analysis = {
+        "basis": "derived: trading-comps equity × control premium (no precedent-"
+                 "transaction database in the current data source)",
+        "control_premium_low": 0.20, "control_premium_mid": 0.25,
+        "control_premium_high": 0.30,
+        "acquisition_equity_low_cr": round(h["equity_low_cr"] * 1.20, 2),
+        "acquisition_equity_mid_cr": round(h["equity_mid_cr"] * 1.25, 2),
+        "acquisition_equity_high_cr": round(h["equity_high_cr"] * 1.30, 2),
+        "caveat": "Indicative only — what a CONTROL buyer might pay relative to the "
+                  "minority trading value above. Replace with observed precedent-"
+                  "transaction multiples when a deal database is integrated.",
+    }
+    if audit is not None:
+        audit.info("value", "TRANSACTION_VIEW",
+                   f"indicative acquisition range ₹{transaction_analysis['acquisition_equity_low_cr']:,.0f}"
+                   f"–{transaction_analysis['acquisition_equity_mid_cr']:,.0f}"
+                   f"–{transaction_analysis['acquisition_equity_high_cr']:,.0f} Cr "
+                   f"(control premium 20–30% over comps equity)",
+                   {"premium_band": [0.20, 0.30]})
 
     # Market cross-check — the strongest accuracy signal available. When the target
     # is itself listed we can compare our comps-derived equity to its OWN observed
@@ -974,6 +1085,8 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
         quality_percentile=round(q_rank, 3), positioning=positioning,
         market_cross_check=market_cross_check,
         effective_peer_count=effective_peer_count, n_borderline=n_borderline,
+        comparability_adjustment=comp_adj,
+        transaction_analysis=transaction_analysis,
         notes=notes, warnings=warnings,
     )
 

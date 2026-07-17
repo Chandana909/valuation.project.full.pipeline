@@ -189,6 +189,11 @@ class RealDnBClient:
         """Valuation-grade companies (revenue>0, EBITDA & net worth present, 12m)."""
         return [str(a) for a in self._universe]
 
+    def industry_catalog(self):
+        """{CD_Industry category -> pseudo-NAICS} — lets the intake agent map a
+        free-text sector onto the SAME classification space as the universe."""
+        return dict(self._naics)
+
     def search_names(self, q, limit=20):
         """Prefix/substring suggestions for the UI autocomplete."""
         ql = (q or "").strip().lower()

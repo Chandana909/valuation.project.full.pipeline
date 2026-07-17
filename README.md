@@ -19,23 +19,53 @@ stores **per-row provenance** (source file + Excel row for every figure) and run
 every valuation carries a per-field **lineage table** tracing each number to its cell.
 
 ```bash
+pip install -r requirements.txt      # fastapi + uvicorn (API layer) + openpyxl (ETL)
 python etl.py                        # one-time: build realdata.db from the 9 Excel files
 python run.py "20 Microns Ltd." --data real
-python server.py                     # UI auto-uses realdata.db when present
+python api.py                        # API + UI; auto-uses realdata.db when present
 ```
 
-## Run — live UI (recommended)
+## Run — API + live UI (recommended)
 
 ```bash
-python server.py            # → http://localhost:8733  (real data if realdata.db exists)
+python api.py               # → http://localhost:8733  (real data if realdata.db exists)
 ```
 
-Type a company name in the browser (autocomplete over the universe), press **Run
-valuation**, and the full industry-style report renders in-page — tabbed
-(Overview | Filters | Peer Analysis | Valuation | Validation | Audit Trail), light-themed,
-with a football-field chart, the complete filter-chain documentation with live counts,
-and a **Download PDF** button (print-to-PDF, no dependencies). The server is pure
-stdlib `http.server` — no flask/fastapi, consistent with the dependency budget.
+- **UI** at `/` — type a company name (autocomplete over the universe), press **Run
+  valuation**, and the full industry-style report renders in-page — tabbed
+  (Overview | Filters | Peer Analysis | Valuation | Validation | Audit Trail), with a
+  football-field chart, the complete filter-chain documentation with live counts, and a
+  **Download PDF** button.
+- **REST API** (OpenAPI docs at `/docs`):
+
+| endpoint | returns |
+|---|---|
+| `GET /api/v1/health` | liveness + readiness (universe cache warm?) |
+| `GET /api/v1/status` | data source, universe size, versions, caveats |
+| `GET /api/v1/companies/suggest?q=` | autocomplete suggestions |
+| `GET /api/v1/valuations?name=` | full valuation JSON (404 no match, 422 insufficient data) |
+| `GET /api/v1/valuations/report?name=&print=1` | self-contained HTML report (`print=1` opens the PDF dialog) |
+| `POST /api/v1/intake/start` | open a guided-intake conversation (question + theory) |
+| `POST /api/v1/intake/{sid}/answer` | answer / skip; returns next question or done |
+| `GET /api/v1/intake/{sid}` | session state |
+| `POST /api/v1/intake/{sid}/value` | value the intake company against database peers |
+| `GET /api/v1/intake/{sid}/report?print=1` | HTML/PDF report for the intake valuation |
+| `GET /api/v1/filters` | complete filter chain + guarantees + limitations |
+| `GET /api/v1/validation` | anti-overfitting backtest |
+| `GET /api/v1/robustness` | 5-seed robustness sweep |
+| `GET /api/v1/database/status` | ETL provenance: counts, recon rate, source-file hashes, age |
+
+**Three ways in** (UI at `/`): search the database · **describe your company** (a
+deterministic conversational agent walks a question graph, then values the custom
+company against database peers — with an explicit, audited **scale-mismatch penalty**
+when no exact-size peer exists) · upload PDFs (placeholder — extraction layer not
+wired yet). Every valuation also carries an indicative **comparable-transactions
+view** (control premium over the minority trading value, disclosed as derived).
+
+Deploy with `docker build -t msme-valuation . && docker run -p 8733:8733 msme-valuation`
+(build `realdata.db` first). Config via env: `PORT`, `DATA_SOURCE=real|mock`,
+`CORS_ORIGINS`. The **calculation core stays pure stdlib**; FastAPI exists only in
+this delivery layer.
 
 ## Run — CLI
 
@@ -207,14 +237,19 @@ identical. In production the universe DUNS list is built offline by paging
 ## Layout
 ```
 dnb_valuation/
+├── *.xlsx (9 files)           # raw Accord extracts (data layer input)
+├── etl.py                     # Excel -> realdata.db (SQLite, provenance, recon gate)
+├── realdata/client.py         # RealDnBClient: realdata.db -> D&B envelopes
 ├── mock_api/dnb_mock.py       # MockDnBClient + 59-company universe (real schema)
 ├── core/pipeline.py           # normalize, profile, validate, discover, value (stdlib)
 ├── core/audit.py              # structured, typed audit trail
-├── dashboard/build_dashboard.py
-├── run.py                     # orchestrator + acceptance suite
+├── run.py                     # orchestrator + CLI + acceptance suite
 ├── validate.py                # anti-overfitting backtest + seed-robustness sweep
-├── server.py                  # live UI server (stdlib http.server)
+├── api.py                     # FastAPI service: versioned REST + UI + HTML reports
+├── dashboard/build_dashboard.py  # result dict -> self-contained report HTML
 ├── ui/index.html              # single-file report app (tabs, charts, print-to-PDF)
-└── output/                    # result.json + dashboard.html
+├── requirements.txt · Dockerfile
+└── output/                    # result.json + dashboard.html (CLI outputs)
 ```
-`core/` never imports `mock_api/`; the client is injected in `run.py`.
+`core/` never imports `mock_api/`, `realdata/`, or `api.py`; the client is injected
+in `run.py`. `api.py` is a pure delivery layer over the unchanged core.

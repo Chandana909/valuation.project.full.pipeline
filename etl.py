@@ -24,6 +24,7 @@ Run:  python etl.py            (writes realdata.db; ~1-3 min)
       python etl.py --report   (print the stored report of an existing DB)
 """
 
+import hashlib
 import json
 import os
 import sqlite3
@@ -121,6 +122,8 @@ def build(db_path=DB_PATH):
         os.remove(db_path)
     con = sqlite3.connect(db_path)
     cur = con.cursor()
+    # WAL: readers (the API) never block behind a future writer (a re-run of etl.py)
+    cur.execute("PRAGMA journal_mode=WAL")
     cur.executescript("""
     CREATE TABLE companies(
       accord INTEGER PRIMARY KEY, name TEXT NOT NULL, industry TEXT, nic TEXT,
@@ -141,6 +144,18 @@ def build(db_path=DB_PATH):
     """)
 
     report = {"started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+
+    # fingerprint every source workbook — lets the API detect a stale DB when
+    # the Excel files change after a build
+    report["source_files"] = {}
+    for f in (PL_FILE, BS_FILE, NW_FILE, FX_FILE, BASIC_FILE, SEG_FILE):
+        p = os.path.join(BASE, f)
+        h = hashlib.sha256()
+        with open(p, "rb") as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b""):
+                h.update(chunk)
+        report["source_files"][f] = {"sha256": h.hexdigest()[:16],
+                                     "size_mb": round(os.path.getsize(p) / 1e6, 2)}
 
     # ---- companies -------------------------------------------------------
     rows = []
@@ -251,6 +266,7 @@ def build(db_path=DB_PATH):
     report["finished"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     cur.execute("INSERT OR REPLACE INTO meta VALUES('etl_report',?)", (json.dumps(report),))
     cur.execute("INSERT OR REPLACE INTO meta VALUES('etl_timestamp',?)", (report["finished"],))
+    cur.execute("ANALYZE")          # query-planner statistics for the read path
     con.commit()
     con.close()
     print(f"\nwrote {db_path}")
