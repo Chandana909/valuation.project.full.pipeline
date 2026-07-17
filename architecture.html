@@ -3,338 +3,393 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Architecture — DNB MSME Comparable-Company Valuation Engine (v1.5.0)</title>
+<title>MSME Valuation Engine — Architecture & Filter Data-Flow (v2.1.0)</title>
 <style>
 :root{
-  --bg:#f6f8fb; --panel:#ffffff; --ink:#182230; --muted:#5b6774; --faint:#8a95a3;
-  --line:#e3e8ef; --line2:#cdd6e0; --accent:#2d6fd6; --accent2:#1f3a5f;
-  --good:#1e7d46; --goodbg:#e7f5ec; --warn:#8a6100; --warnbg:#fbf3e2;
-  --bad:#c0392b; --badbg:#fbecea; --chip:#eef3fb;
+  --page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
+  --grid:#e1e0d9;--axis:#c3c2b7;--navy:#123a63;--accent:#2a78d6;
+  --s1:#2a78d6;--s2:#1baf7a;--s3:#eda100;--rej:#d03b3b;--good:#0ca30c;
 }
-*{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;}
-a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
-.top{position:sticky;top:0;z-index:20;background:var(--accent2);color:#fff;
-  padding:14px 26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
-  box-shadow:0 2px 10px rgba(0,0,0,.12);}
-.top h1{font-size:17px;margin:0;font-weight:700;}
-.top .ver{background:#fff;color:var(--accent2);font-weight:800;border-radius:14px;padding:3px 12px;font-size:13px;}
-nav{display:flex;gap:4px;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--line);
-  padding:8px 20px;position:sticky;top:52px;z-index:19;}
-nav a{font-size:12.5px;color:var(--muted);padding:5px 10px;border-radius:7px;}
-nav a:hover{background:var(--chip);text-decoration:none;color:var(--accent);}
-.wrap{max-width:1080px;margin:0 auto;padding:26px 22px 70px;}
-section{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:24px 26px;margin:22px 0;box-shadow:0 1px 3px rgba(20,30,50,.04);}
-h2{font-size:20px;margin:0 0 4px;display:flex;align-items:center;gap:10px;}
-h2 .n{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:8px;
-  display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;}
-.lead{color:var(--muted);font-size:14px;margin:2px 0 18px;}
-h3{font-size:15px;margin:20px 0 8px;color:var(--accent2);}
-p{margin:8px 0;}
-.grid{display:grid;gap:14px;}
-.g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:1fr 1fr 1fr;}
-@media (max-width:820px){.g2,.g3{grid-template-columns:1fr;}}
-.card{border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:#fcfdff;}
-.card h4{margin:0 0 4px;font-size:14px;}
-.card .path{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--accent);}
-.card p{font-size:13px;color:var(--muted);margin:6px 0 0;}
-.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin:0 4px 4px 0;}
-.t-stdlib{background:var(--goodbg);color:var(--good);}
-.t-nollm{background:var(--chip);color:var(--accent);}
-.t-mock{background:var(--warnbg);color:var(--warn);}
-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;}
-th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
-th{background:var(--accent2);color:#fff;font-size:12px;text-transform:uppercase;letter-spacing:.03em;}
-tbody tr:nth-child(even){background:#fafcff;}
-code,.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;
-  background:var(--chip);padding:1px 6px;border-radius:5px;color:var(--accent2);}
-.flow{display:flex;flex-direction:column;gap:0;margin:10px 0;}
-.step{display:flex;gap:14px;align-items:flex-start;}
-.step .rail{display:flex;flex-direction:column;align-items:center;flex:none;width:34px;}
-.step .dot{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
-.step .line{width:2px;flex:1;background:var(--line2);min-height:14px;}
-.step .body{padding-bottom:16px;flex:1;}
-.step .body h4{margin:2px 0 3px;font-size:14.5px;}
-.step .body p{margin:0;font-size:13px;color:var(--muted);}
-.step .body .io{font-size:12px;margin-top:5px;}
-.io b{color:var(--ink);}
-.formula{background:#0f1b2d;color:#dbe7f5;border-radius:10px;padding:12px 15px;margin:10px 0;
-  font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;white-space:pre;}
-.formula .c{color:#7fd08a;} .formula .k{color:#79b8ff;} .formula .m{color:#f0b57a;}
-.pill{display:inline-block;background:var(--chip);border:1px solid var(--line2);border-radius:16px;
-  padding:2px 11px;margin:2px;font-size:12px;color:var(--accent2);font-weight:600;}
-.note{background:var(--warnbg);border-left:4px solid var(--warn);border-radius:8px;padding:10px 14px;
-  font-size:13px;color:#5c451c;margin:12px 0;}
-.ok{background:var(--goodbg);border-left:4px solid var(--good);border-radius:8px;padding:10px 14px;
-  font-size:13px;color:#14532d;margin:12px 0;}
-.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted);}
-.v-now{background:var(--goodbg)!important;font-weight:600;}
-.small{font-size:12px;color:var(--faint);}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;margin:8px 0;}
-.kv b{color:var(--muted);font-weight:600;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14.5px;line-height:1.6}
+.hero{background:var(--navy);color:#fff;padding:38px 26px 30px;text-align:center}
+.hero h1{margin:0;font-size:26px}
+.hero .sub{opacity:.85;margin-top:8px;font-size:14px}
+.hero .chips{margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hero .chip{border:1px solid #ffffff55;border-radius:16px;padding:4px 14px;font-size:12px}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 22px 90px}
+h2{font-size:20px;margin:44px 0 4px;color:var(--navy)}
+h2 .n{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--navy);
+  color:#fff;align-items:center;justify-content:center;font-size:14px;margin-right:10px;vertical-align:-4px}
+h3{font-size:15.5px;margin:22px 0 6px}
+.purpose{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+.card{background:var(--surface);border:1px solid var(--grid);border-radius:12px;padding:18px 22px;margin:14px 0}
+p.theory{border-left:3px solid var(--grid);padding-left:12px;color:var(--ink2);font-size:13.5px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+th,td{padding:8px 10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  border-bottom:2px solid var(--axis)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.callout{border-radius:10px;padding:11px 15px;font-size:13px;margin:12px 0;border:1px solid}
+.co-good{background:#0ca30c10;border-color:#0ca30c55}
+.co-warn{background:#fab2191a;border-color:#fab21980}
+.co-info{background:#2a78d60d;border-color:#2a78d64d}
+svg{max-width:100%;height:auto;display:block;margin:14px auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin:4px 0 8px}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+@media print{ body{background:#fff} .card{break-inside:avoid} }
 </style>
 </head>
 <body>
 
-<div class="top">
-  <h1>DNB MSME Comparable-Company Valuation — Architecture</h1>
-  <span class="ver">v1.5.0</span>
+<div class="hero">
+  <h1>MSME Comparable Valuation Engine</h1>
+  <div class="sub">Architecture &amp; filter data-flow · methodology v2.1.0 · deterministic · touchless · fully audited</div>
+  <div class="chips">
+    <span class="chip">42,951 real companies loaded</span>
+    <span class="chip">13,906 valuation-grade</span>
+    <span class="chip">15-control filter chain</span>
+    <span class="chip">39 + 30 automated checks green</span>
+    <span class="chip">API · UI · PDF reports</span>
+  </div>
 </div>
-<nav>
-  <a href="#overview">Overview</a>
-  <a href="#modules">Modules</a>
-  <a href="#pipeline">Pipeline</a>
-  <a href="#dataflow">Data flow</a>
-  <a href="#calc">Calculation</a>
-  <a href="#params">Parameters</a>
-  <a href="#versions">Version comparison</a>
-  <a href="#validation">Validation</a>
-  <a href="#trust">Trust &amp; controls</a>
-</nav>
 
 <div class="wrap">
 
-<!-- ===================================================== OVERVIEW -->
-<section id="overview">
-  <h2><span class="n">0</span>Overview &amp; design constraints</h2>
-  <p class="lead">A production-grade, <b>touchless</b>, <b>deterministic</b> engine that estimates the equity
-    value of an Indian MSME by pricing it against comparable listed companies, grounded on a single data source
-    (Dun&nbsp;&amp; Bradstreet <span class="mono">dnbhoovers</span>).</p>
-  <div>
-    <span class="tag t-stdlib">core = Python stdlib only</span>
-    <span class="tag t-nollm">NO LLM in the pipeline</span>
-    <span class="tag t-nollm">NO network in core</span>
-    <span class="tag t-mock">runs on a mock returning the REAL D&amp;B schema</span>
-  </div>
-  <div class="grid g3" style="margin-top:14px">
-    <div class="card"><h4>Single data source</h4><p>All identity, industry, financials and directors come from four
-      D&amp;B datasources. No second provider.</p></div>
-    <div class="card"><h4>Mock now, live last</h4><p>The live swap is one method body (an <code>httpx.post</code>);
-      response paths are identical, so nothing downstream changes.</p></div>
-    <div class="card"><h4>Deterministic core</h4><p>Discovery + valuation are pure functions. Seeded synthetic
-      universe. Same input → same output.</p></div>
-    <div class="card"><h4>Never fake precision</h4><p>Every valuation is a <b>range</b> with a disclosed EV basis,
-      a confidence label and a full audit trail. If nothing is computable → <code>"none"</code>.</p></div>
-    <div class="card"><h4>Money units</h4><p>D&amp;B returns INR <b>Thousand</b>; converted to INR <b>Crore</b>
-      (÷10,000) at the normalization boundary. All math in Crore.</p></div>
-    <div class="card"><h4>Decoupled</h4><p><code>core/</code> never imports <code>mock_api/</code>; the client is
-      injected in <code>run.py</code>.</p></div>
-  </div>
-</section>
+<!-- ================================================================ 1 -->
+<h2><span class="n">1</span>System architecture — the five layers</h2>
+<div class="purpose">each layer talks only to the one below it; swap any layer without touching the others</div>
+<div class="card">
+<svg viewBox="0 0 1000 560" role="img" aria-label="Layer architecture diagram">
+  <defs><marker id="ar" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+    <polygon points="0 0,9 4,0 8" fill="#c3c2b7"/></marker></defs>
+  <!-- DATA -->
+  <rect x="20" y="20" width="960" height="88" rx="10" fill="#86b6ef22" stroke="#86b6ef"/>
+  <text x="40" y="46" font-size="13" font-weight="700" fill="#123a63">DATA LAYER</text>
+  <rect x="40" y="56" width="330" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="205" y="74" font-size="12" text-anchor="middle" font-weight="600">9 Excel extracts (Basic · PL · BS · Net worth ·</text>
+  <text x="205" y="88" font-size="12" text-anchor="middle" font-weight="600">Forex · Segment · Product · R&amp;D · Shareholding)</text>
+  <rect x="400" y="56" width="250" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="525" y="74" font-size="12" text-anchor="middle" font-weight="600">etl.py — header verify · P&amp;L recon gate</text>
+  <text x="525" y="88" font-size="12" text-anchor="middle">provenance · SHA-256 · WAL</text>
+  <rect x="680" y="56" width="280" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="820" y="74" font-size="12" text-anchor="middle" font-weight="600">realdata.db (SQLite)</text>
+  <text x="820" y="88" font-size="12" text-anchor="middle">companies · fin · meta (report + hashes)</text>
+  <line x1="370" y1="76" x2="398" y2="76" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="650" y1="76" x2="678" y2="76" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar)"/>
+  <!-- ADAPTER -->
+  <rect x="20" y="128" width="960" height="86" rx="10" fill="#eda10018" stroke="#eda100"/>
+  <text x="40" y="154" font-size="13" font-weight="700" fill="#7a5300">ADAPTER LAYER — identical D&amp;B-schema envelopes (the core never knows which)</text>
+  <rect x="60" y="164" width="270" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="195" y="182" font-size="12" text-anchor="middle" font-weight="600">RealDnBClient (realdata/client.py)</text>
+  <text x="195" y="196" font-size="12" text-anchor="middle">13,906 real cos · lineage() · caveats</text>
+  <rect x="365" y="164" width="270" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="500" y="182" font-size="12" text-anchor="middle" font-weight="600">MockDnBClient (mock_api/)</text>
+  <text x="500" y="196" font-size="12" text-anchor="middle">59 synthetic cos + market caps → backtests</text>
+  <rect x="670" y="164" width="270" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="805" y="182" font-size="12" text-anchor="middle" font-weight="600">intake.py — conversational agent</text>
+  <text x="805" y="196" font-size="12" text-anchor="middle">12-question graph → Company object</text>
+  <!-- CORE -->
+  <rect x="20" y="234" width="960" height="86" rx="10" fill="#1baf7a15" stroke="#1baf7a"/>
+  <text x="40" y="260" font-size="13" font-weight="700" fill="#0c5c3f">CALCULATION CORE — pure Python stdlib · no network · no LLM · no frameworks</text>
+  <rect x="60" y="270" width="420" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="270" y="288" font-size="12" text-anchor="middle" font-weight="600">core/pipeline.py — normalize · classify · validate ·</text>
+  <text x="270" y="302" font-size="12" text-anchor="middle" font-weight="600">discover (15 filters) · value (3 methods + adjustments)</text>
+  <rect x="510" y="270" width="200" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="610" y="288" font-size="12" text-anchor="middle" font-weight="600">core/calibration.py</text>
+  <text x="610" y="302" font-size="12" text-anchor="middle">sector trading anchors</text>
+  <rect x="740" y="270" width="200" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="840" y="288" font-size="12" text-anchor="middle" font-weight="600">core/audit.py</text>
+  <text x="840" y="302" font-size="12" text-anchor="middle">typed, ordered audit trail</text>
+  <!-- ORCHESTRATOR -->
+  <rect x="20" y="340" width="960" height="80" rx="10" fill="#4a3aa712" stroke="#4a3aa7"/>
+  <text x="40" y="366" font-size="13" font-weight="700" fill="#3a2f86">ORCHESTRATOR — run.py</text>
+  <rect x="60" y="376" width="400" height="34" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="260" y="397" font-size="11.5" text-anchor="middle" font-weight="600">run_pipeline (DB company) · run_pipeline_custom (intake) → shared _evaluate()</text>
+  <rect x="490" y="376" width="220" height="34" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="600" y="397" font-size="12" text-anchor="middle" font-weight="600">confidence + universe cache</text>
+  <rect x="740" y="376" width="200" height="34" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="840" y="397" font-size="12" text-anchor="middle" font-weight="600">39-check acceptance suite</text>
+  <!-- DELIVERY -->
+  <rect x="20" y="440" width="960" height="100" rx="10" fill="#2a78d612" stroke="#2a78d6"/>
+  <text x="40" y="466" font-size="13" font-weight="700" fill="#1c5cab">DELIVERY LAYER — api.py (FastAPI) · the only layer with a framework</text>
+  <rect x="60" y="476" width="215" height="52" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="167" y="496" font-size="12" text-anchor="middle" font-weight="600">REST API — 14 endpoints</text>
+  <text x="167" y="510" font-size="12" text-anchor="middle">valuations · intake · filters</text>
+  <text x="167" y="523" font-size="12" text-anchor="middle">validation · db status · /docs</text>
+  <rect x="300" y="476" width="215" height="52" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="407" y="496" font-size="12" text-anchor="middle" font-weight="600">UI — ui/index.html</text>
+  <text x="407" y="510" font-size="12" text-anchor="middle">search · guided chat intake ·</text>
+  <text x="407" y="523" font-size="12" text-anchor="middle">7 tabs · PDF upload (soon)</text>
+  <rect x="540" y="476" width="215" height="52" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="647" y="496" font-size="12" text-anchor="middle" font-weight="600">Reports — dashboard/</text>
+  <text x="647" y="510" font-size="12" text-anchor="middle">theory-annotated HTML</text>
+  <text x="647" y="523" font-size="12" text-anchor="middle">?print=1 → PDF dialog</text>
+  <rect x="780" y="476" width="160" height="52" rx="6" fill="#fff" stroke="#c3c2b7"/>
+  <text x="860" y="496" font-size="12" text-anchor="middle" font-weight="600">test_api.py</text>
+  <text x="860" y="510" font-size="12" text-anchor="middle">30 live checks on</text>
+  <text x="860" y="523" font-size="12" text-anchor="middle">every endpoint</text>
+  <!-- vertical arrows -->
+  <line x1="500" y1="108" x2="500" y2="126" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="500" y1="214" x2="500" y2="232" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="500" y1="320" x2="500" y2="338" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="500" y1="420" x2="500" y2="438" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar)"/>
+</svg>
+<p class="theory"><b>Why this shape.</b> The clients all emit the same D&amp;B-schema envelopes, so the
+calculation core runs unchanged on real data, mock data, or a user-described company — and going live
+against a real D&amp;B/market feed swaps one adapter, nothing else. The core's stdlib purity keeps every
+number reproducible and auditable.</p>
+</div>
 
-<!-- ===================================================== MODULES -->
-<section id="modules">
-  <h2><span class="n">1</span>Module map</h2>
-  <p class="lead">Nine files. The data client is injected, so the deterministic core is fully isolated and testable.</p>
-  <div class="grid g2">
-    <div class="card"><h4>mock_api/dnb_mock.py</h4><span class="path">MockDnBClient + 59-company universe</span>
-      <p>Returns the exact real D&amp;B response schema for the 4 datasources. Listed comps carry a fundamentals-driven
-        <code>marketData</code> block. <span class="tag t-mock">swap for live in 1 method</span></p></div>
-    <div class="card"><h4>core/pipeline.py</h4><span class="path">normalize · profile · validate · discover · value</span>
-      <p>The whole calculation. Pure stdlib (<code>dataclasses, math, statistics-free</code>). Dataclasses:
-        Company, EconomicProfile, DataQuality, Valuation.</p></div>
-    <div class="card"><h4>core/audit.py</h4><span class="path">AuditTrail (typed, ordered records)</span>
-      <p>seq · ts · stage · level (INFO/WARN/DECISION/ERROR) · code · detail · data. The trust spine of a
-        touchless system.</p></div>
-    <div class="card"><h4>run.py</h4><span class="path">orchestrator + confidence + acceptance suite</span>
-      <p>Injects the client, runs the 7-stage pipeline, scores confidence, writes <code>result.json</code>, prints a
-        summary, runs 34 acceptance checks.</p></div>
-    <div class="card"><h4>validate.py</h4><span class="path">anti-overfitting backtest</span>
-      <p>Re-values every listed comp vs its OWN market cap; proves quality-positioning beats the naive median across
-        the universe. Embedded in <code>result.json</code>.</p></div>
-    <div class="card"><h4>dashboard/build_dashboard.py</h4><span class="path">result.json → dashboard.html</span>
-      <p>Self-contained HTML (no template engine, no JS). 8 explanatory sections incl. the equity bridge, confidence
-        bars, and validation panel.</p></div>
-  </div>
-</section>
+<!-- ================================================================ 2 -->
+<h2><span class="n">2</span>Data pipeline — from the latest Excel extracts to a queryable universe</h2>
+<div class="purpose">what each workbook contributes, and the three gates the data must pass</div>
+<div class="card">
+<table>
+<tr><th>Source file</th><th>Key columns loaded</th><th>What it feeds</th></tr>
+<tr><td><b>Basic Data.xlsx</b></td><td>accord, name, CD_Industry, NIC, description, CIN, ISIN</td>
+  <td>identity · industry → pseudo-NAICS + sector group + major letter (filters 5–6, sector anchors) · classifier text (filters 3–4, 9) · listing status via CIN 'L' (DLOM)</td></tr>
+<tr><td><b>PL data.xlsx</b></td><td>year, months, net sales, EBITDA (excl OI), other income, interest, PBDT, depreciation, PBT, PAT</td>
+  <td>the financial spine (26,317 company-years): EV/EBITDA + EV/Revenue + EV/EBIT drivers, margin positioning, recon gate</td></tr>
+<tr><td><b>BS data.xlsx</b></td><td>plant &amp; machinery, net block, inventories, total assets</td><td>balance-sheet detail on reports</td></tr>
+<tr><td><b>Net worth.xlsx</b></td><td>net worth</td><td>book EV proxy (re-levelled by sector anchors) · valuation-grade criterion</td></tr>
+<tr><td><b>Forex.xlsx</b></td><td>total FX inflow</td><td>exporter flag → similarity filter 10</td></tr>
+<tr><td><b>Segment.xlsx</b></td><td>capital employed (summed per company-year)</td><td>preferred book EV proxy when reported</td></tr>
+<tr><td>Product / R&amp;D / Shareholding.xlsx</td><td>—</td><td>stored, not consumed yet (future signals)</td></tr>
+</table>
+<svg viewBox="0 0 1000 150" role="img" aria-label="ETL gates">
+  <defs><marker id="ar2" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+    <polygon points="0 0,9 4,0 8" fill="#c3c2b7"/></marker></defs>
+  <rect x="10" y="46" width="150" height="58" rx="8" fill="#86b6ef22" stroke="#86b6ef"/>
+  <text x="85" y="70" font-size="12" text-anchor="middle" font-weight="700">9 Excel files</text>
+  <text x="85" y="86" font-size="11.5" text-anchor="middle">42,951 companies</text>
+  <rect x="200" y="46" width="185" height="58" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="292" y="66" font-size="12" text-anchor="middle" font-weight="700">GATE 1 · Header verify</text>
+  <text x="292" y="82" font-size="11" text-anchor="middle">layout changed → LOUD ABORT</text>
+  <text x="292" y="96" font-size="11" text-anchor="middle">(never silent mis-mapping)</text>
+  <rect x="425" y="46" width="185" height="58" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="517" y="66" font-size="12" text-anchor="middle" font-weight="700">GATE 2 · P&amp;L reconciliation</text>
+  <text x="517" y="82" font-size="11" text-anchor="middle">EBITDA + OI − Interest ≈ PBDT</text>
+  <text x="517" y="96" font-size="11" text-anchor="middle">99.1% of rows pass · per-row flag</text>
+  <rect x="650" y="46" width="185" height="58" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="742" y="66" font-size="12" text-anchor="middle" font-weight="700">GATE 3 · Valuation-grade</text>
+  <text x="742" y="82" font-size="11" text-anchor="middle">rev &gt; 0 · EBITDA · net worth &gt; 0</text>
+  <text x="742" y="96" font-size="11" text-anchor="middle">12-month periods only</text>
+  <rect x="875" y="46" width="115" height="58" rx="8" fill="#1baf7a22" stroke="#1baf7a"/>
+  <text x="932" y="70" font-size="12" text-anchor="middle" font-weight="700">13,906</text>
+  <text x="932" y="86" font-size="11.5" text-anchor="middle">usable universe</text>
+  <line x1="160" y1="75" x2="198" y2="75" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar2)"/>
+  <line x1="385" y1="75" x2="423" y2="75" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar2)"/>
+  <line x1="610" y1="75" x2="648" y2="75" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar2)"/>
+  <line x1="835" y1="75" x2="873" y2="75" stroke="#c3c2b7" stroke-width="2" marker-end="url(#ar2)"/>
+</svg>
+<div class="callout co-info"><b>Provenance.</b> Every loaded figure stores its source file + Excel row, and each
+source file's SHA-256 fingerprint is stored in the database — any number in any report can be traced to its
+exact cell, and a stale database is detectable the moment an Excel changes.</div>
+</div>
 
-<!-- ===================================================== PIPELINE -->
-<section id="pipeline">
-  <h2><span class="n">2</span>End-to-end pipeline</h2>
-  <p class="lead">Seven stages from a company name to a ranged equity valuation. Every stage appends to the audit trail.</p>
-  <div class="flow">
-    <div class="step"><div class="rail"><div class="dot">1</div><div class="line"></div></div>
-      <div class="body"><h4>Resolve</h4><p><code>company_search</code> → best DUNS by highest confidenceCode.</p>
-      <div class="io"><b>in:</b> name, "IN" · <b>out:</b> DUNS · <b>audit:</b> TARGET_RESOLVED / NO_MATCH</div></div></div>
-    <div class="step"><div class="rail"><div class="dot">2</div><div class="line"></div></div>
-      <div class="body"><h4>Fetch &amp; normalize</h4><p><code>company_information</code> + <code>company_financials</code>
-        (+ management) → <b>Company</b> dataclass; every monetary field ÷10,000 to Crore; EBIT, growth, margin derived.</p>
-      <div class="io"><b>out:</b> Company (Crore) · listing from CIN L/U · market EV from marketData</div></div></div>
-    <div class="step"><div class="rail"><div class="dot">3</div><div class="line"></div></div>
-      <div class="body"><h4>Economic profile (rule-based)</h4><p>Classifies operating_model / value_chain / customer_type
-        from activities text. The <b>collision rule</b> (a manufacturing VERB, not the noun "manufacturers") is the LLM-swap seam.</p>
-      <div class="io"><b>out:</b> EconomicProfile · <b>audit:</b> TARGET_PROFILED</div></div></div>
-    <div class="step"><div class="rail"><div class="dot">4</div><div class="line"></div></div>
-      <div class="body"><h4>Data-quality gate</h4><p>Weighted per-field grade (A–D) + <code>valuable</code> flag. If not
-        valuable → stops with <code>insufficient_data</code>, no fabricated number.</p>
-      <div class="io"><b>out:</b> DataQuality · <b>audit:</b> DATA_QUALITY_GRADE</div></div></div>
-    <div class="step"><div class="rail"><div class="dot">5</div><div class="line"></div></div>
-      <div class="body"><h4>Discover peers</h4><p>Hard mismatch filter → weighted 5-dimension similarity (0–1) over the
-        whole universe; return all ranked, take top 15.</p>
-      <div class="io"><b>out:</b> ranked peers + rejected (with reasons) · <b>audit:</b> PEER_REJECTED, PEERS_RANKED</div></div></div>
-    <div class="step"><div class="rail"><div class="dot">6</div><div class="line"></div></div>
-      <div class="body"><h4>Value (multi-method)</h4><p>Similarity-weighted trading multiples → Tukey trim → quality
-        positioning → EV → less net debt → less DLOM → equity range. Three methods for triangulation.</p>
-      <div class="io"><b>out:</b> Valuation (low/mid/high) + market cross-check · <b>audit:</b> PEERS_WEIGHTED, METHOD_COMPUTED, HEADLINE_SELECTED</div></div></div>
-    <div class="step"><div class="rail"><div class="dot">7</div></div>
-      <div class="body"><h4>Confidence + outputs</h4><p>Six-signal confidence (incl. triangulation agreement) →
-        <code>result.json</code> + <code>dashboard.html</code>.</p>
-      <div class="io"><b>out:</b> confidence + breakdown, full audit · <b>audit:</b> CONFIDENCE_SCORED, COMPLETE</div></div></div>
-  </div>
-</section>
+<!-- ================================================================ 3 -->
+<h2><span class="n">3</span>The filter chain — 15 controls, as a data-flow chart</h2>
+<div class="purpose">how 13,905 candidates become ~15 priced peers · every reject branch is recorded with a reason</div>
+<div class="card">
+<div class="legend">
+  <span><span class="sw" style="background:#86b6ef"></span>Stage A — eligibility</span>
+  <span><span class="sw" style="background:#d03b3b"></span>Stage B — hard knock-outs (reject)</span>
+  <span><span class="sw" style="background:#2a78d6"></span>Stage C — weighted similarity</span>
+  <span><span class="sw" style="background:#1baf7a"></span>Stage D — quality controls</span>
+  <span>counts: example real run (20 Microns Ltd.)</span>
+</div>
+<svg viewBox="0 0 1000 1310" role="img" aria-label="Filter chain data-flow">
+  <defs>
+    <marker id="af" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0,9 4,0 8" fill="#52514e"/></marker>
+    <marker id="afr" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0,9 4,0 8" fill="#d03b3b"/></marker>
+  </defs>
+  <rect x="290" y="10" width="420" height="52" rx="10" fill="#123a63"/>
+  <text x="500" y="32" font-size="13.5" text-anchor="middle" fill="#fff" font-weight="700">VALUATION-GRADE UNIVERSE — 13,906 companies</text>
+  <text x="500" y="50" font-size="12" text-anchor="middle" fill="#ffffffcc">normalized + profiled once, then cached (~4s)</text>
+  <line x1="500" y1="62" x2="500" y2="88" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
 
-<!-- ===================================================== DATA FLOW -->
-<section id="dataflow">
-  <h2><span class="n">3</span>Data flow</h2>
-  <p class="lead">From four D&amp;B datasources to two artifacts. The core never touches the network or the mock.</p>
-  <div class="formula" style="background:#fbfdff;color:var(--ink);border:1px solid var(--line);white-space:pre-wrap">
-<span class="k">D&amp;B datasources</span>            <span class="k">normalize (÷10,000 → Crore)</span>        <span class="k">engine (pure)</span>                 <span class="k">outputs</span>
-company_search   ─┐
-company_information ├─►  Company · EconomicProfile ──►  discover_peers ──► compute_valuation ──►  result.json
-company_financials ┤        DataQuality gate                (weighted similarity)  (weighted multiples,   dashboard.html
-company_management ┘                                                              positioning, DLOM)     + AuditTrail
-                                                                                   │
-                                                             validate.py  ◄────────┘  (backtest vs own market cap)
-  </div>
-  <div class="legend">
-    <span>◼ injected client (mock ↔ live)</span><span>◼ stdlib-only core</span><span>◼ deterministic</span>
-  </div>
-</section>
+  <rect x="30" y="92" width="940" height="170" rx="10" fill="#86b6ef12" stroke="#86b6ef"/>
+  <text x="46" y="114" font-size="12" font-weight="800" fill="#123a63">STAGE A · ELIGIBILITY — shapes the pool</text>
+  <rect x="290" y="126" width="420" height="50" rx="8" fill="#fff" stroke="#86b6ef" stroke-width="2"/>
+  <text x="500" y="146" font-size="12.5" text-anchor="middle" font-weight="700">1 · GEOGRAPHY</text>
+  <text x="500" y="164" font-size="11.5" text-anchor="middle">criterion: country = IN (the whole database is Indian)</text>
+  <line x1="500" y1="176" x2="500" y2="196" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="198" width="420" height="50" rx="8" fill="#fff" stroke="#86b6ef" stroke-width="2"/>
+  <text x="500" y="218" font-size="12.5" text-anchor="middle" font-weight="700">2 · SELF-EXCLUSION</text>
+  <text x="500" y="236" font-size="11.5" text-anchor="middle">criterion: candidate id ≠ target id → pool = 13,905</text>
+  <line x1="500" y1="262" x2="500" y2="288" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
 
-<!-- ===================================================== CALCULATION -->
-<section id="calc">
-  <h2><span class="n">4</span>Calculation deep-dive</h2>
+  <rect x="30" y="292" width="940" height="252" rx="10" fill="#d03b3b0d" stroke="#d03b3b66"/>
+  <text x="46" y="314" font-size="12" font-weight="800" fill="#8d2a2a">STAGE B · HARD KNOCK-OUTS — rejected BEFORE scoring, every rejection logged PEER_REJECTED with its reason</text>
+  <rect x="290" y="326" width="420" height="56" rx="8" fill="#fff" stroke="#d03b3b" stroke-width="2"/>
+  <text x="500" y="346" font-size="12.5" text-anchor="middle" font-weight="700">3 · OPERATING MODEL must equal target's</text>
+  <text x="500" y="362" font-size="11.5" text-anchor="middle">manufacturer / distributor / retailer / service — from the description</text>
+  <text x="500" y="376" font-size="11" text-anchor="middle" fill="#52514e">collision rule: needs a manufacturing VERB — "sourced from manufacturers" ≠ manufacturer</text>
+  <line x1="710" y1="354" x2="830" y2="354" stroke="#d03b3b" stroke-width="2" marker-end="url(#afr)"/>
+  <text x="838" y="350" font-size="11" fill="#8d2a2a" font-weight="700">REJECT: traders,</text>
+  <text x="838" y="364" font-size="11" fill="#8d2a2a">retailers, service cos</text>
+  <line x1="500" y1="382" x2="500" y2="402" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="404" width="420" height="50" rx="8" fill="#fff" stroke="#d03b3b" stroke-width="2"/>
+  <text x="500" y="424" font-size="12.5" text-anchor="middle" font-weight="700">4 · VALUE CHAIN must match</text>
+  <text x="500" y="442" font-size="11.5" text-anchor="middle">criterion: finished_goods vs raw_material equality</text>
+  <line x1="710" y1="429" x2="830" y2="429" stroke="#d03b3b" stroke-width="2" marker-end="url(#afr)"/>
+  <text x="838" y="425" font-size="11" fill="#8d2a2a" font-weight="700">REJECT: raw-material</text>
+  <text x="838" y="439" font-size="11" fill="#8d2a2a">suppliers (billets…)</text>
+  <line x1="500" y1="454" x2="500" y2="474" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="476" width="420" height="50" rx="8" fill="#fff" stroke="#d03b3b" stroke-width="2"/>
+  <text x="500" y="496" font-size="12.5" text-anchor="middle" font-weight="700">5 · MAJOR INDUSTRY letter must match</text>
+  <text x="500" y="514" font-size="11.5" text-anchor="middle">criterion: D / F / G / I / N / T / C / U equality (from sector group)</text>
+  <line x1="710" y1="501" x2="830" y2="501" stroke="#d03b3b" stroke-width="2" marker-end="url(#afr)"/>
+  <text x="838" y="497" font-size="11" fill="#8d2a2a" font-weight="700">REJECT: wrong</text>
+  <text x="838" y="511" font-size="11" fill="#8d2a2a">macro sector</text>
+  <line x1="500" y1="544" x2="500" y2="566" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <text x="516" y="560" font-size="11.5" fill="#52514e">example run: 7,008 rejected here → 6,897 survive</text>
 
-  <h3>4.1 Peer similarity (discovery)</h3>
-  <p>Candidates first pass a <b>hard mismatch filter</b> (<span class="pill">operating_model</span>
-  <span class="pill">value_chain</span><span class="pill">major_industry</span> must all match — else rejected before scoring).
-  Survivors score 0–1 as a weighted sum:</p>
-  <div class="formula"><span class="c"># dimension = raw × weight</span>
-industry  <span class="m">0.40</span>   <span class="k">=</span> 1.0 same NAICS-3 subsector · 0.6 same Hoovers · else 0
-scale     <span class="m">0.20</span>   <span class="k">=</span> 1 / (1 + |log1p(rev_t) − log1p(rev_p)|)
-margin    <span class="m">0.15</span>   <span class="k">=</span> max(0, 1 − 5 × |margin_t − margin_p|)
-customer  <span class="m">0.15</span>   <span class="k">=</span> 1.0 if same customer_type else 0
-export    <span class="m">0.10</span>   <span class="k">=</span> 1.0 if same is_exporter else 0.3
-score     <span class="k">= Σ(dimension)</span></div>
+  <rect x="30" y="570" width="940" height="330" rx="10" fill="#2a78d60d" stroke="#2a78d666"/>
+  <text x="46" y="592" font-size="12" font-weight="800" fill="#1c5cab">STAGE C · WEIGHTED SIMILARITY — survivors scored 0–1: score = Σ (raw × weight)</text>
+  <rect x="290" y="604" width="420" height="48" rx="8" fill="#fff" stroke="#2a78d6" stroke-width="2"/>
+  <text x="500" y="623" font-size="12.5" text-anchor="middle" font-weight="700">6 · INDUSTRY PROXIMITY — weight 0.40</text>
+  <text x="500" y="640" font-size="11.5" text-anchor="middle">same industry category 1.0 · same sector group 0.6 · else 0</text>
+  <line x1="500" y1="652" x2="500" y2="666" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="668" width="420" height="48" rx="8" fill="#fff" stroke="#2a78d6" stroke-width="2"/>
+  <text x="500" y="687" font-size="12.5" text-anchor="middle" font-weight="700">7 · SCALE PROXIMITY — weight 0.20</text>
+  <text x="500" y="704" font-size="11.5" text-anchor="middle" class="mono">raw = 1 / (1 + |log1p(rev_target) − log1p(rev_peer)|)</text>
+  <line x1="500" y1="716" x2="500" y2="730" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="732" width="420" height="48" rx="8" fill="#fff" stroke="#2a78d6" stroke-width="2"/>
+  <text x="500" y="751" font-size="12.5" text-anchor="middle" font-weight="700">8 · MARGIN PROXIMITY — weight 0.15</text>
+  <text x="500" y="768" font-size="11.5" text-anchor="middle" class="mono">raw = max(0, 1 − 5 · |margin_target − margin_peer|)</text>
+  <line x1="500" y1="780" x2="500" y2="794" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="796" width="420" height="48" rx="8" fill="#fff" stroke="#2a78d6" stroke-width="2"/>
+  <text x="500" y="815" font-size="12.5" text-anchor="middle" font-weight="700">9 · CUSTOMER TYPE — weight 0.15</text>
+  <text x="500" y="832" font-size="11.5" text-anchor="middle">same B2B / B2C / mixed = 1.0 · else 0</text>
+  <line x1="500" y1="844" x2="500" y2="858" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="860" width="420" height="34" rx="8" fill="#fff" stroke="#2a78d6" stroke-width="2"/>
+  <text x="500" y="881" font-size="12.5" text-anchor="middle" font-weight="700">10 · EXPORT PROFILE — weight 0.10 · same flag 1.0 else 0.3</text>
+  <line x1="500" y1="900" x2="500" y2="922" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
 
-  <h3>4.2 Similarity weighting — inexact peers count less <span class="small">(v1.5.0)</span></h3>
-  <p>Not every peer is an exact match. Each peer's multiple is down-weighted by its match quality, then multiples are
-  aggregated with a <b>weighted percentile</b> — so a thin or loose peer set cannot distort the headline.</p>
-  <div class="formula">weight <span class="k">=</span> clamp( (score − <span class="m">0.40</span>) / (<span class="m">0.85</span> − <span class="m">0.40</span>), floor <span class="m">0.15</span>, cap <span class="m">1.0</span> )
-   score ≥ 0.85 → 1.00 (full match)   score 0.625 → 0.50   score ≤ 0.40 → 0.15
-effective_peer_count <span class="k">= Σ</span> weight   <span class="c"># drives range-widening + confidence coverage</span></div>
+  <rect x="30" y="926" width="940" height="330" rx="10" fill="#1baf7a10" stroke="#1baf7a66"/>
+  <text x="46" y="948" font-size="12" font-weight="800" fill="#0c5c3f">STAGE D · QUALITY CONTROLS — how much each surviving peer actually moves the number</text>
+  <rect x="290" y="960" width="420" height="34" rx="8" fill="#fff" stroke="#1baf7a" stroke-width="2"/>
+  <text x="500" y="981" font-size="12.5" text-anchor="middle" font-weight="700">11 · TOP-N CUT — top 15 by score enter the valuation</text>
+  <line x1="500" y1="994" x2="500" y2="1008" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="1010" width="420" height="48" rx="8" fill="#fff" stroke="#1baf7a" stroke-width="2"/>
+  <text x="500" y="1029" font-size="12.5" text-anchor="middle" font-weight="700">12 · SIMILARITY WEIGHTING</text>
+  <text x="500" y="1046" font-size="11" text-anchor="middle" class="mono">weight = clamp((score−0.40)/0.45, 0.15, 1.0) → effective count; &lt;10 → band widens ±30</text>
+  <line x1="500" y1="1058" x2="500" y2="1072" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="1074" width="420" height="48" rx="8" fill="#fff" stroke="#1baf7a" stroke-width="2"/>
+  <text x="500" y="1093" font-size="12.5" text-anchor="middle" font-weight="700">13 · MULTIPLE ELIGIBILITY</text>
+  <text x="500" y="1110" font-size="11" text-anchor="middle">≥3 listed market comps per method, else book pool → SECTOR CALIBRATION · driver &gt; 0</text>
+  <line x1="500" y1="1122" x2="500" y2="1136" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="1138" width="420" height="34" rx="8" fill="#fff" stroke="#1baf7a" stroke-width="2"/>
+  <text x="500" y="1159" font-size="12.5" text-anchor="middle" font-weight="700">14 · OUTLIER TRIM — Tukey 1.5×IQR fence per method</text>
+  <line x1="710" y1="1155" x2="830" y2="1155" stroke="#d03b3b" stroke-width="2" marker-end="url(#afr)"/>
+  <text x="838" y="1151" font-size="11" fill="#8d2a2a" font-weight="700">DROP: multiples outside</text>
+  <text x="838" y="1165" font-size="11" fill="#8d2a2a" class="mono">[Q1−1.5·IQR, Q3+1.5·IQR]</text>
+  <line x1="500" y1="1172" x2="500" y2="1186" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="1188" width="420" height="48" rx="8" fill="#fff" stroke="#1baf7a" stroke-width="2"/>
+  <text x="500" y="1207" font-size="12.5" text-anchor="middle" font-weight="700">15 · SCALE-MISMATCH PENALTY</text>
+  <text x="500" y="1224" font-size="11" text-anchor="middle">outside [0.8×smallest peer, 1.25×largest]: −7.5%/decade (cap 15%) · +5%/decade (cap 10%)</text>
+  <line x1="500" y1="1256" x2="500" y2="1276" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
+  <rect x="290" y="1278" width="420" height="26" rx="8" fill="#123a63"/>
+  <text x="500" y="1296" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">→ VALUATION ENGINE (§4) — 15 peers, effective ≈ 14</text>
+</svg>
+<div class="callout co-good"><b>What this chain guarantees (can never happen):</b> a peer with a different
+operating model, value chain or major industry reaching the valuation · a single outlier multiple moving the
+answer · borderline comps dominating (weights taper to a 0.15 floor and the band widens on the effective count)
+· a size-mismatched peer set silently inflating a small company's value · a fabricated number when nothing
+survives — the answer is honestly "none" with the audit trail explaining why.</div>
+<div class="callout co-warn"><b>What it cannot guarantee:</b> filters compare what the data contains — a
+misdescribed company misclassifies <i>visibly</i> (in the audit trail), not silently · industry codes
+approximate product overlap, they don't prove it · exact market levels need a live price feed (the sector
+anchors are the disclosed bridge).</div>
+</div>
 
-  <h3>4.3 Quality positioning &amp; the multiple</h3>
-  <p>Rather than the flat peer <em>median</em>, the central multiple is read at the target's <b>quality position</b> —
-  its EBITDA-margin percentile in the peer set — so a weaker-margin company earns a lower multiple.</p>
-  <div class="formula">q_rank <span class="k">=</span> percentile-rank of target EBITDA margin among peers
-mid_q  <span class="k">=</span> clamp(q_rank, <span class="m">0.15</span>, <span class="m">0.85</span>)     window <span class="k">=</span> <span class="m">0.20</span> (<span class="m">0.30</span> if effective&lt;10)
-low_q,high_q <span class="k">=</span> clamp(mid_q ∓ window, <span class="m">0.05</span>, <span class="m">0.95</span>)
-multiple_x <span class="k">=</span> weighted_percentile(trimmed peer multiples, x_q)   <span class="c"># Tukey 1.5×IQR trim first</span></div>
+<!-- ================================================================ 4 -->
+<h2><span class="n">4</span>Valuation engine — from 15 peers to an equity range</h2>
+<div class="purpose">the arithmetic after the filters, with every adjustment disclosed</div>
+<div class="card">
+<svg viewBox="0 0 1000 210" role="img" aria-label="Valuation bridge">
+  <defs><marker id="ab" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+    <polygon points="0 0,9 4,0 8" fill="#52514e"/></marker></defs>
+  <rect x="10" y="30" width="150" height="70" rx="8" fill="#2a78d61a" stroke="#2a78d6"/>
+  <text x="85" y="55" font-size="12" text-anchor="middle" font-weight="700">Peer multiples</text>
+  <text x="85" y="71" font-size="11" text-anchor="middle">sector-calibrated ·</text>
+  <text x="85" y="85" font-size="11" text-anchor="middle">trimmed · weighted</text>
+  <rect x="188" y="30" width="150" height="70" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="263" y="55" font-size="12" text-anchor="middle" font-weight="700">Quality position</text>
+  <text x="263" y="71" font-size="11" text-anchor="middle">multiple at target's</text>
+  <text x="263" y="85" font-size="11" text-anchor="middle">margin percentile ± band</text>
+  <rect x="366" y="30" width="130" height="70" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="431" y="55" font-size="12" text-anchor="middle" font-weight="700">× driver</text>
+  <text x="431" y="71" font-size="11" text-anchor="middle">EBITDA / revenue / EBIT</text>
+  <text x="431" y="85" font-size="11" text-anchor="middle">= enterprise value</text>
+  <rect x="524" y="30" width="130" height="70" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="589" y="55" font-size="12" text-anchor="middle" font-weight="700">− net debt</text>
+  <text x="589" y="71" font-size="11" text-anchor="middle">unknown → 0 with</text>
+  <text x="589" y="85" font-size="11" text-anchor="middle">disclosed warning</text>
+  <rect x="682" y="30" width="130" height="70" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="747" y="55" font-size="12" text-anchor="middle" font-weight="700">− DLOM</text>
+  <text x="747" y="71" font-size="11" text-anchor="middle">private only:</text>
+  <text x="747" y="85" font-size="11" text-anchor="middle">30 / 25 / 20% by size</text>
+  <rect x="840" y="30" width="150" height="70" rx="8" fill="#1baf7a22" stroke="#1baf7a"/>
+  <text x="915" y="55" font-size="12" text-anchor="middle" font-weight="700">EQUITY RANGE</text>
+  <text x="915" y="71" font-size="11" text-anchor="middle">low / mid / high ·</text>
+  <text x="915" y="85" font-size="11" text-anchor="middle">3 methods triangulated</text>
+  <line x1="160" y1="65" x2="186" y2="65" stroke="#52514e" stroke-width="2" marker-end="url(#ab)"/>
+  <line x1="338" y1="65" x2="364" y2="65" stroke="#52514e" stroke-width="2" marker-end="url(#ab)"/>
+  <line x1="496" y1="65" x2="522" y2="65" stroke="#52514e" stroke-width="2" marker-end="url(#ab)"/>
+  <line x1="654" y1="65" x2="680" y2="65" stroke="#52514e" stroke-width="2" marker-end="url(#ab)"/>
+  <line x1="812" y1="65" x2="838" y2="65" stroke="#52514e" stroke-width="2" marker-end="url(#ab)"/>
+  <text x="500" y="140" font-size="12" text-anchor="middle" fill="#52514e">plus, on every result:</text>
+  <rect x="120" y="152" width="360" height="44" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="300" y="170" font-size="11.5" text-anchor="middle" font-weight="700">COMPARABLE-TRANSACTIONS VIEW (indicative)</text>
+  <text x="300" y="186" font-size="11" text-anchor="middle">acquisition range = equity × (1 + 20–30% control premium)</text>
+  <rect x="520" y="152" width="360" height="44" rx="8" fill="#fff" stroke="#c3c2b7"/>
+  <text x="700" y="170" font-size="11.5" text-anchor="middle" font-weight="700">CONFIDENCE (6 weighted signals)</text>
+  <text x="700" y="186" font-size="11" text-anchor="middle">incl. triangulation agreement + comp tightness → HIGH/MEDIUM/LOW</text>
+</svg>
+<p class="theory"><b>Sector calibration (the accuracy fix).</b> The extract has no market prices, so book
+capital employed (≈ net worth) is the raw multiple base — but book is <i>not</i> enterprise value, and pricing
+off it lands 2–4× low. When a method runs on the book pool, its peer distribution is re-levelled so the
+weighted median equals the sector's published trading anchor (20 sectors, India aggregates, size-factored for
+small caps; factor clamped [0.25, 25] and audited as <span class="mono">SECTOR_CALIBRATED</span>). Shape,
+dispersion and weights are preserved — only the level moves. Verified: Aarti Industries values at ₹14,824 Cr
+mid vs ≈₹15,000 Cr actual market cap. Replacing the anchor table with a live market feed is a one-table swap.</p>
+</div>
 
-  <h3>4.4 EV → equity bridge</h3>
-  <div class="formula">EV_peer   <span class="k">=</span> market_ev (listed comp)  <span class="c">else</span>  capital_employed (book, only if &lt;3 listed)
-implied_EV <span class="k">=</span> positioned_multiple × target_driver     <span class="c"># EBITDA / Revenue / EBIT</span>
-net_debt   <span class="k">=</span> debt − cash
-DLOM       <span class="k">=</span> <span class="m">0.00</span> if listed · <span class="m">0.30</span> if rev&lt;100 · <span class="m">0.25</span> if rev&lt;500 · else <span class="m">0.20</span>
-<span class="k">equity</span>     <span class="k">=</span> (implied_EV − net_debt) × (1 − DLOM)     <span class="c"># low / mid / high</span></div>
-  <p>Headline = first computable of <b>EV/EBITDA → EV/Revenue → EV/EBIT</b>; all three reported for triangulation.
-  For a listed target, the headline equity is cross-checked against its own market cap.</p>
+<!-- ================================================================ 5 -->
+<h2><span class="n">5</span>Ways in, ways out — the product surface</h2>
+<div class="purpose">three input paths converge on the same engine; four output forms carry the same audited result</div>
+<div class="card">
+<table>
+<tr><th>Input path</th><th>How it works</th><th>Status</th></tr>
+<tr><td><b>Database search</b></td><td>autocomplete over 13,906 names → resolve → value (full file-and-row lineage)</td><td>live</td></tr>
+<tr><td><b>Guided chat intake</b></td><td>deterministic 12-question graph (each question ships its own theory; typed validation; skippable optionals) → <span class="mono">run_pipeline_custom</span> values the company against database peers, with the scale-mismatch penalty covering "no exact peer exists"</td><td>live</td></tr>
+<tr><td><b>PDF upload</b></td><td>annual-report extraction into the same intake answers</td><td>placeholder (button visible, disabled)</td></tr>
+</table>
+<table>
+<tr><th>Output</th><th>What it carries</th></tr>
+<tr><td><b>JSON API</b> (<span class="mono">/api/v1/valuations</span>, <span class="mono">/api/v1/intake/{sid}/value</span>)</td>
+  <td>target + profile + lineage + caveats + data quality + peers (scores, weights, components, multiples) + rejected sample + all methods + adjustments + transactions view + confidence breakdown + full audit trail</td></tr>
+<tr><td><b>UI</b> (7 tabs)</td><td>Overview · Filters (live funnel + guarantees) · Peer Analysis (stacked per-peer cards: match %, 8 checks, 5 dimension bars) · Valuation · Validation · Audit Trail · API &amp; Report</td></tr>
+<tr><td><b>HTML report</b> (<span class="mono">?print=1</span> → PDF)</td><td>theory-annotated 9-section document incl. data lineage &amp; caveats — print-ready</td></tr>
+<tr><td><b>result.json + dashboard.html</b></td><td>CLI artifacts from <span class="mono">python run.py</span></td></tr>
+</table>
+<div class="callout co-info"><b>Proof gates.</b> <span class="mono">python run.py</span> = 39 methodology checks
+(incl. the anti-overfitting backtest: positioning MAE 8.3% beats the naive 10.5% on 24/32 listed companies,
+robust on 5/5 reseeded universes). <span class="mono">python test_api.py</span> = 30 live checks on every
+endpoint, error code, the full intake conversation, and determinism. Both must pass before any change ships.</div>
+</div>
 
-  <h3>4.5 Confidence — six discriminating signals <span class="small">(v1.4.0)</span></h3>
-  <div class="formula"><span class="k">score =</span> <span class="m">0.20</span>·profile + <span class="m">0.20</span>·min(eff_peers,15)/15 + <span class="m">0.10</span>·(EBITDA&gt;0) + <span class="m">0.10</span>·(methods/3)
-      + <span class="m">0.25</span>·triangulation_agreement + <span class="m">0.15</span>·comparable_tightness
-triangulation <span class="k">=</span> 1 − clamp((max_mid/min_mid − 1)/<span class="m">0.80</span>, 0, 1)
-tightness     <span class="k">=</span> 1 − clamp(CV(multiples)/<span class="m">0.45</span>, 0, 1)
-<span class="k">label</span> HIGH ≥ <span class="m">0.75</span> · MEDIUM ≥ <span class="m">0.50</span> · else LOW</div>
-  <div class="ok"><b>Not saturated.</b> Across the universe confidence spans <b>0.31–0.95</b> (the 5 wrong entities score LOW);
-  a target whose methods diverge scores lower even with 15 peers.</div>
-</section>
-
-<!-- ===================================================== PARAMETERS -->
-<section id="params">
-  <h2><span class="n">5</span>Parameters reference</h2>
-  <p class="lead">The exact inputs, derived values and constants are enumerated in the companion workbook.</p>
-  <div class="kv">
-    <b>Workbook</b><span><code>parameters.xlsx</code> — 4 sheets</span>
-    <b>Sheet 1</b><span>Input Parameters — 19 raw D&amp;B fields (datasource + JSON path + role)</span>
-    <b>Sheet 2</b><span>Derived Parameters — 16 computed values (formulas)</span>
-    <b>Sheet 3</b><span>Model Constants — 49 fixed weights / thresholds / rules</span>
-  </div>
-  <div class="note">Scope: only fields that feed discovery / valuation / confidence / data-quality are listed. Display-only
-  fields (employees, city, directors) and mock data-generation ranges are deliberately excluded.</div>
-</section>
-
-<!-- ===================================================== VERSIONS -->
-<section id="versions">
-  <h2><span class="n">6</span>Version comparison</h2>
-  <p class="lead">How the methodology evolved. Use this to compare this build against earlier (or later) versions of the same project.</p>
-  <table>
-    <thead><tr><th>Ver.</th><th>Focus</th><th>Key changes</th><th>Valuation basis</th><th>Accuracy / calibration</th><th>Confidence</th><th>Tests</th></tr></thead>
-    <tbody>
-      <tr><td><b>1.0</b></td><td>Initial build</td>
-        <td>Mock D&amp;B (real schema), rule-based profile, 5-dim discovery, multi-method valuation, dashboard.</td>
-        <td>Book capital-employed proxy</td><td>Book ratios (~7×) — not real trading multiples</td><td>flat heuristic</td><td>10</td></tr>
-      <tr><td><b>1.1</b></td><td>Production hardening</td>
-        <td>Structured audit trail, data-quality gate, provenance metadata, graceful fallbacks (no_match / insufficient_data).</td>
-        <td>Book proxy</td><td>—</td><td>flat ~0.98</td><td>20</td></tr>
-      <tr><td><b>1.2</b></td><td>Market EV</td>
-        <td>Trading multiples from LISTED comps (market cap + net debt); book proxy demoted to per-method fallback.</td>
-        <td>Market EV (listed)</td><td>Realistic sector multiples recovered</td><td>flat ~0.98</td><td>20</td></tr>
-      <tr><td><b>1.3</b></td><td>Positioning + DLOM</td>
-        <td>Central multiple at target's margin percentile (not median); DLOM only for private targets; market cross-check.</td>
-        <td>Market EV + positioning</td><td>Matched own market cap on 2 examples (later found to be luck)</td><td>flat ~0.98</td><td>33</td></tr>
-      <tr><td><b>1.4</b></td><td>Anti-overfitting</td>
-        <td>Diagnosed positioning was luck (corr 0.07); made synthetic multiples fundamentals-driven (corr 0.49);
-          added <code>validate.py</code> backtest; made confidence discriminating.</td>
-        <td>Market EV + positioning</td><td><b>mean |Δ| 8.1%</b> vs own market cap over 32 comps · beats naive median (10.5%) on 24/32</td>
-        <td>0.31–0.95</td><td>34</td></tr>
-      <tr class="v-now"><td><b>1.5</b> ◄ this</td><td>Similarity weighting</td>
-        <td>Borderline comps down-weighted via a weighted percentile; range-widening &amp; confidence use the
-          EFFECTIVE (weighted) peer count.</td>
-        <td>Market EV + positioning + weighting</td><td>8.1% mean (robust to inexact peer sets); backtest still PASS</td>
-        <td>0.31–0.95</td><td>34</td></tr>
-    </tbody>
-  </table>
-  <p class="small">Accuracy = comps-derived equity vs the company's own observed market capitalisation, backtested across
-    all listed comparables (see §7). "Tests" = passing acceptance checks in <code>run.py</code>.</p>
-</section>
-
-<!-- ===================================================== VALIDATION -->
-<section id="validation">
-  <h2><span class="n">7</span>Validation — proof it is not overfit</h2>
-  <p class="lead"><code>validate.py</code> treats every listed company as a target, values it from its peers, and compares to
-    its own market cap. Positioning must beat the naive flat-median baseline across the board.</p>
-  <table>
-    <thead><tr><th>Approach</th><th>Mean |error|</th><th>Median |error|</th><th>Max |error|</th><th>within 15%</th></tr></thead>
-    <tbody>
-      <tr class="v-now"><td><b>Quality-positioned + weighted (used)</b></td><td><b>8.1%</b></td><td>7.5%</td><td>26%</td><td>28/32</td></tr>
-      <tr><td>Flat median (naive baseline)</td><td>10.5%</td><td>8.3%</td><td>37%</td><td>23/32</td></tr>
-    </tbody>
-  </table>
-  <div class="ok"><b>VERDICT: PASS.</b> corr(margin, EV/EBITDA)=0.49 · positioning is closer on 24/32 targets ·
-    positioning never sees the market cap it is validated against, so the agreement is genuine, not circular.</div>
-</section>
-
-<!-- ===================================================== TRUST -->
-<section id="trust">
-  <h2><span class="n">8</span>Trust &amp; controls (touchless)</h2>
-  <div class="grid g3">
-    <div class="card"><h4>Structured audit trail</h4><p>Every D&amp;B call, rejected peer and valuation decision is a typed,
-      time-stamped, ordered record. DECISION rows are the judgement calls.</p></div>
-    <div class="card"><h4>Data-quality gate</h4><p>Grades A–D and can halt with <code>insufficient_data</code> before any number is produced.</p></div>
-    <div class="card"><h4>Discriminating confidence</h4><p>Reflects triangulation agreement and comparable tightness — it earns its value.</p></div>
-    <div class="card"><h4>Disclosed EV basis</h4><p>Market vs book, and the effective peer count, are always disclosed.</p></div>
-    <div class="card"><h4>Market cross-check</h4><p>Listed targets are validated against their own market cap (±25% acceptance gate).</p></div>
-    <div class="card"><h4>Anti-overfitting gate</h4><p>The universe backtest is an acceptance check — the build fails if positioning stops generalizing.</p></div>
-  </div>
-  <p class="small" style="margin-top:16px">Methodology v1.5.0 · deterministic · no LLM · stdlib-only core · 34/34 acceptance checks passing.
-    See <code>PROJECT_CONTEXT.md</code> for the exhaustive reference and <code>parameters.xlsx</code> for every constant.</p>
-</section>
+<div style="text-align:center;color:var(--muted);font-size:12px;margin-top:40px">
+MSME Comparable Valuation Engine · methodology v2.1.0 · full handoff in DOCUMENTATION.md ·
+all parameters in parameters_from_latest_report.xlsx</div>
 
 </div>
 </body>

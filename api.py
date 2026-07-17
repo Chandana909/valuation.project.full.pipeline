@@ -200,6 +200,17 @@ def ui_root():
     return FileResponse(UI_PATH, media_type="text/html")
 
 
+@app.get("/architecture", tags=["system"], response_class=HTMLResponse)
+def architecture():
+    """All-in-one architecture presentation: the five layers, the data pipeline
+    from the Excel extracts, and the full 15-control filter chain as a
+    data-flow chart."""
+    path = os.path.join(BASE, "architecture.html")
+    if not os.path.exists(path):
+        return _err(404, "architecture.html not found")
+    return FileResponse(path, media_type="text/html")
+
+
 # ---- v1 API ----------------------------------------------------------------
 
 @app.get("/api/v1/health", tags=["system"])
