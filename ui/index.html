@@ -429,6 +429,11 @@ function render(){
     rep.innerHTML=cover()+`<section class="tab active" id="tab-overview">
       <div class="card"><h2>No valuation produced</h2>
       <p class="explain">Status <b>${esc(meta.status)}</b>. Nothing is fabricated — the audit trail records why.</p>
+      <div class="callout co-info"><b>Have the figures yourself?</b> The data source can't support this
+        valuation, but you can supply the numbers directly — the guided intake agent asks ~12 questions
+        (with the theory behind each) and values your company against the same database peers.<br>
+        <button class="btn btn-run no-print" style="background:var(--accent);color:#fff;margin-top:10px"
+          onclick="startIntake()">Describe the company instead → guided intake</button></div>
       ${auditTable()}</div></section>`;
     $("#tabnav").style.display="none"; return;
   }

@@ -1,5 +1,7 @@
 # Delivery layer only — core/ is pure stdlib by design (see PROJECT_CONTEXT §1).
 fastapi>=0.110
 uvicorn[standard]>=0.29
+# Conversational intake graph runtime (deterministic — no LLM is called):
+langgraph>=1.0
 # ETL build tool only (never imported by the runtime core):
 openpyxl>=3.1

@@ -157,11 +157,19 @@ class RealDnBClient:
         self._naics = {cat: f"{100 + i}0" for i, cat in enumerate(cats)}
 
         # ---- valuation-grade universe ---------------------------------------
+        # Beyond presence checks, a PLAUSIBILITY screen keeps garbage source
+        # rows out of the peer pool: |EBITDA| must not exceed 1.5x revenue
+        # (a "170% margin" is a data error, not a business), and revenue must
+        # be a real operating scale (>= ₹0.1 Cr). Negative EBITDA is KEPT —
+        # loss-making is a legitimate state the engine handles honestly
+        # (EV/EBITDA skips, EV/Revenue prices). Zeros in optional columns stay
+        # None/0 and flow into the disclosed-warning paths, never invented.
         self._universe = []
         for a, years in self._fin.items():
             y = years[0]
-            if (a in self._co and (y["revenue"] or 0) > 0
+            if (a in self._co and (y["revenue"] or 0) >= 0.1
                     and y["ebitda"] is not None
+                    and abs(y["ebitda"]) <= 1.5 * y["revenue"]
                     and y["net_worth"] is not None and y["net_worth"] > 0):
                 self._universe.append(a)
         self._universe.sort()

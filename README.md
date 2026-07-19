@@ -9,7 +9,7 @@ response schema**; going live is a one-method swap.
 
 | | source | companies | valuation basis |
 |---|---|---|---|
-| **real** | 9 uploaded Excel extracts → `python etl.py` → `realdata.db` (SQLite) | **13,906** valuation-grade (of 42,951) | book basis (extract has no market prices / borrowings / cash — caveats disclosed on every result) |
+| **real** | 9 uploaded Excel extracts → `python etl.py` → `realdata.db` (SQLite) | **13,619** valuation-grade, plausibility-screened (of 42,951) | book basis (extract has no market prices / borrowings / cash — caveats disclosed on every result) |
 | **mock** | synthetic 59-company universe generated in code | 59 | market trading multiples (used for methodology validation/backtests) |
 
 The core calculation is identical for both: `RealDnBClient` and `MockDnBClient` emit the

@@ -74,11 +74,71 @@ def _bar(frac, cls="bar-accent"):
     return (f'<div class="bar"><div class="{cls}" style="width:{frac*100:.0f}%"></div></div>')
 
 
+def _football_field(val, target):
+    """Static SVG football-field: one bar per method spanning low→high equity,
+    a thick tick at the positioned mid, and the target's own market cap as a
+    dashed reference line when it is listed. Pure string SVG — print-safe."""
+    methods = [m for m in val.get("methods", [])
+               if m.get("equity_low_cr") is not None]
+    if not methods:
+        return ""
+    colors = {"EV/EBITDA": ("#2a78d6", "#1c5cab"),
+              "EV/Revenue": ("#1baf7a", "#0c5c3f"),
+              "EV/EBIT": ("#eda100", "#7a5300")}
+    lo = min(m["equity_low_cr"] for m in methods)
+    hi = max(m["equity_high_cr"] for m in methods)
+    own = (target or {}).get("market_cap_cr")
+    if own:
+        lo, hi = min(lo, own), max(hi, own)
+    pad = (hi - lo) * 0.08 or 1.0
+    lo, hi = max(0.0, lo - pad), hi + pad
+    W, L, R = 940, 110, 30
+    H = 56 * len(methods) + 46
+
+    def x(v):
+        return L + (v - lo) / (hi - lo) * (W - L - R)
+
+    g = []
+    for i in range(6):
+        v = lo + (hi - lo) * i / 5
+        g.append(f'<line x1="{x(v):.0f}" y1="8" x2="{x(v):.0f}" y2="{H-30}" '
+                 f'stroke="#e1e0d9"/><text x="{x(v):.0f}" y="{H-14}" font-size="11" '
+                 f'fill="#898781" text-anchor="middle">{v:,.0f}</text>')
+    for i, m in enumerate(methods):
+        c, cd = colors.get(m["method"], ("#2a78d6", "#1c5cab"))
+        y = 18 + i * 56
+        xl, xm, xh = x(m["equity_low_cr"]), x(m["equity_mid_cr"]), x(m["equity_high_cr"])
+        star = " ★" if m["method"] == val.get("headline_method") else ""
+        g.append(
+            f'<text x="{L-8}" y="{y+14}" font-size="12" font-weight="700" '
+            f'text-anchor="end" fill="#0b0b0b">{_esc(m["method"])}{star}</text>'
+            f'<rect x="{xl:.0f}" y="{y}" width="{max(2, xh-xl):.0f}" height="16" '
+            f'rx="4" fill="{c}" opacity="0.85"/>'
+            f'<rect x="{xm-2:.0f}" y="{y-3}" width="4" height="22" rx="1.5" fill="{cd}"/>'
+            f'<text x="{xl-5:.0f}" y="{y+13}" font-size="11" fill="#52514e" '
+            f'text-anchor="end">{m["equity_low_cr"]:,.0f}</text>'
+            f'<text x="{xh+5:.0f}" y="{y+13}" font-size="11" '
+            f'fill="#52514e">{m["equity_high_cr"]:,.0f}</text>'
+            f'<text x="{xm:.0f}" y="{y-7}" font-size="11" font-weight="700" '
+            f'fill="#0b0b0b" text-anchor="middle">{m["equity_mid_cr"]:,.0f}</text>')
+    if own:
+        g.append(f'<line x1="{x(own):.0f}" y1="6" x2="{x(own):.0f}" y2="{H-30}" '
+                 f'stroke="#0b0b0b" stroke-width="1.6" stroke-dasharray="5 4"/>')
+    g.append(f'<line x1="{L}" y1="{H-30}" x2="{W-R}" y2="{H-30}" stroke="#c3c2b7"/>')
+    legend = (f'<div class="sub-note" style="margin:4px 0 14px">bar = low→high equity '
+              f'per method · thick tick = positioned central estimate · axis: equity '
+              f'value, ₹ Cr'
+              + (f' · dashed line = own market cap ₹{own:,.0f} Cr' if own else "")
+              + '</div>')
+    return (f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" '
+            f'aria-label="Equity range by method">{"".join(g)}</svg>{legend}')
+
+
 _STYLE = """
 :root{
-  --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2b3444; --line2:#3a465a;
-  --ink:#e6edf3; --muted:#9aa7b4; --faint:#6b7684; --accent:#4f9cf9; --good:#3fb950;
-  --warn:#d29922; --bad:#f85149; --dec:#a371f7;
+  --bg:#f9f9f7; --panel:#fcfcfb; --panel2:#f1f1ec; --line:#e1e0d9; --line2:#c3c2b7;
+  --ink:#0b0b0b; --muted:#52514e; --faint:#898781; --accent:#2a78d6; --good:#0a7d0a;
+  --warn:#8a6100; --bad:#c0392b; --dec:#5b46c7;
 }
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);color:var(--ink);
@@ -106,7 +166,7 @@ h1{font-size:24px;margin:0 0 6px;}
 .sec-head h2{font-size:17px;margin:0;}
 .sec-purpose{color:var(--faint);font-size:12.5px;margin-top:2px;}
 .theory{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 18px;
-  border-left:3px solid var(--line2);padding:2px 0 2px 14px;background:rgba(255,255,255,.01);}
+  border-left:3px solid var(--line2);padding:2px 0 2px 14px;}
 .theory b{color:var(--ink);font-weight:600;}
 
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
@@ -115,9 +175,9 @@ h1{font-size:24px;margin:0 0 6px;}
 .sub-note{color:var(--muted);font-size:11.5px;margin-top:2px;font-weight:400;}
 
 .badge{display:inline-block;padding:6px 14px;border-radius:20px;font-weight:700;font-size:15px;}
-.badge.hi{background:rgba(63,185,80,.15);color:var(--good);border:1px solid var(--good);}
-.badge.med{background:rgba(210,153,34,.15);color:var(--warn);border:1px solid var(--warn);}
-.badge.lo{background:rgba(248,81,73,.15);color:var(--bad);border:1px solid var(--bad);}
+.badge.hi{background:rgba(10,125,10,.10);color:var(--good);border:1px solid var(--good);}
+.badge.med{background:rgba(138,97,0,.10);color:var(--warn);border:1px solid var(--warn);}
+.badge.lo{background:rgba(192,57,43,.10);color:var(--bad);border:1px solid var(--bad);}
 
 .headline{display:flex;gap:30px;align-items:flex-end;margin:6px 0 18px;flex-wrap:wrap;}
 .hv{text-align:center;}
@@ -134,8 +194,8 @@ h1{font-size:24px;margin:0 0 6px;}
 
 .callout{margin-top:14px;padding:12px 16px;border-radius:10px;border:1px solid var(--line2);
   background:var(--panel2);}
-.callout.ok{border-color:var(--good);background:rgba(63,185,80,.07);}
-.callout.warn{border-color:var(--warn);background:rgba(210,153,34,.07);}
+.callout.ok{border-color:var(--good);background:rgba(10,125,10,.06);}
+.callout.warn{border-color:var(--warn);background:rgba(138,97,0,.06);}
 .callout b{font-size:13.5px;}
 
 /* confidence breakdown bars */
@@ -151,7 +211,8 @@ th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-
   vertical-align:top;}
 th{color:var(--muted);text-transform:uppercase;font-size:11px;letter-spacing:.05em;}
 tr:hover td{background:var(--panel2);}
-.hl-row{background:rgba(79,156,249,.10);}
+.hl-row{background:rgba(42,120,214,.10);}
+@media print{ body{background:#fff} .card{break-inside:avoid;border-color:#bbb} }
 
 .peer{background:var(--panel2);border:1px solid var(--line);border-radius:11px;
   padding:15px;margin-bottom:12px;}
@@ -397,8 +458,8 @@ def render_dashboard(data):
             f'control pay a premium (synergies, control of cash flows) — empirical '
             f'studies cluster at 20–30%. {_esc(txn["caveat"])}</span></div>')
     parts.append(_section("2", "Headline Valuation", "the answer, and the arithmetic behind it",
-                          theory + hv + bridge + pos_note + disc_note + ca_html
-                          + txn_html + xc_html + warns))
+                          theory + hv + _football_field(val, t) + bridge + pos_note
+                          + disc_note + ca_html + txn_html + xc_html + warns))
 
     # ================= 3 · CONFIDENCE & DATA QUALITY ===================
     theory = ('<p class="theory"><b>What this is.</b> How much to trust this specific result. '

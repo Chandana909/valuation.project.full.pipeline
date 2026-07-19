@@ -154,6 +154,18 @@ def _value(name):
             result["validation"] = _validation()
         except Exception:                              # pragma: no cover
             log.exception("backtest attach failed")
+    status = (result.get("meta") or {}).get("status")
+    if status in ("no_match", "insufficient_data"):
+        # actionable fallback: the data source can't support this valuation,
+        # but the user can supply the figures through the guided intake agent
+        result["hint"] = {
+            "action": "guided_intake",
+            "detail": ("Not enough source data to value this company. Provide "
+                       "the figures yourself through the guided intake — the "
+                       "engine values user-described companies against the "
+                       "same database peers, with user-provided lineage."),
+            "start": "POST /api/v1/intake/start",
+        }
     return result
 
 _HTTP_BY_STATUS = {"ok": 200, "no_valuation": 200,

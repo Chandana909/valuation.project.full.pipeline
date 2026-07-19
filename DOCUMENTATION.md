@@ -10,7 +10,7 @@
 ## 1. What this is
 
 A production-grade, **touchless**, **deterministic** comparable-company valuation
-engine for Indian MSMEs. Given a company — either one of **13,906 valuation-grade
+engine for Indian MSMEs. Given a company — either one of **13,619 valuation-grade (plausibility-screened)
 real companies** loaded from 9 Excel extracts, or a company **you describe through a
 guided conversational intake** — it:
 
@@ -127,7 +127,7 @@ per-row **provenance** (source file + Excel row stored for every figure) ·
 WAL journal mode + ANALYZE.
 
 **Valuation-grade universe:** revenue > 0 AND EBITDA present AND net worth > 0 AND
-12-month period → **13,906 companies** (of 42,951 loaded). Latest + prior year kept.
+12-month period → **13,619 companies** (of 42,951 loaded). Latest + prior year kept.
 
 **Honest gaps in the source (disclosed on every result):** no market prices, no
 borrowings, no cash, no current liabilities. Consequences: multiples are
@@ -231,7 +231,7 @@ code-verified complete; regenerate with `python make_parameter_dictionary.py`).
 |---|---|
 | `GET /api/v1/health` | `{ok, ready}` — ready flips when the universe cache is warm |
 | `GET /api/v1/status` | engine + data source + universe size + caveats |
-| `GET /api/v1/companies/suggest?q=&limit=` | autocomplete over 13,906 names |
+| `GET /api/v1/companies/suggest?q=&limit=` | autocomplete over 13,619 names |
 | `GET /api/v1/valuations?name=` | full result JSON — **404** no match · **422** insufficient data · 200 otherwise |
 | `GET /api/v1/valuations/report?name=&print=1` | self-contained HTML report; `print=1` auto-opens the PDF dialog |
 | `POST /api/v1/intake/start` | 201 → `{session_id, question{prompt, help, optional}, progress}` |

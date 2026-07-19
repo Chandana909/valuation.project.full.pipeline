@@ -50,7 +50,7 @@ svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
   <div class="sub">Architecture &amp; filter data-flow · methodology v2.1.0 · deterministic · touchless · fully audited</div>
   <div class="chips">
     <span class="chip">42,951 real companies loaded</span>
-    <span class="chip">13,906 valuation-grade</span>
+    <span class="chip">13,619 valuation-grade (plausibility-screened)</span>
     <span class="chip">15-control filter chain</span>
     <span class="chip">39 + 30 automated checks green</span>
     <span class="chip">API · UI · PDF reports</span>
@@ -85,7 +85,7 @@ svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
   <text x="40" y="154" font-size="13" font-weight="700" fill="#7a5300">ADAPTER LAYER — identical D&amp;B-schema envelopes (the core never knows which)</text>
   <rect x="60" y="164" width="270" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
   <text x="195" y="182" font-size="12" text-anchor="middle" font-weight="600">RealDnBClient (realdata/client.py)</text>
-  <text x="195" y="196" font-size="12" text-anchor="middle">13,906 real cos · lineage() · caveats</text>
+  <text x="195" y="196" font-size="12" text-anchor="middle">13,619 real cos · lineage() · caveats</text>
   <rect x="365" y="164" width="270" height="40" rx="6" fill="#fff" stroke="#c3c2b7"/>
   <text x="500" y="182" font-size="12" text-anchor="middle" font-weight="600">MockDnBClient (mock_api/)</text>
   <text x="500" y="196" font-size="12" text-anchor="middle">59 synthetic cos + market caps → backtests</text>
@@ -210,7 +210,7 @@ exact cell, and a stale database is detectable the moment an Excel changes.</div
       <polygon points="0 0,9 4,0 8" fill="#d03b3b"/></marker>
   </defs>
   <rect x="290" y="10" width="420" height="52" rx="10" fill="#123a63"/>
-  <text x="500" y="32" font-size="13.5" text-anchor="middle" fill="#fff" font-weight="700">VALUATION-GRADE UNIVERSE — 13,906 companies</text>
+  <text x="500" y="32" font-size="13.5" text-anchor="middle" fill="#fff" font-weight="700">VALUATION-GRADE UNIVERSE — 13,619 companies</text>
   <text x="500" y="50" font-size="12" text-anchor="middle" fill="#ffffffcc">normalized + profiled once, then cached (~4s)</text>
   <line x1="500" y1="62" x2="500" y2="88" stroke="#52514e" stroke-width="2" marker-end="url(#af)"/>
 
@@ -369,7 +369,7 @@ mid vs ≈₹15,000 Cr actual market cap. Replacing the anchor table with a live
 <div class="card">
 <table>
 <tr><th>Input path</th><th>How it works</th><th>Status</th></tr>
-<tr><td><b>Database search</b></td><td>autocomplete over 13,906 names → resolve → value (full file-and-row lineage)</td><td>live</td></tr>
+<tr><td><b>Database search</b></td><td>autocomplete over 13,619 names → resolve → value (full file-and-row lineage)</td><td>live</td></tr>
 <tr><td><b>Guided chat intake</b></td><td>deterministic 12-question graph (each question ships its own theory; typed validation; skippable optionals) → <span class="mono">run_pipeline_custom</span> values the company against database peers, with the scale-mismatch penalty covering "no exact peer exists"</td><td>live</td></tr>
 <tr><td><b>PDF upload</b></td><td>annual-report extraction into the same intake answers</td><td>placeholder (button visible, disabled)</td></tr>
 </table>

@@ -1,27 +1,32 @@
 """
-intake.py — conversational intake agent: a deterministic question-graph that
-collects a target company's profile turn by turn, then builds the same `Company`
-object the rest of the engine consumes — so a company that is NOT in the
-database can be valued against database peers with zero changes to the core.
+intake.py — conversational intake agent on a REAL LangGraph StateGraph.
 
-Design (LangGraph-style, no LLM):
-  * The conversation is a STATE GRAPH: each node is a question with a typed
-    validator and a `help` explainer (the theory shown to the user); edges are
-    the `skip_if` conditions that route past questions that no longer apply.
-  * Deterministic and touchless, consistent with the project contract — the
-    graph IS the agent. An LLM layer can later sit in front (free-text →
-    answers) without changing anything downstream: the seam is `submit()`.
-  * Sessions are plain dicts (JSON-serializable) so any delivery layer — the
-    bundled API, a CLI, a chatbot — can drive the same graph.
+The conversation is a compiled `langgraph.graph.StateGraph`: one node per
+question (12 nodes), a conditional entry point that routes each turn to the
+node for the current position, and edges that either advance the state
+(validated answer) or hold it in place with a typed error (bad answer).
+`IntakeSession.submit()` invokes the compiled graph exactly once per user turn.
 
-Industry resolution: free-text sector answers are matched against the live data
-source's own industry catalog (RealDnBClient exposes the 137 CD_Industry
-categories), falling back to the keyword sector-group rules — so the intake
-company lands in the same classification space as its database peers.
+Deterministic by construction — the graph runtime is LangGraph, but every node
+is a pure validator function: NO LLM, no network, no sampling, nothing
+fabricated. If a figure was not provided, it stays None and every downstream
+warning fires (net-debt-unknown, method-skipped, …) — the agent never fills
+gaps with guesses. An LLM layer could later sit in FRONT of `submit()`
+(free text → answer string) without changing the graph or anything downstream.
+
+Answers build the same `Company` dataclass the rest of the engine consumes, so
+a company that is NOT in the database is valued against database peers with
+zero changes to the core. Industry free-text is matched against the live data
+source's own catalog (137 CD_Industry categories), falling back to the keyword
+sector-group rules — the intake company lands in the same classification space
+as its peers.
 """
 
 import uuid
 from math import isfinite
+from typing import Optional, TypedDict
+
+from langgraph.graph import StateGraph, START, END
 
 from core import Company
 from realdata.client import _GROUP_RULES, _GROUP_MAJOR, _group_of
@@ -133,11 +138,64 @@ _BY_ID = {n["id"]: n for n in GRAPH}
 
 
 # ---------------------------------------------------------------------------
-# Session — one conversation walking the graph
+# The LangGraph StateGraph — one node per question, conditional entry routing
+# ---------------------------------------------------------------------------
+
+class IntakeState(TypedDict):
+    answers: dict
+    idx: int
+    pending: Optional[str]      # the user's raw answer for this turn
+    error: Optional[str]        # validation error (state held in place)
+
+
+def _make_node(node_def):
+    """A pure validator node: consume `pending`, either advance (answer
+    recorded) or hold with a typed error. No side effects, no fabrication."""
+    def node(state: IntakeState) -> IntakeState:
+        raw = (state.get("pending") or "").strip()
+        answers = dict(state["answers"])
+        if node_def.get("optional") and raw.lower() in ("skip", "na", "n/a", "-", ""):
+            answers[node_def["id"]] = None
+            return {"answers": answers, "idx": state["idx"] + 1,
+                    "pending": None, "error": None}
+        val, err = node_def["validate"](raw)
+        if err:
+            return {"answers": answers, "idx": state["idx"],
+                    "pending": None, "error": err}
+        answers[node_def["id"]] = val
+        return {"answers": answers, "idx": state["idx"] + 1,
+                "pending": None, "error": None}
+    node.__name__ = f"q_{node_def['id']}"
+    return node
+
+
+def _route(state: IntakeState) -> str:
+    """Conditional entry: send this turn to the node of the current question."""
+    if state["idx"] >= len(GRAPH):
+        return END
+    return GRAPH[state["idx"]]["id"]
+
+
+def _build_graph():
+    g = StateGraph(IntakeState)
+    for node_def in GRAPH:
+        g.add_node(node_def["id"], _make_node(node_def))
+        g.add_edge(node_def["id"], END)
+    g.add_conditional_edges(START, _route,
+                            {**{n["id"]: n["id"] for n in GRAPH}, END: END})
+    return g.compile()
+
+
+_COMPILED = _build_graph()          # compiled once at import; stateless runtime
+
+
+# ---------------------------------------------------------------------------
+# Session — one conversation driving the compiled graph
 # ---------------------------------------------------------------------------
 
 class IntakeSession:
-    """One guided conversation. JSON-serializable state; deterministic."""
+    """One guided conversation. JSON-serializable state; deterministic.
+    Each submit() = one invocation of the compiled LangGraph StateGraph."""
 
     def __init__(self):
         self.session_id = uuid.uuid4().hex[:12]
@@ -162,24 +220,20 @@ class IntakeSession:
 
     # -- the one transition --------------------------------------------------
     def submit(self, raw):
-        """Validate the answer for the current node and advance. Returns
-        {ok, error?, question?, done, progress}. This is the LLM seam: a
-        language layer would translate free text into these submits."""
+        """Run one turn through the compiled graph. Returns {ok, error?,
+        question?, done, progress}. This is the LLM seam: a language layer
+        would translate free text into these submits."""
         if self.done:
             return {"ok": False, "error": "intake already complete",
                     "done": True, "progress": self.progress()}
-        node = GRAPH[self.idx]
-        raw_s = str(raw if raw is not None else "").strip()
-        if node.get("optional") and raw_s.lower() in ("skip", "na", "n/a", "-", ""):
-            self.answers[node["id"]] = None
-            self.idx += 1
-        else:
-            val, err = node["validate"](raw_s)
-            if err:
-                return {"ok": False, "error": err, "question": self.current(),
-                        "done": False, "progress": self.progress()}
-            self.answers[node["id"]] = val
-            self.idx += 1
+        out = _COMPILED.invoke({"answers": self.answers, "idx": self.idx,
+                                "pending": str(raw if raw is not None else ""),
+                                "error": None})
+        self.answers = out["answers"]
+        self.idx = out["idx"]
+        if out.get("error"):
+            return {"ok": False, "error": out["error"], "question": self.current(),
+                    "done": False, "progress": self.progress()}
         return {"ok": True, "question": self.current(), "done": self.done,
                 "progress": self.progress(),
                 "summary": self.summary() if self.done else None}
