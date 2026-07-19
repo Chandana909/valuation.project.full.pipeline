@@ -198,6 +198,19 @@ a.apiurl:hover{text-decoration:underline}
   border:1px solid var(--grid);outline:none;background:var(--surface)}
 .chatbar input:focus{border-color:var(--accent)}
 .chatbar .btn{background:var(--accent);color:#fff}
+
+/* ============ enrichment popup (partial-data companies) ============ */
+.epop{position:fixed;right:22px;bottom:22px;width:350px;background:var(--surface);
+  border:1px solid var(--grid);border-radius:14px;box-shadow:0 12px 40px rgba(11,11,11,.18);
+  z-index:80;padding:14px 16px}
+.epop .ehead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.epop .ehead button{background:none;border:none;font-size:14px;color:var(--muted)}
+.epop .eq b{font-size:13.5px}
+.epop .ewhy{color:var(--muted);font-size:11.5px;margin:4px 0 10px}
+.epop input{flex:1;font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--grid);outline:none}
+.epop .btn{background:var(--accent);color:#fff;padding:8px 12px}
+.epop .btn.eskip{background:var(--surface);color:var(--ink2);border:1px solid var(--grid)}
+.epop .eprog{color:var(--muted);font-size:11px;margin-top:9px}
 .chips{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
 .chips button{background:var(--surface);border:1px solid var(--grid);border-radius:18px;
   padding:7px 15px;font-size:13px;color:var(--accent);font-weight:600}
@@ -279,10 +292,17 @@ a.apiurl:hover{text-decoration:underline}
     <div class="chatlog" id="chatlog"></div>
     <div class="chatbar">
       <input id="chatin" placeholder="Type your answer… ('skip' for optional questions)" autocomplete="off">
+      <datalist id="indlist"></datalist>
       <button class="btn" onclick="sendIntake()">Send</button>
       <button class="btn" style="background:transparent;color:var(--ink2);border:1px solid var(--grid)"
         onclick="cancelIntake()">Cancel</button>
     </div>
+  </div>
+
+  <div id="enrich" class="epop no-print" style="display:none">
+    <div class="ehead"><b>💬 Improve this valuation</b>
+      <button onclick="closeEnrich()" title="dismiss">✕</button></div>
+    <div id="ebody"></div>
   </div>
 
   <div id="report" style="display:none"></div>
@@ -388,7 +408,16 @@ function askQ(q,prog){
     <div class="help">💡 ${esc(q.help)}</div>`);
   if(prog){$("#iprogfill").style.width=prog.pct+"%";
     $("#iproglab").textContent=`${prog.answered}/${prog.total} answered`;}
-  $("#chatin").focus();
+  const inp=$("#chatin");
+  if(q.choices&&q.choices.length){
+    $("#indlist").innerHTML=q.choices.map(c=>`<option value="${esc(c)}">`).join("");
+    inp.setAttribute("list","indlist");
+    inp.placeholder=`Type to search ${q.choices.length} sectors and pick one…`;
+  }else{
+    inp.removeAttribute("list");
+    inp.placeholder="Type your answer… ('skip' for optional questions)";
+  }
+  inp.focus();
 }
 async function sendIntake(){
   if(!INTAKE)return;
@@ -415,7 +444,79 @@ async function sendIntake(){
 }
 document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&document.activeElement===$("#chatin"))sendIntake();
+  if(e.key==="Enter"&&document.activeElement===document.querySelector("#ein"))ansEnrich();
 });
+
+/* ---------- enrichment popup: DB companies with partial source data ---------- */
+const ENRICH_FIELDS={
+  debt_cr:{q:"Total borrowings / debt, in ₹ Crore?",
+    why:"The source has no borrowings — net debt is assumed 0, the single largest gap in the equity bridge."},
+  cash_cr:{q:"Cash and equivalents, in ₹ Crore?",
+    why:"The other half of the net-debt bridge (net debt = debt − cash)."},
+  depreciation_cr:{q:"Annual depreciation, in ₹ Crore?",
+    why:"Enables EBIT = EBITDA − depreciation → adds the EV/EBIT triangulation method."},
+  revenue_prior_cr:{q:"Previous year's revenue, in ₹ Crore?",
+    why:"Gives revenue growth, sharpening peer comparison."}};
+let EN=null, _enrichShownFor=null;
+function detectMissing(){
+  if(!DATA||!DATA.target||!DATA.valuation)return[];
+  if(String(DATA.target.duns||"").startsWith("CUSTOM-"))return[];
+  const m=[];
+  if((DATA.valuation.warnings||[]).some(w=>w.indexOf("net debt unknown")>=0)){m.push("debt_cr","cash_cr");}
+  if(DATA.target.ebit_cr==null)m.push("depreciation_cr");
+  if(DATA.target.revenue_growth==null)m.push("revenue_prior_cr");
+  return m;
+}
+function maybeEnrich(){
+  const key=DATA&&DATA.query;
+  if(!key||_enrichShownFor===key)return;
+  const m=detectMissing(); if(!m.length)return;
+  _enrichShownFor=key;
+  EN={fields:m,i:0,vals:{}};
+  $("#enrich").style.display="block";
+  nextEnrichQ();
+}
+function nextEnrichQ(){
+  if(!EN)return;
+  if(EN.i>=EN.fields.length){submitEnrich();return;}
+  const f=EN.fields[EN.i],d=ENRICH_FIELDS[f];
+  $("#ebody").innerHTML=`
+    <div class="eq"><b>${esc(d.q)}</b><div class="ewhy">💡 ${esc(d.why)}</div></div>
+    <div style="display:flex;gap:6px">
+      <input id="ein" inputmode="decimal" placeholder="e.g. 25 — or Skip" autocomplete="off">
+      <button class="btn" onclick="ansEnrich()">OK</button>
+      <button class="btn eskip" onclick="skipEnrich()">Skip</button></div>
+    <div class="eprog">${EN.i+1} of ${EN.fields.length} figures missing from the source —
+      answers are marked user-provided in the lineage</div>`;
+  $("#ein").focus();
+}
+function ansEnrich(){
+  const el=document.querySelector("#ein"); if(!el||!EN)return;
+  const v=el.value.trim().replace(/,/g,"");
+  if(v&&v.toLowerCase()!=="skip"){
+    const x=parseFloat(v);
+    if(isNaN(x)||x<0){el.style.borderColor="var(--crit)";return;}
+    EN.vals[EN.fields[EN.i]]=x;
+  }
+  EN.i++;nextEnrichQ();
+}
+function skipEnrich(){if(EN){EN.i++;nextEnrichQ();}}
+function closeEnrich(){$("#enrich").style.display="none";EN=null;}
+async function submitEnrich(){
+  const vals=EN?EN.vals:{}; closeEnrich();
+  if(!Object.keys(vals).length)return;
+  const btn=$("#runBtn");btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span>&nbsp;Re-valuing…';
+  try{
+    const r=await fetch("/api/v1/valuations/enrich",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:DATA.query||DATA.target.name,...vals})});
+    DATA=await r.json();
+    _enrichShownFor=DATA.query;      // don't re-nag after an enriched run
+    render();
+  }catch(e){}
+  btn.disabled=false;btn.textContent="Run valuation";
+}
 
 /* ---------------- render ---------------- */
 function render(){
@@ -451,6 +552,7 @@ function render(){
   showTab("overview");
   drawField(); drawFunnel();
   const rb=$("#robustBtn"); if(rb&&ROBUST) renderRobust();
+  setTimeout(maybeEnrich,600);
 }
 
 /* ---------------- cover strip ---------------- */

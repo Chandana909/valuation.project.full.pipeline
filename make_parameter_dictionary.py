@@ -314,6 +314,13 @@ def build():
         ("Sector calibration factor clamp", "[0.25, 25]",
          "compute_valuation", "anchor ÷ book median, clamped",
          "guards against degenerate book distributions"),
+        ("Positioning shrinkage (non-market bases)", "λ = 0.5",
+         "core/pipeline.py _POSITION_SHRINK_NONMARKET",
+         "on book/sector-calibrated bases the margin position moves only "
+         "halfway from the median toward the margin rank",
+         "the margin→multiple link is verified only on market data; Jul-2026 "
+         "real-market spot checks showed full-strength positioning can point "
+         "the wrong way on calibrated bases"),
         ("Anchor size factor", " · ".join(f"rev < ₹{int(t)} Cr → ×{f}"
                                           for t, f in _SIZE_FACTORS) + " · else ×1.00",
          "core/calibration.py", "haircuts the sector anchor for small targets",

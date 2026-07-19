@@ -685,6 +685,16 @@ _METHOD_SPEC = [
     ("EV/EBIT", "ebit_cr"),
 ]
 
+# Positioning shrinkage on NON-MARKET bases. The margin->multiple relationship
+# that justifies full-strength quality positioning is verified only where peer
+# multiples are observed market prices (backtest corr ~0.49). On book/sector-
+# calibrated bases that link is unverified, and real-market spot checks
+# (Jul-2026: Kirloskar priced at a premium DESPITE low margin, Shakti at a
+# discount DESPITE high margin) show it can point the wrong way. So on those
+# bases the position moves only halfway from the median toward the margin rank
+# — a shrinkage estimator: keep the signal, halve its leverage.
+_POSITION_SHRINK_NONMARKET = 0.5
+
 
 def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation:
     used = peers[:top_n]
@@ -931,10 +941,26 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
                            {"method": mname, "n_multiples": len(kept)})
             continue
         eff_n = round(sum(w for _, w in kept), 2)          # effective (weighted) count
-        # similarity-weighted positioned multiple + band
-        p_mid = _weighted_percentile(kept, mid_q)
-        p_low = _weighted_percentile(kept, low_q)
-        p_high = _weighted_percentile(kept, high_q)
+        # similarity-weighted positioned multiple + band; shrink the position
+        # toward the median on non-market bases (see _POSITION_SHRINK_NONMARKET)
+        if method_basis != "market":
+            m_mid_q = 0.5 + _POSITION_SHRINK_NONMARKET * (mid_q - 0.5)
+            m_low_q = _clamp(m_mid_q - window, 0.05, 0.95)
+            m_high_q = _clamp(m_mid_q + window, 0.05, 0.95)
+            shrunk = True
+        else:
+            m_mid_q, m_low_q, m_high_q = mid_q, low_q, high_q
+            shrunk = False
+        p_mid = _weighted_percentile(kept, m_mid_q)
+        p_low = _weighted_percentile(kept, m_low_q)
+        p_high = _weighted_percentile(kept, m_high_q)
+        if shrunk and audit is not None:
+            audit.info("value", "POSITION_SHRUNK",
+                       f"{mname}: non-market basis — margin position P"
+                       f"{int(round(mid_q*100))} shrunk halfway to median → "
+                       f"P{int(round(m_mid_q*100))}",
+                       {"method": mname, "raw_q": round(mid_q, 3),
+                        "shrunk_q": round(m_mid_q, 3)})
         # strict ordering guard (flat/degenerate distributions)
         if not (p_low < p_mid < p_high):
             p_low = _weighted_percentile(kept, 0.25)

@@ -52,8 +52,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
-from run import (run_pipeline, run_pipeline_custom, make_client, get_universe,
-                 METHODOLOGY_VERSION, ENGINE_NAME)
+from run import (run_pipeline, run_pipeline_custom, run_pipeline_enriched,
+                 make_client, get_universe, METHODOLOGY_VERSION, ENGINE_NAME)
 from intake import IntakeSession, build_company, intake_lineage
 from dashboard import render_dashboard
 
@@ -295,18 +295,44 @@ class AnswerBody(BaseModel):
     value: str
 
 
+class EnrichBody(BaseModel):
+    name: str
+    debt_cr: float | None = None
+    cash_cr: float | None = None
+    depreciation_cr: float | None = None
+    revenue_prior_cr: float | None = None
+
+
 def _intake_get(sid):
     with _intake_lock:
         rec = _INTAKE.get(sid)
     return rec
 
 
+def _industry_choices():
+    catalog = getattr(_client(), "industry_catalog", None)
+    return sorted(catalog().keys()) if callable(catalog) else None
+
+
+@app.get("/api/v1/industries", tags=["companies"])
+def v1_industries():
+    """The data source's own industry catalog (the categories the intake's
+    industry SELECTION must resolve to) with each category's sector group."""
+    from realdata.client import _group_of
+    choices = _industry_choices() or []
+    return {"count": len(choices),
+            "industries": [{"category": c, "group": _group_of(c)}
+                           for c in choices]}
+
+
 @app.post("/api/v1/intake/start", tags=["intake"], status_code=201)
 def intake_start():
     """Open a guided-intake conversation. The agent walks a deterministic
-    question graph (each question ships its own 'why we ask' theory); answers
-    build a target company that is then valued against the database universe."""
-    s = IntakeSession()
+    LangGraph question graph (each question ships its own 'why we ask' theory);
+    the industry question is a SELECTION over the live catalog, so the
+    sub-sector classification is exact. Answers build a target company that is
+    then valued against the database universe."""
+    s = IntakeSession(industry_choices=_industry_choices())
     with _intake_lock:
         if len(_INTAKE) >= _INTAKE_MAX:
             _INTAKE.pop(next(iter(_INTAKE)))
@@ -369,6 +395,28 @@ def intake_report(sid: str,
     if rec["result"] is None:
         return _err(409, "no valuation run yet — POST /value first")
     return _report_html(rec["result"], print)
+
+
+@app.post("/api/v1/valuations/enrich", tags=["valuations"])
+def v1_enrich(body: EnrichBody):
+    """Re-value a DATABASE company with user-supplied figures for the fields
+    the source lacks (debt / cash / depreciation / prior revenue). Dependent
+    quantities (net debt, EBIT, growth) are re-derived; supplied fields carry
+    'user-provided enrichment' lineage and an audited TARGET_ENRICHED decision."""
+    overrides = {k: getattr(body, k) for k in
+                 ("debt_cr", "cash_cr", "depreciation_cr", "revenue_prior_cr")}
+    if all(v is None for v in overrides.values()):
+        return _err(422, "no override figures supplied")
+    with _lock:
+        result, _ctx = run_pipeline_enriched(body.name.strip(), overrides,
+                                             client=_client())
+    if result.get("valuation"):
+        try:
+            result["validation"] = _validation()
+        except Exception:                          # pragma: no cover
+            log.exception("backtest attach failed")
+    status = (result.get("meta") or {}).get("status", "ok")
+    return JSONResponse(result, status_code=_HTTP_BY_STATUS.get(status, 200))
 
 
 # ---- filter-chain documentation ---------------------------------------------

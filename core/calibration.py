@@ -31,36 +31,49 @@ untouched.
 
 # sector group -> (EV/EBITDA anchor, EV/Sales anchor).  EV/EBIT = EV/EBITDA x 1.25
 # (typical D&A ~20% of EBITDA for Indian industrials).
+#
+# VINTAGE: July-2026. Re-calibrated against OBSERVED NSE market caps pulled on
+# 2026-07-17 for companies present in this database (FY2025 financials):
+#   MINING  — 20 Microns:      implied EV/EBITDA ≈ 9.0x   (anchor set 9.0)
+#   MACH    — Kirloskar 38.8x · Roto 21.9x · Mahindra EPC 15.6x · Shakti 12.1x
+#             → sector median ≈ 18x                        (anchor set 18.0)
+#   CHEM    — Aarti Industries: ≈ 17x                      (anchor set 16.0)
+# Unobserved sectors are scaled ~1.25-1.35x from the Jan-2025 base, consistent
+# with the broad 2025-26 Indian mid/small-cap re-rating those points evidence.
+# THIS TABLE IS THE CALIBRATION SURFACE: refresh it on a schedule (or replace
+# with a derived monthly vintage from a price feed) — see PRODUCTION_REVIEW 1.7.
 SECTOR_ANCHORS = {
-    "AUTO":      (11.0, 1.4),   # auto components / OEM ancillaries
-    "PHARMA":    (14.0, 3.0),
-    "CHEM":      (12.0, 2.0),
-    "METAL":     (7.0,  1.0),
-    "TEXTILE":   (8.0,  0.9),
-    "BUILDMAT":  (11.0, 1.6),
-    "MACH":      (13.0, 1.8),   # engineering / capital goods
-    "ELEC":      (13.0, 1.5),
-    "FOOD":      (12.0, 1.3),
-    "POLYPAPER": (8.5,  1.0),
-    "MINING":    (6.5,  1.4),
-    "ENERGY":    (7.0,  1.1),
-    "CONSTR":    (9.0,  1.3),
-    "LOGIST":    (10.0, 1.4),
-    "MEDIA":     (10.0, 1.8),
-    "HOTEL":     (12.0, 2.5),
-    "SERVICES":  (12.0, 1.8),
-    "IT":        (15.0, 2.8),
-    "RETAIL":    (14.0, 1.2),
-    "TRADE":     (9.0,  0.5),
+    "AUTO":      (14.0, 1.8),   # auto components / OEM ancillaries
+    "PHARMA":    (17.0, 3.6),
+    "CHEM":      (16.0, 2.6),   # observed (Aarti)
+    "METAL":     (9.0,  1.3),
+    "TEXTILE":   (9.5,  1.1),
+    "BUILDMAT":  (14.0, 2.0),
+    "MACH":      (18.0, 2.5),   # observed (pumps/engineering cluster)
+    "ELEC":      (17.0, 2.0),
+    "FOOD":      (14.0, 1.6),
+    "POLYPAPER": (10.0, 1.2),
+    "MINING":    (9.0,  1.9),   # observed (20 Microns)
+    "ENERGY":    (8.5,  1.3),
+    "CONSTR":    (11.0, 1.6),
+    "LOGIST":    (12.0, 1.7),
+    "MEDIA":     (11.0, 2.0),
+    "HOTEL":     (15.0, 3.1),
+    "SERVICES":  (14.0, 2.2),
+    "IT":        (17.0, 3.2),
+    "RETAIL":    (17.0, 1.5),
+    "TRADE":     (11.0, 0.6),
     # "FIN" deliberately absent: EV multiples are not meaningful for financials;
     # those stay on the disclosed book basis until a P/B method is added.
 }
 
 _EBIT_UPLIFT = 1.25
 
-# Size factor on the anchor — published sector aggregates skew to larger caps;
-# small companies trade at a documented multiple discount.
-_SIZE_FACTORS = ((100.0, 0.80), (500.0, 0.90))   # revenue < threshold -> factor
+# Size factor on the anchor — published sector aggregates skew to larger caps.
+# Softened in the Jul-2026 vintage: the observed small caps in the calibration
+# set (Roto ₹240 Cr revenue at 21.9x, Mahindra EPC ₹312 Cr at 15.6x) showed no
+# small-cap multiple discount in the current market.
+_SIZE_FACTORS = ((100.0, 0.90), (500.0, 0.95))   # revenue < threshold -> factor
 
 
 def size_factor(revenue_cr):
@@ -99,4 +112,4 @@ def describe(hoovers_code, revenue_cr=None):
     ev, sales = SECTOR_ANCHORS[group]
     return (f"sector '{group}' trading anchors: EV/EBITDA {ev}x · EV/Sales {sales}x "
             f"· EV/EBIT {round(ev*_EBIT_UPLIFT,1)}x, size factor ×{sf} "
-            f"(India sector aggregates, Jan-2025 calibration defaults)")
+            f"(Jul-2026 vintage, calibrated to observed NSE sector points)")

@@ -3,7 +3,7 @@
     "engine": "dnb-msme-comparable-valuation",
     "methodology_version": "2.0.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-19T15:40:43+00:00",
+    "run_timestamp": "2026-07-19T16:01:42+00:00",
     "data_source": "Synthetic mock universe (59 companies, real D&B schema)",
     "currency": "INR",
     "reporting_units": "Crore",
@@ -1370,7 +1370,7 @@
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-19T15:40:43.590+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
@@ -1382,7 +1382,7 @@
     },
     {
       "seq": 2,
-      "ts": "2026-07-19T15:40:43.590+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
@@ -1391,7 +1391,7 @@
     },
     {
       "seq": 3,
-      "ts": "2026-07-19T15:40:43.590+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "resolve",
       "level": "DECISION",
       "code": "TARGET_RESOLVED",
@@ -1404,7 +1404,7 @@
     },
     {
       "seq": 4,
-      "ts": "2026-07-19T15:40:43.590+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1413,7 +1413,7 @@
     },
     {
       "seq": 5,
-      "ts": "2026-07-19T15:40:43.590+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1422,7 +1422,7 @@
     },
     {
       "seq": 6,
-      "ts": "2026-07-19T15:40:43.590+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_MANAGEMENT",
@@ -1431,7 +1431,7 @@
     },
     {
       "seq": 7,
-      "ts": "2026-07-19T15:40:43.591+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
@@ -1444,7 +1444,7 @@
     },
     {
       "seq": 8,
-      "ts": "2026-07-19T15:40:43.591+00:00",
+      "ts": "2026-07-19T16:01:42.623+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1458,7 +1458,7 @@
     },
     {
       "seq": 9,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
@@ -1470,7 +1470,7 @@
     },
     {
       "seq": 10,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1482,7 +1482,7 @@
     },
     {
       "seq": 11,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1494,7 +1494,7 @@
     },
     {
       "seq": 12,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1506,7 +1506,7 @@
     },
     {
       "seq": 13,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1518,7 +1518,7 @@
     },
     {
       "seq": 14,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -1530,7 +1530,7 @@
     },
     {
       "seq": 15,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -1542,7 +1542,7 @@
     },
     {
       "seq": 16,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "QUALITY_POSITIONED",
@@ -1555,7 +1555,7 @@
     },
     {
       "seq": 17,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.626+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
@@ -1568,7 +1568,7 @@
     },
     {
       "seq": 18,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -1584,7 +1584,7 @@
     },
     {
       "seq": 19,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -1600,7 +1600,7 @@
     },
     {
       "seq": 20,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -1616,7 +1616,7 @@
     },
     {
       "seq": 21,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -1627,7 +1627,7 @@
     },
     {
       "seq": 22,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "TRANSACTION_VIEW",
@@ -1641,7 +1641,7 @@
     },
     {
       "seq": 23,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "MARKET_CROSSCHECK",
@@ -1656,7 +1656,7 @@
     },
     {
       "seq": 24,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -1668,7 +1668,7 @@
     },
     {
       "seq": 25,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
@@ -1688,7 +1688,7 @@
     },
     {
       "seq": 26,
-      "ts": "2026-07-19T15:40:43.593+00:00",
+      "ts": "2026-07-19T16:01:42.627+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",

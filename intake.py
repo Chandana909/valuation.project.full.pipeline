@@ -146,6 +146,27 @@ class IntakeState(TypedDict):
     idx: int
     pending: Optional[str]      # the user's raw answer for this turn
     error: Optional[str]        # validation error (state held in place)
+    industry_choices: Optional[list]   # live catalog for the industry node
+
+
+def _match_choice(raw, choices):
+    """Deterministic selection matching: exact (case-insensitive) wins, else a
+    UNIQUE substring match; ambiguous or unknown input is rejected with the
+    matching candidates listed — the user selects, never free-types a sector."""
+    t = raw.strip().lower()
+    if not t:
+        return None, "please pick an industry from the list"
+    exact = [c for c in choices if c.lower() == t]
+    if exact:
+        return exact[0], None
+    subs = [c for c in choices if t in c.lower()]
+    if len(subs) == 1:
+        return subs[0], None
+    if 1 < len(subs) <= 8:
+        return None, "ambiguous — did you mean: " + " · ".join(subs)
+    if len(subs) > 8:
+        return None, f"'{raw}' matches {len(subs)} sectors — keep typing to narrow it"
+    return None, f"'{raw}' is not in the industry list — type part of a sector name"
 
 
 def _make_node(node_def):
@@ -158,7 +179,13 @@ def _make_node(node_def):
             answers[node_def["id"]] = None
             return {"answers": answers, "idx": state["idx"] + 1,
                     "pending": None, "error": None}
-        val, err = node_def["validate"](raw)
+        # the industry node becomes a SELECTION when a live catalog is present:
+        # the answer must resolve to exactly one catalog category, so the
+        # sub-sector classification downstream is exact, never approximate
+        if node_def["id"] == "industry" and state.get("industry_choices"):
+            val, err = _match_choice(raw, state["industry_choices"])
+        else:
+            val, err = node_def["validate"](raw)
         if err:
             return {"answers": answers, "idx": state["idx"],
                     "pending": None, "error": err}
@@ -197,10 +224,11 @@ class IntakeSession:
     """One guided conversation. JSON-serializable state; deterministic.
     Each submit() = one invocation of the compiled LangGraph StateGraph."""
 
-    def __init__(self):
+    def __init__(self, industry_choices=None):
         self.session_id = uuid.uuid4().hex[:12]
         self.answers = {}
         self.idx = 0
+        self.industry_choices = sorted(industry_choices) if industry_choices else None
 
     # -- state ---------------------------------------------------------------
     @property
@@ -211,8 +239,13 @@ class IntakeSession:
         if self.done:
             return None
         n = GRAPH[self.idx]
-        return {"id": n["id"], "prompt": n["prompt"], "help": n["help"],
-                "optional": bool(n.get("optional"))}
+        q = {"id": n["id"], "prompt": n["prompt"], "help": n["help"],
+             "optional": bool(n.get("optional"))}
+        if n["id"] == "industry" and self.industry_choices:
+            q["choices"] = self.industry_choices
+            q["prompt"] = ("Which industry / sector is it in? Pick from the list "
+                           "(type to search — the answer must match a category).")
+        return q
 
     def progress(self):
         return {"answered": self.idx, "total": len(GRAPH),
@@ -228,7 +261,8 @@ class IntakeSession:
                     "done": True, "progress": self.progress()}
         out = _COMPILED.invoke({"answers": self.answers, "idx": self.idx,
                                 "pending": str(raw if raw is not None else ""),
-                                "error": None})
+                                "error": None,
+                                "industry_choices": self.industry_choices})
         self.answers = out["answers"]
         self.idx = out["idx"]
         if out.get("error"):

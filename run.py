@@ -297,6 +297,69 @@ def run_pipeline_custom(target, client=None, top_n=15, data_source="mock",
                      custom_lineage=lineage)
 
 
+_ENRICHABLE = ("debt_cr", "cash_cr", "depreciation_cr", "revenue_prior_cr")
+
+
+def run_pipeline_enriched(name, overrides, client=None, top_n=15,
+                          data_source="mock"):
+    """Value a DATABASE company with user-supplied figures for the fields the
+    source lacks (debt, cash, depreciation, prior-year revenue). The engine
+    re-derives every dependent quantity (EBIT, growth, net debt) and the
+    supplied fields carry 'user-provided enrichment' lineage — the peer set
+    and multiples stay fully database-driven.
+    """
+    audit = AuditTrail()
+    if client is None:
+        client = make_client(data_source, audit=audit)
+    elif hasattr(client, "set_audit"):
+        client.set_audit(audit)
+    audit.info("run", "START", f"pipeline start (enriched) for '{name}'",
+               {"methodology_version": METHODOLOGY_VERSION,
+                "overrides": {k: v for k, v in overrides.items() if v is not None}})
+    ctx = {"target": None, "tprofile": None, "ranked": [], "rejected": [],
+           "valuation": None, "data_quality": None}
+    duns = _best_match(client, name, audit)
+    if duns is None:
+        return {"meta": _metadata(name, "no_match", client), "query": name,
+                "target": None, "target_profile": None, "data_quality": None,
+                "peers": [], "peers_ranked_count": 0, "rejected": [],
+                "valuation": None,
+                "confidence": {"score": 0.0, "label": "LOW"},
+                "audit_trail": audit.to_list()}, ctx
+
+    target = _fetch_company(client, duns, audit, with_mgmt=True)
+    applied = []
+    for f in _ENRICHABLE:
+        v = overrides.get(f)
+        if v is None:
+            continue
+        setattr(target, f, float(v))
+        applied.append(f)
+    if "debt_cr" in applied:
+        target.debt_known = True
+    if "cash_cr" in applied:
+        target.cash_known = True
+    if "depreciation_cr" in applied and target.ebitda_cr is not None:
+        target.ebit_cr = round(target.ebitda_cr - target.depreciation_cr, 4)
+    if "revenue_prior_cr" in applied and (target.revenue_prior_cr or 0) > 0 \
+            and target.revenue_cr is not None:
+        target.revenue_growth = round(
+            (target.revenue_cr - target.revenue_prior_cr)
+            / target.revenue_prior_cr, 4)
+    if applied:
+        audit.decision("resolve", "TARGET_ENRICHED",
+                       f"user supplied {len(applied)} missing figure(s) for "
+                       f"'{target.name}': {', '.join(applied)} — dependent "
+                       f"quantities re-derived; lineage marks them user-provided",
+                       {"fields": applied})
+    lineage = dict(client.lineage(duns) or {}) if hasattr(client, "lineage") else {}
+    for f in applied:
+        lineage[f] = {"file": "user-provided enrichment (popup)",
+                      "row": None, "fy": None}
+    return _evaluate(name, target, client, audit, ctx, top_n,
+                     custom_lineage=lineage)
+
+
 def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None):
     """Shared evaluation path: profile -> data-quality gate -> universe ->
     discover -> value -> confidence -> result. Both entry points route here, so
@@ -372,9 +435,10 @@ def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None):
     caveats = list(getattr(client, "source_caveats", []) or [])
     if custom_lineage is not None:
         caveats.append(
-            "Target figures are user-provided via guided intake and unaudited — "
-            "the peer set and multiples come from the database, but the drivers "
-            "they are applied to are only as reliable as the inputs.")
+            "Some or all target figures are user-provided (guided intake or "
+            "enrichment popup) and unaudited — the peer set and multiples come "
+            "from the database, but user-supplied drivers are only as reliable "
+            "as the inputs. Per-field lineage marks exactly which is which.")
     for cv in caveats:
         valuation.notes.append(f"data-source caveat: {cv}")
         audit.warn("run", "SOURCE_CAVEAT", cv)
