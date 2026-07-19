@@ -293,7 +293,7 @@ class RealDnBClient:
             "ebitda": _th(y["ebitda"]),
             "grossProfit": None,
             "operatingProfit": _th(ebit),
-            "profitAfterTax": _th(y["pat"]),
+            "profitAfterTax": None,
             "netIncome": _th(y["pat"]),
             "profitBeforeTaxes": _th(y["pbt"]),
             "costOfSales": None,

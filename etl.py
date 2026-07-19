@@ -173,10 +173,14 @@ def build(db_path=DB_PATH):
     for r in _open_rows(os.path.join(BASE, PL_FILE), PL_COLS):
         if r["accord"] is None or r["year_end"] is None:
             continue
+        pbt = _num(r["pbt"])
+        dep = _num(r["depreciation"])
+        pbdt = (pbt + dep) if (pbt is not None and dep is not None) else None
+        
         rows.append((int(r["accord"]), int(r["year_end"]), _num(r["months"]),
                      _num(r["revenue"]), _num(r["ebitda"]), _num(r["other_income"]),
-                     _num(r["interest"]), _num(r["pbdt"]), _num(r["depreciation"]),
-                     _num(r["pbt"]), _num(r["pat"]), r["src_row"]))
+                     _num(r["interest"]), pbdt, dep,
+                     pbt, _num(r["pat"]), r["src_row"]))
     cur.executemany("""INSERT OR REPLACE INTO fin
         (accord,year_end,months,revenue,ebitda,other_income,interest,pbdt,
          depreciation,pbt,pat,src_row_pl)

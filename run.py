@@ -29,7 +29,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from datetime import datetime, timezone
 
-from mock_api import MockDnBClient
 from core import (
     AuditTrail,
     normalize_company, build_profile, validate_company,
@@ -192,13 +191,11 @@ def _metadata(name, status, client=None):
     }
 
 
-def make_client(data_source="mock", audit=None):
-    """Factory for the injected data client. 'real' serves realdata.db (run etl.py
-    first); 'mock' serves the synthetic 59-company universe."""
-    if data_source == "real":
-        from realdata import RealDnBClient
-        return RealDnBClient(audit=audit)
-    return MockDnBClient(audit=audit)
+def make_client(data_source="real", audit=None):
+    """Factory for the injected data client. Only 'real' serves realdata.db (run etl.py
+    first). Mock API has been disconnected."""
+    from realdata import RealDnBClient
+    return RealDnBClient(audit=audit)
 
 
 # Universe cache: building (normalize + profile) 14k real companies takes seconds —
@@ -237,7 +234,7 @@ def get_universe(client, audit=None):
     return universe
 
 
-def run_pipeline(name, client=None, top_n=15, data_source="mock"):
+def run_pipeline(name, client=None, top_n=15, data_source="real"):
     """
     Returns (result_dict, ctx). `ctx` carries the live objects for callers/tests.
     Never raises on bad input — degraded runs return a structured result with a
@@ -273,7 +270,7 @@ def run_pipeline(name, client=None, top_n=15, data_source="mock"):
     return _evaluate(name, target, client, audit, ctx, top_n)
 
 
-def run_pipeline_custom(target, client=None, top_n=15, data_source="mock",
+def run_pipeline_custom(target, client=None, top_n=15, data_source="real",
                         lineage=None):
     """Value a USER-PROVIDED company (e.g. from the conversational intake)
     against the database universe. Same engine, same audit, same result shape —
@@ -301,7 +298,7 @@ _ENRICHABLE = ("debt_cr", "cash_cr", "depreciation_cr", "revenue_prior_cr")
 
 
 def run_pipeline_enriched(name, overrides, client=None, top_n=15,
-                          data_source="mock"):
+                          data_source="real"):
     """Value a DATABASE company with user-supplied figures for the fields the
     source lacks (debt, cash, depreciation, prior-year revenue). The engine
     re-derives every dependent quantity (EBIT, growth, net debt) and the
