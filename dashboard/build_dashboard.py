@@ -80,6 +80,12 @@ def _football_field(val, target):
     dashed reference line when it is listed. Pure string SVG — print-safe."""
     methods = [m for m in val.get("methods", [])
                if m.get("equity_low_cr") is not None]
+    axis_label = "equity value"
+    if not methods:                      # equity withheld -> plot the EV ranges
+        methods = [dict(m, equity_low_cr=m["ev_low_cr"], equity_mid_cr=m["ev_mid_cr"],
+                        equity_high_cr=m["ev_high_cr"])
+                   for m in val.get("methods", []) if m.get("ev_low_cr") is not None]
+        axis_label = "ENTERPRISE value (equity withheld)"
     if not methods:
         return ""
     colors = {"EV/EBITDA": ("#2a78d6", "#1c5cab"),
@@ -126,8 +132,7 @@ def _football_field(val, target):
                  f'stroke="#0b0b0b" stroke-width="1.6" stroke-dasharray="5 4"/>')
     g.append(f'<line x1="{L}" y1="{H-30}" x2="{W-R}" y2="{H-30}" stroke="#c3c2b7"/>')
     legend = (f'<div class="sub-note" style="margin:4px 0 14px">bar = low→high equity '
-              f'per method · thick tick = positioned central estimate · axis: equity '
-              f'value, ₹ Cr'
+              f'per method · thick tick = positioned central estimate · axis: {axis_label}, ₹ Cr'
               + (f' · dashed line = own market cap ₹{own:,.0f} Cr' if own else "")
               + '</div>')
     return (f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" '
@@ -386,6 +391,27 @@ def render_dashboard(data):
         parts.append(_section("1b", "Data lineage & Source Caveats",
                               "where every number came from", theory + table + cav_html))
 
+    # ---- 1c · essential-parameter checklist ------------------------------
+    cl = data.get("parameter_checklist") or []
+    if cl:
+        icon = {"available": "✓", "user_provided": "✓*", "missing": "✗"}
+        rows = "".join(
+            f'<tr><td><b>{icon.get(c["status"], "?")}</b></td>'
+            f'<td><b>{_esc(c["label"])}</b></td>'
+            f'<td>{"NOT AVAILABLE" if c["status"] == "missing" else _esc(c["value"])}</td>'
+            f'<td>{_esc(c["needed_for"])}</td></tr>' for c in cl)
+        n_missing = sum(1 for c in cl if c["status"] == "missing")
+        theory = ('<p class="theory"><b>What this is.</b> The honest inventory of every '
+                  'input the valuation consumes: ✓ from the source data · ✓* supplied by '
+                  'the user (chat/enrichment) · ✗ not available — and NEVER assumed. '
+                  'Missing figures can be provided through the conversational agent; '
+                  'until then any output that depends on them (e.g. equity when '
+                  'borrowings/cash are missing) is withheld, not fabricated.</p>')
+        parts.append(_section("1c", f"Essential Parameters ({len(cl)-n_missing}/{len(cl)} present)",
+                              "ticked = present · crossed = not available, fillable in chat",
+                              theory + '<table><tr><th></th><th>Parameter</th><th>Value</th>'
+                              '<th>Needed for</th></tr>' + rows + '</table>'))
+
     # ================= 2 · HEADLINE VALUATION ==========================
     hm = next((m for m in val["methods"] if m["method"] == val["headline_method"]), None)
     theory = ('<p class="theory"><b>What this is.</b> The estimated equity value range from the '
@@ -396,11 +422,26 @@ def render_dashboard(data):
               '→ implied <b>enterprise value</b>; (4) − <b>net debt</b> → equity; (5) − <b>DLOM</b> '
               'if the company is private (a listed target is already liquid, so DLOM = 0). '
               'Low / mid / high span the peer band around the position.</p>')
-    hv = (f'<div class="headline">'
-          f'<div class="hv"><div class="k">Low</div><div class="n">{_num(val["equity_low_cr"])}</div></div>'
-          f'<div class="hv"><div class="k">Mid — central estimate</div><div class="n mid">{_num(val["equity_mid_cr"])}</div></div>'
-          f'<div class="hv"><div class="k">High</div><div class="n">{_num(val["equity_high_cr"])}</div></div>'
-          f'<div class="unit">equity value · INR Crore</div></div>')
+    withheld = val.get("equity_mid_cr") is None and (val.get("equity_requires") or [])
+    if withheld:
+        _v = hm or {}
+        hv = (f'<div class="callout warn"><b>Equity value withheld — nothing is '
+              f'assumed.</b> <span class="sub-note">The source has no '
+              f'{_esc(" or ".join(val.get("equity_requires") or []))}; the '
+              f'ENTERPRISE-VALUE range is the honest answer. Supply the missing '
+              f'figures (chat / enrichment API) to bridge EV → equity.</span></div>'
+              f'<div class="headline">'
+              f'<div class="hv"><div class="k">Low</div><div class="n">{_num(_v.get("ev_low_cr"))}</div></div>'
+              f'<div class="hv"><div class="k">Mid — central estimate</div><div class="n mid">{_num(_v.get("ev_mid_cr"))}</div></div>'
+              f'<div class="hv"><div class="k">High</div><div class="n">{_num(_v.get("ev_high_cr"))}</div></div>'
+              f'<div class="unit">ENTERPRISE value · INR Crore (equity requires '
+              f'{_esc(" + ".join(val.get("equity_requires") or []))})</div></div>')
+    else:
+        hv = (f'<div class="headline">'
+              f'<div class="hv"><div class="k">Low</div><div class="n">{_num(val["equity_low_cr"])}</div></div>'
+              f'<div class="hv"><div class="k">Mid — central estimate</div><div class="n mid">{_num(val["equity_mid_cr"])}</div></div>'
+              f'<div class="hv"><div class="k">High</div><div class="n">{_num(val["equity_high_cr"])}</div></div>'
+              f'<div class="unit">equity value · INR Crore</div></div>')
     bridge = ""
     if hm:
         bridge = ('<div class="bridge">'
@@ -448,7 +489,14 @@ def render_dashboard(data):
                    f'over/under-statement.</span></div>')
     txn = val.get("transaction_analysis")
     txn_html = ""
-    if txn:
+    if txn and txn.get("txn_multiple"):
+        txn_html = (
+            f'<div class="callout ok"><b>Comparable transaction (OBSERVED, user-'
+            f'provided) — {txn["txn_multiple"]:.1f}x EV/EBITDA → acquisition EV '
+            f'₹{_num(txn["acquisition_ev_low_cr"])} – ₹{_num(txn["acquisition_ev_mid_cr"])} '
+            f'– ₹{_num(txn["acquisition_ev_high_cr"])} Cr.</b><br><span class="sub-note">'
+            f'{_esc(txn["caveat"])}</span></div>')
+    elif txn:
         txn_html = (
             f'<div class="callout"><b>Comparable-transactions view (indicative) — '
             f'what a control buyer might pay: ₹{_num(txn["acquisition_equity_low_cr"])} '
@@ -489,35 +537,34 @@ def render_dashboard(data):
                           theory + f'<div class="two"><div>{left}</div><div>{right}</div></div>'))
 
     # ================= 4 · METHODOLOGY VALIDATION (anti-overfit) ========
-    if validation and "positioned" in validation:
+    if validation and validation.get("kind") == "observed_market_validation":
         v_ok = validation.get("verdict_ok")
-        vp, vm = validation["positioned"], validation["flat_median"]
-        theory = ('<p class="theory"><b>What this is.</b> Proof the method is <b>accurate in '
-                  'general, not just lucky here.</b> We re-value <i>every</i> listed company in '
-                  'the universe from its peers and compare to its <b>own real market cap</b>. If '
-                  'quality-positioning only worked on the headline target it would be overfitting; '
-                  'instead it must beat the naive "just use the median" approach across the board. '
-                  '<b>corr(margin, EV/EBITDA)</b> confirms the market actually prices quality '
-                  '(near-zero would make positioning meaningless).</p>')
+        theory = ('<p class="theory"><b>What this is.</b> The engine checked against REALITY: '
+                  'a pinned set of listed database companies is valued and compared to each '
+                  "company's <b>own observed NSE market cap</b> (dated, sourced). Two known "
+                  'idiosyncratic outliers are kept in deliberately — hiding them would '
+                  'overstate accuracy. Basis note: '
+                  f'{_esc(validation.get("basis",""))}.</p>')
         vbadge = ('<span class="badge hi">VALIDATION: PASS</span>' if v_ok
                   else '<span class="badge lo">VALIDATION: REVIEW</span>')
-        vtable = (
-            '<table><tr><th>Approach</th><th>Mean |error|</th><th>Median |error|</th>'
-            '<th>Max |error|</th><th>within 15%</th></tr>'
-            f'<tr class="hl-row"><td><b>Quality-positioned</b> (used)</td>'
-            f'<td><b>{vp["mean_abs_pct"]}%</b></td><td>{vp["median_abs_pct"]}%</td>'
-            f'<td>{vp["max_abs_pct"]}%</td><td>{vp["within_15pct"]}/{vp["n"]}</td></tr>'
-            f'<tr><td>Flat median (naive baseline)</td>'
-            f'<td>{vm["mean_abs_pct"]}%</td><td>{vm["median_abs_pct"]}%</td>'
-            f'<td>{vm["max_abs_pct"]}%</td><td>{vm["within_15pct"]}/{vm["n"]}</td></tr></table>')
+        vrows = "".join(
+            f'<tr><td><b>{_esc(r["company"])}</b></td>'
+            f'<td>₹{_num(r["engine_ev_low_cr"],0)} – <b>₹{_num(r["engine_ev_mid_cr"],0)}</b> – '
+            f'₹{_num(r["engine_ev_high_cr"],0)}</td>'
+            f'<td>₹{_num(r["actual_mcap_cr"],0)}</td>'
+            f'<td>{r["delta_pct"]:+.1f}%</td>'
+            f'<td>{"IN RANGE" if r["in_range"] else "outside"}</td></tr>'
+            for r in validation.get("rows", []) if r.get("status") == "ok")
+        vtable = ('<table><tr><th>Company</th><th>Engine EV (low–mid–high)</th>'
+                  '<th>Actual market cap</th><th>Δ mid</th><th>Range</th></tr>'
+                  + vrows + '</table>')
         vfacts = (f'<div style="margin:14px 0 6px">{vbadge}</div>'
-                  f'<p class="sub-note">Error = comps equity vs the company\'s own market cap, '
-                  f'across <b>{validation["n_targets"]}</b> listed comparables. Positioning is '
-                  f'closer on <b>{validation["positioning_wins"]}/{validation["n_targets"]}</b> '
-                  f'targets. Market prices quality: '
-                  f'<b>corr(margin, EV/EBITDA) = {validation["margin_multiple_corr"]}</b>.</p>')
-        parts.append(_section("4", "Methodology Validation — not overfit",
-                              "proof the accuracy generalizes",
+                  f'<p class="sub-note">median |error| <b>{validation["median_abs_pct"]}%</b> · '
+                  f'mean {validation["mean_abs_pct"]}% · actual inside the published range on '
+                  f'<b>{validation["n_in_range"]}/{validation["n"]}</b> · as of '
+                  f'{_esc(validation["as_of"])}. {_esc(validation.get("note",""))}</p>')
+        parts.append(_section("4", "Observed-Market Validation",
+                              "checked against real NSE prices — nothing simulated",
                               theory + vfacts + vtable))
         methods_num, peers_num, rej_num, audit_num = "5", "6", "7", "8"
     else:

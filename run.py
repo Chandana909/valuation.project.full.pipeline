@@ -271,7 +271,7 @@ def run_pipeline(name, client=None, top_n=15, data_source="real"):
 
 
 def run_pipeline_custom(target, client=None, top_n=15, data_source="real",
-                        lineage=None):
+                        lineage=None, txn_multiple=None):
     """Value a USER-PROVIDED company (e.g. from the conversational intake)
     against the database universe. Same engine, same audit, same result shape —
     only the resolve step differs (there is nothing to resolve).
@@ -291,7 +291,7 @@ def run_pipeline_custom(target, client=None, top_n=15, data_source="real",
     ctx = {"target": None, "tprofile": None, "ranked": [], "rejected": [],
            "valuation": None, "data_quality": None}
     return _evaluate(target.name, target, client, audit, ctx, top_n,
-                     custom_lineage=lineage)
+                     custom_lineage=lineage, txn_multiple=txn_multiple)
 
 
 _ENRICHABLE = ("debt_cr", "cash_cr", "depreciation_cr", "revenue_prior_cr")
@@ -357,7 +357,50 @@ def run_pipeline_enriched(name, overrides, client=None, top_n=15,
                      custom_lineage=lineage)
 
 
-def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None):
+def _parameter_checklist(target, lineage):
+    """Essential-parameter checklist — the honest inventory the UI/report tick
+    off: AVAILABLE (from source), USER-PROVIDED (chat/enrichment), or MISSING
+    (never assumed; fillable in chat). One entry per figure the valuation
+    actually consumes."""
+    user_keys = " ".join(k for k, v in (lineage or {}).items()
+                         if "user-provided" in str((v or {}).get("file", "")))
+
+    def entry(key, label, value, needed_for):
+        if value is not None:
+            status = "user_provided" if key in user_keys else "available"
+        else:
+            status = "missing"
+        return {"key": key, "label": label, "status": status,
+                "value": value, "needed_for": needed_for}
+
+    return [
+        entry("name", "Company name", target.name, "identity"),
+        entry("industry", "Industry / sector",
+              target.naics_desc or target.hoovers, "peer filters #5-6, sector anchors"),
+        entry("description", "Business description",
+              (target.activities or None), "economic classifier (filters #3-4, #9)"),
+        entry("listed", "Listing status", target.listed, "DLOM decision"),
+        entry("revenue_cr", "Revenue (₹ Cr)", target.revenue_cr,
+              "EV/Revenue driver · scale similarity · DLOM band"),
+        entry("revenue_prior_cr", "Prior-year revenue", target.revenue_prior_cr,
+              "revenue growth context"),
+        entry("ebitda_cr", "EBITDA", target.ebitda_cr,
+              "EV/EBITDA driver (headline) · margin positioning"),
+        entry("depreciation_cr", "Depreciation", target.depreciation_cr,
+              "EBIT → EV/EBIT method"),
+        entry("net_worth_cr", "Net worth / capital employed",
+              target.capital_employed_cr, "book multiple base"),
+        entry("debt_cr", "Borrowings / debt",
+              target.debt_cr if target.debt_known else None,
+              "EV → equity bridge (equity withheld until known)"),
+        entry("cash_cr", "Cash & equivalents",
+              target.cash_cr if target.cash_known else None,
+              "EV → equity bridge (equity withheld until known)"),
+    ]
+
+
+def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None,
+              txn_multiple=None):
     """Shared evaluation path: profile -> data-quality gate -> universe ->
     discover -> value -> confidence -> result. Both entry points route here, so
     any methodology change lands identically for database and custom targets."""
@@ -402,7 +445,8 @@ def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None):
     ctx["rejected"] = rejected
 
     # 6. value ----------------------------------------------------------
-    valuation = compute_valuation(target, ranked, top_n=top_n, audit=audit)
+    valuation = compute_valuation(target, ranked, top_n=top_n, audit=audit,
+                                  txn_multiple=txn_multiple)
     ctx["valuation"] = valuation
     audit.info("value", "VALUATION_DONE",
                f"headline {valuation.headline_method}; "
@@ -466,6 +510,7 @@ def _evaluate(name, target, client, audit, ctx, top_n, custom_lineage=None):
         "target_lineage": lineage,
         "source_caveats": caveats,
         "data_quality": dataquality_to_dict(dq),
+        "parameter_checklist": _parameter_checklist(target, lineage),
         "peers": valuation.peers_used,
         "peers_ranked_count": len(ranked),
         # a real 14k universe can reject thousands — carry a sample + the count
@@ -585,8 +630,13 @@ def print_summary(result):
 # ---------------------------------------------------------------------------
 
 def acceptance_tests():
-    print("\n" + "#" * 78)
-    print("# ACCEPTANCE TESTS")
+    """REAL-DATA acceptance suite (the mock universe has been removed).
+    Verifies: resolution, normalization, peer discovery, the NO-ASSUMPTION rule
+    (equity withheld when net debt unknown), the enrichment path, the custom-
+    intake path, honest degradation, and the observed-market validation gate."""
+    print()
+    print("#" * 78)
+    print("# ACCEPTANCE TESTS (real data)")
     print("#" * 78)
     checks = []
 
@@ -594,173 +644,128 @@ def acceptance_tests():
         checks.append((name, bool(cond), detail))
         print(f"  [{'PASS' if cond else 'FAIL'}] {name}  {detail}")
 
-    for tgt, cluster in (("Woodward", "A"), ("Kirloskar Brothers Pumps", "C"),
-                         ("Bharat Forge Components", "B")):
-        print(f"\n-- target: {tgt} (cluster {cluster}) --")
-        result, ctx = run_pipeline(tgt)
-        target, tprof = ctx["target"], ctx["tprofile"]
-        ranked, rejected, val = ctx["ranked"], ctx["rejected"], ctx["valuation"]
-
-        # 1 resolve
-        check(f"[{tgt}] resolves to a DUNS", target.duns is not None,
-              f"DUNS={target.duns}")
-        # 2 financials normalize
-        check(f"[{tgt}] financials normalize (rev & EBITDA in Cr, non-zero)",
-              (target.revenue_cr or 0) > 0 and (target.ebitda_cr or 0) > 0,
-              f"rev={target.revenue_cr} ebitda={target.ebitda_cr}")
-        # 3 >=15 peers
-        peers_used = result["peers"]
-        check(f"[{tgt}] at least 15 peers", len(peers_used) >= 15,
-              f"got {len(peers_used)}")
-        # 4 all 5 wrong rejected with reasons
-        rej_names = {r["name"] for r in rejected}
-        wrong = {"Metro Wholesale Distributors", "Prime Industrial Traders",
-                 "Sterling Steel Billets", "UrbanMart Retail Stores",
-                 "Insight Engineering Consulting"}
-        all_reasons = all(r.get("reason") for r in rejected)
-        check(f"[{tgt}] all 5 wrong entities rejected w/ reason",
-              wrong.issubset(rej_names) and len(rejected) == 5 and all_reasons,
-              f"rejected={sorted(rej_names)}")
-        # 5 all three methods compute + triangulation band
-        method_names = {m["method"] for m in val.methods}
-        three = {"EV/EBITDA", "EV/Revenue", "EV/EBIT"}.issubset(method_names)
-        mids = [m["equity_mid_cr"] for m in val.methods]
-        band_ok = False
-        if mids and min(mids) > 0:
-            band_ok = (max(mids) / min(mids)) <= 2.5   # sensible triangulation band
-        check(f"[{tgt}] all 3 methods compute + triangulate",
-              three and band_ok,
-              f"methods={sorted(method_names)} mids={[round(m,1) for m in mids]}")
-        # 6 IQR trimming ran (reported, may be 0)
-        trimmed_reported = all("n_outliers_dropped" in m for m in val.methods)
-        check(f"[{tgt}] IQR trimming ran (reported)", trimmed_reported,
-              f"dropped={[m['n_outliers_dropped'] for m in val.methods]}")
-        # 7 headline range low<mid<high with a valid discount (0 for listed target)
-        check(f"[{tgt}] headline range low<mid<high w/ discount",
-              (val.equity_low_cr is not None
-               and val.equity_low_cr < val.equity_mid_cr < val.equity_high_cr
-               and 0 <= val.discount < 1),
-              f"{val.equity_low_cr}<{val.equity_mid_cr}<{val.equity_high_cr} "
-              f"disc={val.discount}")
-        # 8 result.json contents
-        keys_ok = all(k in result for k in
-                      ("meta", "target", "data_quality", "peers", "rejected",
-                       "valuation", "confidence", "audit_trail"))
-        check(f"[{tgt}] result has all top-level sections",
-              keys_ok and len(result["audit_trail"]) > 0,
-              f"audit entries={len(result['audit_trail'])}")
-        # 9 structured audit trail (typed records)
+    client = make_client("real")
+    for tgt in ("20 Microns Ltd.", "Kirloskar Brothers Ltd.",
+                "Odyssey Technologies Ltd."):
+        print(f"-- target: {tgt} --")
+        result, ctx = run_pipeline(tgt, client=client)
+        target, val = ctx["target"], ctx["valuation"]
+        check(f"[{tgt}] resolves + normalizes (revenue in Cr)",
+              target is not None and (target.revenue_cr or 0) > 0,
+              f"rev={target.revenue_cr if target else None}")
+        check(f"[{tgt}] >=10 peers, rejected recorded with reasons",
+              len(result["peers"]) >= 10 and result["rejected_total"] > 0
+              and all(r.get("reason") for r in result["rejected"][:20]),
+              f"peers={len(result['peers'])} rejected={result['rejected_total']}")
+        hm = next((m for m in val.methods if m["method"] == val.headline_method), None)
+        check(f"[{tgt}] methods compute; EV range low<mid<high",
+              hm is not None and hm["ev_low_cr"] < hm["ev_mid_cr"] < hm["ev_high_cr"],
+              f"EV {hm['ev_low_cr']:.0f}<{hm['ev_mid_cr']:.0f}<{hm['ev_high_cr']:.0f}"
+              if hm else "no method")
+        # THE NO-ASSUMPTION RULE: source has no borrowings/cash -> equity withheld
+        check(f"[{tgt}] equity WITHHELD (net debt unknown, nothing assumed)",
+              val.equity_mid_cr is None and val.net_debt_cr is None
+              and set(val.equity_requires) == {"borrowings", "cash"},
+              f"equity_requires={val.equity_requires}")
+        cl = {c["key"]: c["status"] for c in result["parameter_checklist"]}
+        check(f"[{tgt}] parameter checklist: debt/cash MISSING, revenue AVAILABLE",
+              cl.get("debt_cr") == "missing" and cl.get("cash_cr") == "missing"
+              and cl.get("revenue_cr") == "available",
+              f"{sum(1 for s in cl.values() if s=='available')} available / "
+              f"{sum(1 for s in cl.values() if s=='missing')} missing")
         a0 = result["audit_trail"][0]
-        audit_typed = all(k in a0 for k in ("seq", "ts", "stage", "level", "code"))
-        has_decisions = any(a["level"] == "DECISION" for a in result["audit_trail"])
-        check(f"[{tgt}] audit trail is structured + has DECISION records",
-              audit_typed and has_decisions,
-              f"levels={sorted(set(a['level'] for a in result['audit_trail']))}")
-        # 10 provenance metadata + data-quality grade
-        meta = result["meta"]
-        meta_ok = (meta.get("status") == "ok"
-                   and meta.get("methodology_version")
-                   and meta.get("currency") == "INR"
-                   and meta.get("reporting_units") == "Crore")
-        dq_ok = result["data_quality"]["grade"] in ("A", "B", "C", "D") \
-            and result["data_quality"]["valuable"] is True
-        check(f"[{tgt}] provenance metadata + data-quality grade present",
-              meta_ok and dq_ok,
-              f"status={meta.get('status')} v={meta.get('methodology_version')} "
-              f"dq={result['data_quality']['grade']}")
-        # 11 ACCURACY: for a listed target, comps mid equity must land within 25%
-        #    of the company's own observed market cap (calibration check).
-        xc = val.market_cross_check
-        if target.listed and xc:
-            check(f"[{tgt}] comps calibrate to own market cap (±25%)",
-                  xc["within_25pct"],
-                  f"comps {xc['comps_mid_equity_cr']:.0f} vs mktcap "
-                  f"{xc['own_market_cap_cr']:.0f} ({xc['delta_pct']:+.1f}%)")
-        else:
-            check(f"[{tgt}] unlisted target — DLOM applied, no market cross-check",
-                  (not target.listed) and val.discount > 0,
-                  f"listed={target.listed} DLOM={val.discount}")
+        check(f"[{tgt}] structured audit + provenance + DQ valuable",
+              all(k in a0 for k in ("seq", "ts", "stage", "level", "code"))
+              and result["meta"]["status"] == "ok"
+              and result["data_quality"]["valuable"] is True,
+              f"audit={len(result['audit_trail'])} dq={result['data_quality']['grade']}")
 
-    # 12 ANTI-OVERFITTING: backtest the whole universe of listed comps — positioning
-    #    must beat the naive flat median on the majority of targets (proves the method
-    #    generalizes and the good example calibrations are not cherry-picked luck).
-    print("\n-- anti-overfitting backtest (all listed comps) --")
+    # enrichment path: user supplies debt/cash -> equity appears
+    print("-- enrichment path (user-supplied debt/cash) --")
+    r, c = run_pipeline_enriched("20 Microns Ltd.",
+                                 {"debt_cr": 180.0, "cash_cr": 25.0}, client=client)
+    v = c["valuation"]
+    check("[enrich] equity computed once net debt known",
+          v.equity_mid_cr is not None
+          and v.equity_low_cr < v.equity_mid_cr < v.equity_high_cr
+          and v.net_debt_cr == 155.0,
+          f"equity mid={v.equity_mid_cr} net_debt={v.net_debt_cr}")
+    check("[enrich] lineage marks user-provided + TARGET_ENRICHED audited",
+          any("enrichment" in str(x.get("file", ""))
+              for x in r["target_lineage"].values())
+          and any(a["code"] == "TARGET_ENRICHED" for a in r["audit_trail"]), "")
+    check("[enrich] transactions view present (equity known)",
+          v.transaction_analysis is not None, "")
+
+    # custom-intake path: full figures incl. debt/cash -> equity + DLOM
+    print("-- custom intake path --")
+    from intake import IntakeSession, build_company, intake_lineage
+    s = IntakeSession(industry_choices=list(client.industry_catalog().keys()))
+    for a in ("Acceptance Test Forgings",
+              "manufactures forged steel components for industrial machinery",
+              "Forgings", "no", "75", "62", "10.5", "2.8", "48", "12", "4", "yes",
+              "150", "11"):        # optional observed deal: 150/11 ≈ 13.6x
+        s.submit(a)
+    from intake import txn_multiple_from
+    r, c = run_pipeline_custom(build_company(s.answers, client), client=client,
+                               lineage=intake_lineage(s.answers),
+                               txn_multiple=txn_multiple_from(s.answers))
+    v = c["valuation"]
+    check("[intake] custom company valued with equity + DLOM",
+          v is not None and v.equity_mid_cr is not None and v.discount > 0,
+          f"equity mid={v.equity_mid_cr} DLOM={v.discount}")
+    check("[intake] OBSERVED transaction multiple used (user-provided deal)",
+          v.transaction_analysis is not None
+          and v.transaction_analysis.get("txn_multiple") is not None,
+          f"txn {v.transaction_analysis.get('txn_multiple') if v.transaction_analysis else None}x")
+
+    # honest degradation
+    r, _c = run_pipeline("zzz-no-such-company-999", client=client)
+    check("[degrade] unknown company -> status no_match, no numbers",
+          r["meta"]["status"] == "no_match" and r["valuation"] is None, "")
+
+    # observed-market validation gate (EV mid vs actual market caps, 2026-07-17)
+    print("-- observed-market validation gate --")
     try:
-        from validate import run_backtest
-        corr, pos, med, pos_better, _rows = run_backtest()
-        import statistics as _st
-        pos_mae = _st.mean(abs(x) for x in pos)
-        med_mae = _st.mean(abs(x) for x in med)
-        check("[backtest] positioning generalizes (beats naive median)",
-              corr > 0.3 and pos_mae < med_mae and pos_better > len(pos) / 2,
-              f"corr={corr:.2f} pos_MAE={pos_mae*100:.1f}% med_MAE={med_mae*100:.1f}% "
-              f"pos_better={pos_better}/{len(pos)}")
+        from validate import real_validation_summary
+        summ = real_validation_summary(client=client)
+        check("[market] median |EV vs market-cap error| within 25%",
+              summ["median_abs_pct"] <= 25.0,
+              f"median {summ['median_abs_pct']}% · mean {summ['mean_abs_pct']}% · "
+              f"in-range {summ['n_in_range']}/{summ['n']}")
     except Exception as e:  # pragma: no cover
-        check("[backtest] positioning generalizes (beats naive median)", False, f"error: {e}")
-
-    # ---- REAL-DATA checks (only when realdata.db exists) -----------------
-    # The mock checks above validate the METHODOLOGY (they have market caps to
-    # cross-check against). These validate the REAL-DATA path end to end.
-    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   "realdata.db")):
-        print("\n-- real-data path (realdata.db) --")
-        try:
-            r, c = run_pipeline("20 Microns Ltd.", data_source="real")
-            t, v = c["target"], c["valuation"]
-            check("[real] resolves + normalizes (revenue in Crore)",
-                  t is not None and (t.revenue_cr or 0) > 100,
-                  f"rev={t.revenue_cr if t else None}")
-            check("[real] valuation produced on book basis with ≥10 peers",
-                  v is not None and v.headline_method != "none"
-                  and len(r["peers"]) >= 10,
-                  f"headline={v.headline_method if v else None} "
-                  f"peers={len(r['peers'])}")
-            check("[real] net-debt-unknown warning surfaced (honesty)",
-                  v is not None and any("net debt unknown" in w for w in v.warnings),
-                  f"warnings={len(v.warnings) if v else 0}")
-            check("[real] source caveats + per-field lineage attached",
-                  bool(r.get("source_caveats")) and bool(r.get("target_lineage")),
-                  f"lineage fields={len(r.get('target_lineage') or {})}")
-            check("[real] rejected candidates recorded with reasons",
-                  len(r["rejected"]) >= 1 and all(x.get("reason")
-                                                  for x in r["rejected"][:50]),
-                  f"rejected={len(r['rejected'])}")
-        except Exception as e:  # pragma: no cover
-            check("[real] real-data pipeline runs", False, f"error: {e}")
+        check("[market] observed-market validation runs", False, f"error: {e}")
 
     total = len(checks)
-    passed = sum(1 for _, c, _ in checks if c)
-    print("\n" + "#" * 78)
+    passed = sum(1 for _, cnd, _ in checks if cnd)
+    print()
+    print("#" * 78)
     print(f"# RESULT: {passed}/{total} checks passed")
     print("#" * 78)
     return passed == total
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main():
     argv = sys.argv[1:]
-    data_source = os.environ.get("DATA_SOURCE", "mock")
+    data_source = os.environ.get("DATA_SOURCE", "real")
     if "--data" in argv:
         i = argv.index("--data")
         if i + 1 < len(argv):
             data_source = argv[i + 1]
         argv = argv[:i] + argv[i + 2:]          # strip the flag + its value
     args = [a for a in argv if not a.startswith("--")]
-    default_name = "20 Microns Ltd." if data_source == "real" else "Woodward"
+    default_name = "20 Microns Ltd."
     name = args[0] if args else default_name
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     result, _ctx = run_pipeline(name, data_source=data_source)
 
-    # Embed the methodology backtest so the dashboard can show honest, aggregate
-    # accuracy (guards against reading one lucky calibration as proof).
+    # Embed the observed-market validation so reports show aggregate accuracy.
     if result.get("valuation"):
         try:
-            from validate import backtest_summary
-            result["validation"] = backtest_summary()
+            from validate import real_validation_summary
+            result["validation"] = real_validation_summary()
         except Exception as e:  # pragma: no cover
             result["validation"] = {"error": str(e)}
 

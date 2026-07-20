@@ -312,7 +312,7 @@ a.apiurl:hover{text-decoration:underline}
 
 <script>
 "use strict";
-let DATA=null, ROBUST=null;
+let DATA=null;
 
 /* ---------------- utilities ---------------- */
 const $=s=>document.querySelector(s);
@@ -461,15 +461,13 @@ let EN=null, _enrichShownFor=null;
 function detectMissing(){
   if(!DATA||!DATA.target||!DATA.valuation)return[];
   if(String(DATA.target.duns||"").startsWith("CUSTOM-"))return[];
-  const m=[];
-  if((DATA.valuation.warnings||[]).some(w=>w.indexOf("net debt unknown")>=0)){m.push("debt_cr","cash_cr");}
-  if(DATA.target.ebit_cr==null)m.push("depreciation_cr");
-  if(DATA.target.revenue_growth==null)m.push("revenue_prior_cr");
-  return m;
+  const fillable=["debt_cr","cash_cr","depreciation_cr","revenue_prior_cr"];
+  return (DATA.parameter_checklist||[]).filter(c=>c.status==="missing"&&fillable.includes(c.key)).map(c=>c.key);
 }
-function maybeEnrich(){
+function maybeEnrich(force){
   const key=DATA&&DATA.query;
-  if(!key||_enrichShownFor===key)return;
+  if(!key)return;
+  if(!force&&_enrichShownFor===key)return;
   const m=detectMissing(); if(!m.length)return;
   _enrichShownFor=key;
   EN={fields:m,i:0,vals:{}};
@@ -551,7 +549,6 @@ function render(){
   $("#rptBtn").disabled=false;
   showTab("overview");
   drawField(); drawFunnel();
-  const rb=$("#robustBtn"); if(rb&&ROBUST) renderRobust();
   setTimeout(maybeEnrich,600);
 }
 
@@ -587,13 +584,43 @@ function cover(){
 }
 
 /* ---------------- overview tab ---------------- */
+function eqWithheld(){const v=DATA&&DATA.valuation;return !!(v&&v.equity_mid_cr==null&&(v.equity_requires||[]).length);}
+function hMethod(){const v=DATA.valuation;return v.methods.find(m=>m.method===v.headline_method)||v.methods[0]||{};}
+function checklistCard(){
+  const cl=DATA.parameter_checklist||[];
+  if(!cl.length)return "";
+  const rows=cl.map(c=>{
+    const ic=c.status==="available"?'<span style="color:var(--goodtext);font-weight:800">✓</span>'
+      :c.status==="user_provided"?'<span style="color:var(--accent);font-weight:800">✓*</span>'
+      :'<span style="color:#8d2a2a;font-weight:800">✗</span>';
+    const vv=c.status==="missing"?'<span class="tag tag-rej">NOT AVAILABLE</span>'
+      :(typeof c.value==="number"?num(c.value,2):esc(String(c.value)).slice(0,46));
+    return `<tr><td style="width:26px">${ic}</td><td><b>${esc(c.label)}</b></td>
+      <td>${vv}</td><td style="color:var(--muted);font-size:12px">${esc(c.needed_for)}</td></tr>`;
+  }).join("");
+  const missing=cl.filter(c=>c.status==="missing").length;
+  return `<div class="card" style="margin-top:16px"><h2>Essential parameters — what this valuation actually has</h2>
+    <div class="purpose">✓ from source · ✓* user-provided · ✗ not available (never assumed — fill in chat)</div>
+    <table><tbody>${rows}</tbody></table>
+    ${missing?`<button class="btn btn-run no-print" style="background:var(--accent);color:#fff;margin-top:10px"
+      onclick="maybeEnrich(true)">Fill ${missing} missing in chat</button>`:""}
+  </div>`;
+}
 function overviewTab(){
   const t=DATA.target, tp=DATA.target_profile||{}, val=DATA.valuation;
   const xc=val.market_cross_check;
   return `
+  ${eqWithheld()?`<div class="callout co-warn" style="margin-bottom:14px"><b>Equity value withheld — nothing is assumed.</b>
+    The source has no ${esc((val.equity_requires||[]).join(" or "))}. The ENTERPRISE-VALUE range below is the honest
+    answer; supply the missing figures to bridge EV → equity.
+    <button class="btn btn-run no-print" style="background:var(--accent);color:#fff;margin-left:10px"
+      onclick="maybeEnrich(true)">Fill missing figures in chat</button></div>`:""}
   <div class="grid g4">
-    <div class="tile"><div class="k">Equity value (mid)</div><div class="v" style="color:var(--accent)">${cr(val.equity_mid_cr)}</div>
-      <div class="s">range ${cr(val.equity_low_cr)} – ${cr(val.equity_high_cr)}</div></div>
+    ${eqWithheld()
+      ?`<div class="tile"><div class="k">Enterprise value (mid)</div><div class="v" style="color:var(--accent)">${cr(hMethod().ev_mid_cr)}</div>
+        <div class="s">range ${cr(hMethod().ev_low_cr)} – ${cr(hMethod().ev_high_cr)} · equity needs ${esc((val.equity_requires||[]).join(" + "))}</div></div>`
+      :`<div class="tile"><div class="k">Equity value (mid)</div><div class="v" style="color:var(--accent)">${cr(val.equity_mid_cr)}</div>
+        <div class="s">range ${cr(val.equity_low_cr)} – ${cr(val.equity_high_cr)}</div></div>`}
     <div class="tile"><div class="k">Headline method</div><div class="v">${esc(val.headline_method)}</div>
       <div class="s">triangulated with ${val.methods.length} methods</div></div>
     <div class="tile"><div class="k">Peers used</div><div class="v">${DATA.peers.length}</div>
@@ -604,7 +631,7 @@ function overviewTab(){
 
   <div class="card" style="margin-top:16px">
     <h2>Valuation summary — football field</h2>
-    <div class="purpose">the equity-value range each method implies; the dashed line is the company's own market value (listed targets)</div>
+    <div class="purpose">${eqWithheld()?"the ENTERPRISE-value range each method implies (equity withheld until debt/cash provided)":"the equity-value range each method implies; the dashed line is the company's own market value (listed targets)"}</div>
     <p class="explain"><b>How to read it.</b> Each bar spans that method's low→high equity value; the thick tick is the
       central (positioned) estimate. Tight overlap across bars means the methods corroborate one another.</p>
     <div id="ffchart" class="chart"></div>
@@ -635,6 +662,7 @@ function overviewTab(){
       ${val.warnings.map(w=>`<div class="callout co-warn">⚠ ${esc(w)}</div>`).join("")}
     </div>
   </div>
+  ${checklistCard()}
   ${lineageCard()}`;
 }
 function lineageCard(){
@@ -814,7 +842,7 @@ function valuationTab(){
       <td class="num">${num(m.multiple_p25,2)} / <b>${num(m.multiple_median,2)}</b> / ${num(m.multiple_p75,2)}</td>
       <td class="num">${cr(m.target_driver)}</td>
       <td class="num">${cr(m.ev_mid_cr)}</td>
-      <td class="num"><b>${cr(m.equity_low_cr)} – <span style="color:var(--accent)">${cr(m.equity_mid_cr)}</span> – ${cr(m.equity_high_cr)}</b></td></tr>`;
+      <td class="num"><b>${m.equity_mid_cr==null?'<span class="tag tag-bl">withheld — needs debt/cash</span>':`${cr(m.equity_low_cr)} – <span style="color:var(--accent)">${cr(m.equity_mid_cr)}</span> – ${cr(m.equity_high_cr)}`}</b></td></tr>`;
   }).join("");
   const h=val.methods.find(m=>m.method===val.headline_method)||{};
   return `<div class="card">
@@ -827,10 +855,14 @@ function valuationTab(){
     <div style="overflow-x:auto"><table><thead><tr><th>Method</th><th>Basis</th><th class="num">Comps</th>
       <th class="num">Outliers cut</th><th class="num">Multiple low/<b>pos</b>/high</th><th class="num">Driver</th>
       <th class="num">EV (mid)</th><th class="num">Equity low–mid–high</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="callout co-info"><b>Equity bridge (headline).</b>
-      ${esc(val.headline_method)} ${num(h.multiple_median,2)}x × ${cr(h.target_driver)} =
-      EV ${cr(h.ev_mid_cr)} &nbsp;−&nbsp; net debt ${cr(val.net_debt_cr)} &nbsp;−&nbsp; DLOM ${pct(val.discount,0)}
-      &nbsp;=&nbsp; <b style="color:var(--accent)">equity ${cr(val.equity_mid_cr)}</b></div>
+    ${eqWithheld()
+      ?`<div class="callout co-warn"><b>Bridge stops at EV.</b> ${esc(val.headline_method)} ${num(h.multiple_median,2)}x ×
+        ${cr(h.target_driver)} = <b style="color:var(--accent)">EV ${cr(h.ev_mid_cr)}</b>. Equity needs
+        ${esc((val.equity_requires||[]).join(" + "))} — nothing is assumed. Fill them in chat to complete the bridge.</div>`
+      :`<div class="callout co-info"><b>Equity bridge (headline).</b>
+        ${esc(val.headline_method)} ${num(h.multiple_median,2)}x × ${cr(h.target_driver)} =
+        EV ${cr(h.ev_mid_cr)} &nbsp;−&nbsp; net debt ${cr(val.net_debt_cr)} &nbsp;−&nbsp; DLOM ${pct(val.discount,0)}
+        &nbsp;=&nbsp; <b style="color:var(--accent)">equity ${cr(val.equity_mid_cr)}</b></div>`}
     ${compAdjBlock()}
     ${txnBlock()}
     <p class="explain" style="margin-top:10px"><b>Positioning.</b> ${esc(val.positioning||"—")}<br>
@@ -855,6 +887,12 @@ function compAdjBlock(){
 function txnBlock(){
   const tx=(DATA.valuation||{}).transaction_analysis;
   if(!tx)return "";
+  if(tx.txn_multiple){
+    return `<div class="callout co-good"><b>Comparable transaction (OBSERVED, user-provided) —
+      ${num(tx.txn_multiple,1)}x EV/EBITDA → acquisition EV ${cr(tx.acquisition_ev_low_cr)} –
+      <span style="color:var(--accent)">${cr(tx.acquisition_ev_mid_cr)}</span> – ${cr(tx.acquisition_ev_high_cr)}.</b><br>
+      <span style="color:var(--ink2);font-size:12.5px">${esc(tx.caveat)}</span></div>`;
+  }
   return `<div class="callout co-info"><b>Comparable-transactions view (indicative) —
       what a control buyer might pay: ${cr(tx.acquisition_equity_low_cr)} –
       <span style="color:var(--accent)">${cr(tx.acquisition_equity_mid_cr)}</span> –
@@ -868,52 +906,30 @@ function txnBlock(){
 function validationTab(){
   const v=DATA.validation;
   let core="";
-  if(v&&v.positioned){
-    core=`<table><thead><tr><th>Approach</th><th class="num">Mean |err|</th><th class="num">Median |err|</th>
-      <th class="num">Max |err|</th><th class="num">within 15%</th></tr></thead><tbody>
-      <tr class="hl"><td><b>Quality-positioned + weighted (used)</b></td><td class="num"><b>${v.positioned.mean_abs_pct}%</b></td>
-        <td class="num">${v.positioned.median_abs_pct}%</td><td class="num">${v.positioned.max_abs_pct}%</td>
-        <td class="num">${v.positioned.within_15pct}/${v.positioned.n}</td></tr>
-      <tr><td>Flat median (naive baseline)</td><td class="num">${v.flat_median.mean_abs_pct}%</td>
-        <td class="num">${v.flat_median.median_abs_pct}%</td><td class="num">${v.flat_median.max_abs_pct}%</td>
-        <td class="num">${v.flat_median.within_15pct}/${v.flat_median.n}</td></tr></tbody></table>
-      <div class="callout ${v.verdict_ok?"co-good":"co-warn"}"><b>${v.verdict_ok?"✓ VERDICT: PASS":"⚠ VERDICT: REVIEW"}</b>
-        — corr(margin, EV/EBITDA) = ${v.margin_multiple_corr}; positioning closer on
-        ${v.positioning_wins}/${v.n_targets} targets. Positioning never sees the market cap it is checked against.</div>`;
+  if(v&&v.kind==="observed_market_validation"){
+    const rows=(v.rows||[]).filter(r=>r.status==="ok").map(r=>
+      `<tr><td><b>${esc(r.company)}</b></td>
+        <td class="num">${cr(r.engine_ev_low_cr)} – <b>${cr(r.engine_ev_mid_cr)}</b> – ${cr(r.engine_ev_high_cr)}</td>
+        <td class="num">${cr(r.actual_mcap_cr)}</td>
+        <td class="num">${r.delta_pct>0?"+":""}${num(r.delta_pct,1)}%</td>
+        <td>${r.in_range?'<span class="tag tag-listed">IN RANGE</span>':'<span class="tag tag-bl">outside</span>'}</td></tr>`).join("");
+    core=`<table><thead><tr><th>Company</th><th class="num">Engine EV (low–mid–high)</th>
+      <th class="num">Actual market cap</th><th class="num">Δ mid</th><th>Range</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <div class="callout ${v.verdict_ok?"co-good":"co-warn"}">
+        <b>${v.verdict_ok?"✓ VERDICT: PASS":"⚠ VERDICT: REVIEW"}</b> — median |error|
+        <b>${num(v.median_abs_pct,1)}%</b> · mean ${num(v.mean_abs_pct,1)}% · actual inside the
+        published range on ${v.n_in_range}/${v.n} · as of ${esc(v.as_of)}.</div>
+      <div class="callout co-warn">⚠ <b>Basis.</b> ${esc(v.basis)}. ${esc(v.note)}</div>`;
   }else{core=`<p class="explain">Validation summary not available for this run.</p>`;}
   return `<div class="card">
-    <h2>Methodology validation — is it accurate in general, or just here?</h2>
-    <div class="purpose">every listed company in the universe is re-valued from its peers and compared to its OWN market cap</div>
-    <p class="explain"><b>Why this matters.</b> One good calibration can be luck. This backtest re-values
-      <b>every</b> listed comparable and measures the error against real market value — and the method must beat the
-      naive "just use the median" baseline across the board, not just on the demo company.</p>
+    <h2>Observed-market validation — checked against real NSE prices</h2>
+    <div class="purpose">nothing simulated: the engine's output vs each company's own observed market value (dated, sourced)</div>
+    <p class="explain"><b>Why this matters.</b> A single good calibration can be luck. This table re-values a
+      pinned set of listed database companies and compares to their real market caps — including two known
+      idiosyncratic outliers kept in deliberately, because hiding them would overstate accuracy.</p>
     ${core}
-    <h3 style="margin-top:18px;font-size:14px">Seed-robustness — 5 freshly drawn universes</h3>
-    <p class="explain">The same backtest re-run on universes generated with different random seeds (different
-      financials, listings, market noise). If positioning only won on the canonical universe, it was seed-luck.</p>
-    <div id="robustBox">
-      <button class="btn btn-run no-print" id="robustBtn" style="background:var(--accent);color:#fff"
-        onclick="loadRobust()">Run robustness sweep (≈20s)</button>
-    </div>
   </div>`;
-}
-async function loadRobust(){
-  const b=$("#robustBtn"); b.disabled=true; b.innerHTML='<span class="spin"></span>&nbsp;Sweeping 5 universes…';
-  try{ROBUST=await(await fetch("/api/robustness")).json();renderRobust();}
-  catch(e){b.textContent="Failed: "+e;}
-}
-function renderRobust(){
-  const s=ROBUST; if(!s||!s.per_seed)return;
-  $("#robustBox").innerHTML=`<table><thead><tr><th>Seed</th><th class="num">n</th><th class="num">corr</th>
-    <th class="num">Positioned MAE</th><th class="num">Naive MAE</th><th class="num">Wins</th><th>Beats naive?</th></tr></thead>
-    <tbody>${s.per_seed.map(r=>`<tr><td class="mono">${r.seed_offset}</td><td class="num">${r.n}</td>
-      <td class="num">${r.corr.toFixed(2)}</td><td class="num">${r.pos_mae_pct}%</td><td class="num">${r.med_mae_pct}%</td>
-      <td class="num">${r.pos_wins}/${r.n}</td>
-      <td>${r.pos_beats_naive?'<span class="tag tag-listed">YES</span>':'<span class="tag tag-rej">no</span>'}</td></tr>`).join("")}
-    </tbody></table>
-    <div class="callout ${s.robust?"co-good":"co-warn"}"><b>${s.robust?"✓ ROBUST":"⚠ REVIEW"}</b> — positioning beats the
-      naive baseline on ${s.seeds_where_positioning_beats_naive}/${s.n_seeds} fresh universes
-      (mean MAE ${s.mean_pos_mae_pct}% vs ${s.mean_med_mae_pct}%). Not seed-luck.</div>`;
 }
 
 /* ---------------- API & Report tab ---------------- */
@@ -956,7 +972,6 @@ function apiTab(){
     ["GET","/api/v1/intake/{sid}/report?print=1","intake valuation report (HTML/PDF)"],
     ["GET","/api/v1/filters","complete filter chain + guarantees + limitations"],
     ["GET","/api/v1/validation","anti-overfitting backtest (methodology proof)"],
-    ["GET","/api/v1/robustness","5-seed robustness sweep"],
     ["GET","/api/v1/database/status","ETL provenance: counts, recon rate, source hashes, age"]];
   const catRows=cat.map(r=>`<tr class="apirow">
     <td><span class="method ${r[0]==="GET"?"m-get":"m-post"}">${r[0]}</span></td>
@@ -1000,7 +1015,8 @@ function drawField(){
   const el=$("#ffchart"); if(!el)return;
   const val=DATA.valuation, t=DATA.target;
   const series=[["EV/EBITDA","var(--s1)","#1c5cab"],["EV/Revenue","var(--s2)","#0c5c3f"],["EV/EBIT","var(--s3)","#7a5300"]];
-  const ms=val.methods;
+  const useEV=eqWithheld();
+  const ms=val.methods.map(m=>useEV?{...m,equity_low_cr:m.ev_low_cr,equity_mid_cr:m.ev_mid_cr,equity_high_cr:m.ev_high_cr}:m);
   const lows=ms.map(m=>m.equity_low_cr), highs=ms.map(m=>m.equity_high_cr);
   let dom=[Math.min(...lows),Math.max(...highs)];
   if(t.market_cap_cr){dom[0]=Math.min(dom[0],t.market_cap_cr);dom[1]=Math.max(dom[1],t.market_cap_cr);}
@@ -1034,7 +1050,7 @@ function drawField(){
   $("#fflegend").innerHTML=series.filter(s=>ms.some(m=>m.method===s[0]))
     .map(s=>`<span><span class="sw" style="background:${s[1]}"></span>${s[0]}</span>`).join("")
     +(t.market_cap_cr?`<span><span class="sw" style="background:var(--ink);height:2px;width:14px;border-radius:0"></span>own market cap ${cr(t.market_cap_cr)}</span>`:"")
-    +`<span style="color:var(--muted)">axis: equity value, ₹ Cr</span>`;
+    +`<span style="color:var(--muted)">axis: ${eqWithheld()?"enterprise value":"equity value"}, ₹ Cr</span>`;
   attachTips(el);
 }
 function drawFunnel(){

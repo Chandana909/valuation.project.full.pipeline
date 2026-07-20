@@ -3,71 +3,107 @@
     "engine": "dnb-msme-comparable-valuation",
     "methodology_version": "2.0.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-19T16:01:42+00:00",
-    "data_source": "Synthetic mock universe (59 companies, real D&B schema)",
+    "run_timestamp": "2026-07-20T03:16:09+00:00",
+    "data_source": "Accord real extract (via realdata.db)",
     "currency": "INR",
     "reporting_units": "Crore",
     "source_units": "Thousand",
     "human_in_the_loop": false,
-    "query": "Woodward",
+    "query": "20 Microns Ltd.",
     "status": "ok"
   },
-  "query": "Woodward",
+  "query": "20 Microns Ltd.",
   "target": {
-    "duns": "INA00010000",
-    "name": "Woodward India Controls",
-    "cin": "L29100MH1994PLC000001",
-    "naics": "333611",
-    "naics_desc": "Turbine and Turbine Generator Set Units Manufacturing",
-    "hoovers": "31111100",
+    "duns": "207635",
+    "name": "20 Microns Ltd.",
+    "cin": "L99999GJ1987PLC009768",
+    "naics": "1900",
+    "naics_desc": "Mining & Minerals",
+    "hoovers": "GRP_MINING",
     "major_industry": "D",
     "major_industry_desc": "Manufacturing",
-    "activities": "manufactures precision engine governors and turbine control systems for power generation, marine and industrial OEMs",
-    "is_exporter": false,
-    "employees": 5590,
-    "incorporated": "1994-04-01",
-    "city": "Hyderabad",
+    "activities": "20 Microns Limited is the pioneers in the field of Industrial Minerals in India and bringing the organized concept of Micronization and tapping various different Industrial Micronized and Sub-Micronized Minerals under its portfolio. Since few years back, the company also delved into the world of Specialty Minerals, Chemicals and Performance Additives catering to the niche segments and formulations made through advanced and superior technology to serve its existing and new customer base for diverse applications. The company has a strong presence across the country with dedicated regional divisions for commercial distribution and technical assistance along with a vast network and infrastructure. With a devoted R&D and Product Application Centre, the company is committed to continuously innovate and offer a variety of products catering to numerous applications and formulations enhancing the product performances and delivering high value added functional solutions to various industries. 20 Microns, through its innovative & continuous R&D thrives to add further more products into its basket of products with continuous interaction with its domestic and international customers which has always proven to be its key to success.",
+    "is_exporter": true,
+    "employees": null,
+    "incorporated": null,
+    "city": "IN-19",
     "listed": true,
-    "revenue_cr": 5874.35,
-    "revenue_prior_cr": 4630.82,
-    "revenue_growth": 0.2685,
-    "ebitda_cr": 785.01,
-    "ebitda_margin": 0.1336,
-    "depreciation_cr": 339.06,
-    "ebit_cr": 445.95,
-    "gross_profit_cr": 2056.02,
-    "operating_profit_cr": 445.94,
-    "pat_cr": 222.55,
-    "net_income_cr": 222.55,
-    "cash_cr": 327.45,
-    "debt_cr": 1657.83,
-    "capital_employed_cr": 6757.58,
-    "net_worth_cr": 4054.55,
-    "total_assets_cr": 8784.85,
-    "working_capital_cr": 1174.87,
-    "market_cap_cr": 10259.19,
-    "market_ev_cr": 11589.57,
+    "revenue_cr": 794.9198,
+    "revenue_prior_cr": 672.45,
+    "revenue_growth": 0.1821,
+    "ebitda_cr": 97.3552,
+    "ebitda_margin": 0.1225,
+    "depreciation_cr": 15.0677,
+    "ebit_cr": 82.2875,
+    "gross_profit_cr": null,
+    "operating_profit_cr": null,
+    "pat_cr": null,
+    "net_income_cr": 56.3598,
+    "cash_cr": 0.0,
+    "debt_cr": 0.0,
+    "capital_employed_cr": 381.1303,
+    "net_worth_cr": 381.1303,
+    "total_assets_cr": 657.4897,
+    "working_capital_cr": null,
+    "market_cap_cr": null,
+    "market_ev_cr": null,
     "listing_status": "listed",
-    "debt_known": true,
-    "cash_known": true,
-    "directors": [
-      "Director Woodward A",
-      "Director Woodward B",
-      "Director Woodward C"
-    ]
+    "debt_known": false,
+    "cash_known": false,
+    "directors": []
   },
   "target_profile": {
     "operating_model": "manufacturer",
     "value_chain": "finished_goods",
     "customer_type": "B2B",
-    "naics_subsector": "333",
+    "naics_subsector": "190",
     "major_industry": "D",
-    "confidence": 0.95
+    "confidence": 0.8
   },
-  "target_lineage": {},
-  "source_caveats": [],
+  "target_lineage": {
+    "identity/industry/description": {
+      "file": "Basic Data.xlsx",
+      "row": 4,
+      "fy": null
+    },
+    "revenue/EBITDA/interest/depreciation/PBT/PAT": {
+      "file": "PL data.xlsx",
+      "row": 3,
+      "fy": 202503
+    },
+    "net worth": {
+      "file": "Net worth.xlsx",
+      "row": 3,
+      "fy": 202503
+    },
+    "total assets/net block/inventories": {
+      "file": "BS data.xlsx",
+      "row": 2,
+      "fy": 202503
+    },
+    "forex inflow (export flag)": {
+      "file": "Forex.xlsx",
+      "row": 2,
+      "fy": 202503
+    },
+    "prior-year revenue": {
+      "file": "PL data.xlsx",
+      "row": 4,
+      "fy": 202403
+    },
+    "P&L reconciliation": {
+      "file": "(computed in ETL)",
+      "row": null,
+      "fy": 202503,
+      "status": "ok"
+    }
+  },
+  "source_caveats": [
+    "Borrowings, cash and current liabilities are not in the source extract: net debt is treated as 0 with a warning, and capital employed is approximated by segment capital-employed where reported, else Net Worth.",
+    "Market prices are not in the source extract: no trading multiples — the valuation runs on the disclosed book basis until a market-price feed is added."
+  ],
   "data_quality": {
-    "score": 1.0,
+    "score": 0.93,
     "grade": "A",
     "checks": [
       {
@@ -120,479 +156,280 @@
       },
       {
         "field": "debt",
-        "status": "pass",
+        "status": "fail",
         "level": "MEDIUM",
-        "detail": "borrowings present"
+        "detail": "borrowings absent from source (net debt assumes 0)"
       },
       {
         "field": "cash",
-        "status": "pass",
+        "status": "fail",
         "level": "LOW",
-        "detail": "cash & liquid assets present"
+        "detail": "cash absent from source (net debt assumes 0)"
       }
     ],
-    "missing_fields": [],
+    "missing_fields": [
+      "debt",
+      "cash"
+    ],
     "valuable": true
   },
+  "parameter_checklist": [
+    {
+      "key": "name",
+      "label": "Company name",
+      "status": "available",
+      "value": "20 Microns Ltd.",
+      "needed_for": "identity"
+    },
+    {
+      "key": "industry",
+      "label": "Industry / sector",
+      "status": "available",
+      "value": "Mining & Minerals",
+      "needed_for": "peer filters #5-6, sector anchors"
+    },
+    {
+      "key": "description",
+      "label": "Business description",
+      "status": "available",
+      "value": "20 Microns Limited is the pioneers in the field of Industrial Minerals in India and bringing the organized concept of Micronization and tapping various different Industrial Micronized and Sub-Micronized Minerals under its portfolio. Since few years back, the company also delved into the world of Specialty Minerals, Chemicals and Performance Additives catering to the niche segments and formulations made through advanced and superior technology to serve its existing and new customer base for diverse applications. The company has a strong presence across the country with dedicated regional divisions for commercial distribution and technical assistance along with a vast network and infrastructure. With a devoted R&D and Product Application Centre, the company is committed to continuously innovate and offer a variety of products catering to numerous applications and formulations enhancing the product performances and delivering high value added functional solutions to various industries. 20 Microns, through its innovative & continuous R&D thrives to add further more products into its basket of products with continuous interaction with its domestic and international customers which has always proven to be its key to success.",
+      "needed_for": "economic classifier (filters #3-4, #9)"
+    },
+    {
+      "key": "listed",
+      "label": "Listing status",
+      "status": "available",
+      "value": true,
+      "needed_for": "DLOM decision"
+    },
+    {
+      "key": "revenue_cr",
+      "label": "Revenue (₹ Cr)",
+      "status": "available",
+      "value": 794.9198,
+      "needed_for": "EV/Revenue driver · scale similarity · DLOM band"
+    },
+    {
+      "key": "revenue_prior_cr",
+      "label": "Prior-year revenue",
+      "status": "available",
+      "value": 672.45,
+      "needed_for": "revenue growth context"
+    },
+    {
+      "key": "ebitda_cr",
+      "label": "EBITDA",
+      "status": "available",
+      "value": 97.3552,
+      "needed_for": "EV/EBITDA driver (headline) · margin positioning"
+    },
+    {
+      "key": "depreciation_cr",
+      "label": "Depreciation",
+      "status": "available",
+      "value": 15.0677,
+      "needed_for": "EBIT → EV/EBIT method"
+    },
+    {
+      "key": "net_worth_cr",
+      "label": "Net worth / capital employed",
+      "status": "available",
+      "value": 381.1303,
+      "needed_for": "book multiple base"
+    },
+    {
+      "key": "debt_cr",
+      "label": "Borrowings / debt",
+      "status": "missing",
+      "value": null,
+      "needed_for": "EV → equity bridge (equity withheld until known)"
+    },
+    {
+      "key": "cash_cr",
+      "label": "Cash & equivalents",
+      "status": "missing",
+      "value": null,
+      "needed_for": "EV → equity bridge (equity withheld until known)"
+    }
+  ],
   "peers": [
     {
-      "duns": "INA00040000",
-      "name": "Bharat Turbine Controls",
-      "score": 0.9661,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Chennai",
-      "revenue_cr": 6739.01,
-      "ebitda_margin": 0.1205,
-      "revenue_growth": 0.1032,
-      "ev_basis": "market",
-      "market_ev_cr": 10928.46,
-      "market_cap_cr": 11311.89,
-      "book_ev_cr": 7137.53,
-      "multiples": {
-        "EV/EBITDA": 13.4627,
-        "EV/Revenue": 1.6217,
-        "EV/EBIT": 21.7955
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1759,
-        "margin": 0.1402,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INC00480000",
-      "name": "Mather Platt Fluid",
-      "score": 0.9502,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Ghaziabad",
-      "revenue_cr": 6545.91,
-      "ebitda_margin": 0.174,
-      "revenue_growth": 0.2228,
-      "ev_basis": "market",
-      "market_ev_cr": 22150.64,
-      "market_cap_cr": 21684.45,
-      "book_ev_cr": 8187.5,
-      "multiples": {
-        "EV/EBITDA": 19.4466,
-        "EV/Revenue": 3.3839,
-        "EV/EBIT": 27.2024
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1805,
-        "margin": 0.1197,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INA00060000",
-      "name": "Greaves Governor Systems",
-      "score": 0.9481,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Hyderabad",
-      "revenue_cr": 5376.17,
-      "ebitda_margin": 0.1811,
-      "revenue_growth": 0.2647,
-      "ev_basis": "market",
-      "market_ev_cr": 16414.42,
-      "market_cap_cr": 15754.71,
-      "book_ev_cr": 6622.13,
-      "multiples": {
-        "EV/EBITDA": 16.858,
-        "EV/Revenue": 3.0532,
-        "EV/EBIT": 20.4727
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1837,
-        "margin": 0.1144,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INC00460000",
-      "name": "Darling Pumps Machinery",
-      "score": 0.9472,
+      "duns": "293984",
+      "name": "Jindal Coke Ltd.",
+      "score": 0.8962,
       "weight": 1.0,
       "borderline": false,
       "listed": false,
-      "city": "Ahmedabad",
-      "revenue_cr": 8225.79,
-      "ebitda_margin": 0.1304,
-      "revenue_growth": 0.2534,
+      "city": "IN-20",
+      "revenue_cr": 1871.3256,
+      "ebitda_margin": 0.1071,
+      "revenue_growth": 0.1897,
       "ev_basis": "book",
       "market_ev_cr": null,
       "market_cap_cr": null,
-      "book_ev_cr": 8245.1,
+      "book_ev_cr": 643.3136,
       "multiples": {
-        "EV/EBITDA": 7.6855,
-        "EV/Revenue": 1.0023,
-        "EV/EBIT": 11.1108
+        "EV/EBITDA": 3.2096,
+        "EV/Revenue": 0.3438,
+        "EV/EBIT": 3.7966
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1496,
-        "margin": 0.1476,
+        "scale": 0.1078,
+        "margin": 0.1384,
         "customer": 0.15,
         "export": 0.1
       },
       "selected_because": [
-        "same NAICS subsector 333",
+        "same NAICS subsector 190",
         "similar EBITDA margin",
         "same customer type (B2B)",
         "same export profile"
       ],
       "differences": [
-        "revenue ₹8226 Cr vs ₹5874 Cr"
+        "revenue ₹1871 Cr vs ₹795 Cr"
       ]
     },
     {
-      "duns": "INA00170000",
-      "name": "Deccan Engine Controls",
-      "score": 0.943,
+      "duns": "208645",
+      "name": "MSPL Ltd.",
+      "score": 0.8935,
       "weight": 1.0,
       "borderline": false,
-      "listed": true,
-      "city": "Pune",
-      "revenue_cr": 7340.48,
-      "ebitda_margin": 0.1611,
-      "revenue_growth": 0.1694,
-      "ev_basis": "market",
-      "market_ev_cr": 19052.53,
-      "market_cap_cr": 18975.29,
-      "book_ev_cr": 8342.82,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 1339.9901,
+      "ebitda_margin": 0.0719,
+      "revenue_growth": -0.0875,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 5507.0276,
       "multiples": {
-        "EV/EBITDA": 16.11,
-        "EV/Revenue": 2.5955,
-        "EV/EBIT": 24.9317
+        "EV/EBITDA": 57.1378,
+        "EV/Revenue": 4.1098,
+        "EV/EBIT": 364.0264
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1636,
-        "margin": 0.1294,
+        "scale": 0.1314,
+        "margin": 0.1121,
         "customer": 0.15,
         "export": 0.1
       },
       "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)",
-        "same export profile"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INC00440000",
-      "name": "Texmo Pumps Machinery",
-      "score": 0.9224,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Ghaziabad",
-      "revenue_cr": 5841.7,
-      "ebitda_margin": 0.1249,
-      "revenue_growth": 0.0856,
-      "ev_basis": "market",
-      "market_ev_cr": 11897.56,
-      "market_cap_cr": 11361.44,
-      "book_ev_cr": 6647.54,
-      "multiples": {
-        "EV/EBITDA": 16.3027,
-        "EV/Revenue": 2.0367,
-        "EV/EBIT": 22.9918
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1989,
-        "margin": 0.1435,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INC00450000",
-      "name": "Aqua Pump Industries",
-      "score": 0.918,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Vadodara",
-      "revenue_cr": 7927.91,
-      "ebitda_margin": 0.1815,
-      "revenue_growth": 0.0929,
-      "ev_basis": "market",
-      "market_ev_cr": 28425.47,
-      "market_cap_cr": 27041.94,
-      "book_ev_cr": 11742.06,
-      "multiples": {
-        "EV/EBITDA": 19.7542,
-        "EV/Revenue": 3.5855,
-        "EV/EBIT": 24.6494
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1539,
-        "margin": 0.1141,
-        "customer": 0.15,
-        "export": 0.1
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
+        "same NAICS subsector 190",
         "similar EBITDA margin",
         "same customer type (B2B)",
         "same export profile"
       ],
       "differences": [
-        "revenue ₹7928 Cr vs ₹5874 Cr"
+        "revenue ₹1340 Cr vs ₹795 Cr"
       ]
     },
     {
-      "duns": "INA00030000",
-      "name": "Cummins Governor Controls",
-      "score": 0.8943,
+      "duns": "288306",
+      "name": "VPR Mining Infrastructure Pvt Ltd.",
+      "score": 0.8842,
       "weight": 1.0,
       "borderline": false,
       "listed": false,
-      "city": "Coimbatore",
-      "revenue_cr": 4757.0,
-      "ebitda_margin": 0.1348,
-      "revenue_growth": 0.1653,
+      "city": "IN-20",
+      "revenue_cr": 1864.1273,
+      "ebitda_margin": 0.1542,
+      "revenue_growth": 0.0345,
       "ev_basis": "book",
       "market_ev_cr": null,
       "market_cap_cr": null,
-      "book_ev_cr": 4977.72,
+      "book_ev_cr": 967.6309,
       "multiples": {
-        "EV/EBITDA": 7.7613,
-        "EV/Revenue": 1.0464,
-        "EV/EBIT": 12.1568
+        "EV/EBITDA": 3.3653,
+        "EV/Revenue": 0.5191,
+        "EV/EBIT": 5.0091
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1652,
-        "margin": 0.1491,
+        "scale": 0.108,
+        "margin": 0.1262,
         "customer": 0.15,
-        "export": 0.03
+        "export": 0.1
       },
       "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
+        "same NAICS subsector 190",
         "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INA00180000",
-      "name": "Elgi Governor Controls",
-      "score": 0.8873,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Coimbatore",
-      "revenue_cr": 5987.79,
-      "ebitda_margin": 0.1854,
-      "revenue_growth": 0.0599,
-      "ev_basis": "market",
-      "market_ev_cr": 18926.79,
-      "market_cap_cr": 17943.66,
-      "book_ev_cr": 8849.1,
-      "multiples": {
-        "EV/EBITDA": 17.0462,
-        "EV/Revenue": 3.1609,
-        "EV/EBIT": 24.7915
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1962,
-        "margin": 0.1111,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INC00380000",
-      "name": "KSB Pumps India",
-      "score": 0.8828,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": true,
-      "city": "Coimbatore",
-      "revenue_cr": 5356.16,
-      "ebitda_margin": 0.174,
-      "revenue_growth": -0.0394,
-      "ev_basis": "market",
-      "market_ev_cr": 17185.89,
-      "market_cap_cr": 17006.15,
-      "book_ev_cr": 7076.61,
-      "multiples": {
-        "EV/EBITDA": 18.437,
-        "EV/Revenue": 3.2086,
-        "EV/EBIT": 26.8765
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1831,
-        "margin": 0.1197,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INA00090000",
-      "name": "BHEL Turbine Controls",
-      "score": 0.8826,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": false,
-      "city": "Hyderabad",
-      "revenue_cr": 4741.28,
-      "ebitda_margin": 0.1497,
-      "revenue_growth": 0.123,
-      "ev_basis": "book",
-      "market_ev_cr": null,
-      "market_cap_cr": null,
-      "book_ev_cr": 7204.36,
-      "multiples": {
-        "EV/EBITDA": 10.147,
-        "EV/Revenue": 1.5195,
-        "EV/EBIT": 15.8711
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1647,
-        "margin": 0.1379,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "comparable revenue scale",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
-      ],
-      "differences": []
-    },
-    {
-      "duns": "INA00070000",
-      "name": "Triveni Turbine Controls",
-      "score": 0.8807,
-      "weight": 1.0,
-      "borderline": false,
-      "listed": false,
-      "city": "Bengaluru",
-      "revenue_cr": 7953.51,
-      "ebitda_margin": 0.1298,
-      "revenue_growth": 0.009,
-      "ev_basis": "book",
-      "market_ev_cr": null,
-      "market_cap_cr": null,
-      "book_ev_cr": 10766.36,
-      "multiples": {
-        "EV/EBITDA": 10.4271,
-        "EV/Revenue": 1.3537,
-        "EV/EBIT": 17.8006
-      },
-      "components": {
-        "industry": 0.4,
-        "scale": 0.1535,
-        "margin": 0.1472,
-        "customer": 0.15,
-        "export": 0.03
-      },
-      "selected_because": [
-        "same NAICS subsector 333",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
+        "same customer type (B2B)",
+        "same export profile"
       ],
       "differences": [
-        "revenue ₹7954 Cr vs ₹5874 Cr"
+        "revenue ₹1864 Cr vs ₹795 Cr"
       ]
     },
     {
-      "duns": "INA00150000",
-      "name": "Sanghvi Engine Equipment",
-      "score": 0.8687,
+      "duns": "221569",
+      "name": "Universal MEP Projects & Engineering Services Ltd.",
+      "score": 0.8694,
       "weight": 1.0,
       "borderline": false,
-      "listed": true,
-      "city": "Chennai",
-      "revenue_cr": 4950.85,
-      "ebitda_margin": 0.1764,
-      "revenue_growth": 0.1598,
-      "ev_basis": "market",
-      "market_ev_cr": 14762.5,
-      "market_cap_cr": 13688.07,
-      "book_ev_cr": 7191.29,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 2839.9222,
+      "ebitda_margin": 0.0977,
+      "revenue_growth": -0.0099,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 752.1716,
       "multiples": {
-        "EV/EBITDA": 16.9066,
-        "EV/Revenue": 2.9818,
-        "EV/EBIT": 20.5214
+        "EV/EBITDA": 2.7116,
+        "EV/Revenue": 0.2649,
+        "EV/EBIT": 2.7371
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1708,
-        "margin": 0.1179,
+        "scale": 0.088,
+        "margin": 0.1314,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹2840 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "226306",
+      "name": "AMPL Resources Pvt Ltd.",
+      "score": 0.8619,
+      "weight": 1.0,
+      "borderline": false,
+      "listed": false,
+      "city": "IN-20",
+      "revenue_cr": 952.7922,
+      "ebitda_margin": 0.1725,
+      "revenue_growth": null,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 644.8805,
+      "multiples": {
+        "EV/EBITDA": 3.9247,
+        "EV/Revenue": 0.6768,
+        "EV/EBIT": 5.257
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1694,
+        "margin": 0.1125,
         "customer": 0.15,
         "export": 0.03
       },
       "selected_because": [
-        "same NAICS subsector 333",
+        "same NAICS subsector 190",
         "comparable revenue scale",
         "similar EBITDA margin",
         "same customer type (B2B)"
@@ -600,648 +437,1016 @@
       "differences": []
     },
     {
-      "duns": "INA00120000",
-      "name": "Apex Engine Controls",
-      "score": 0.8648,
+      "duns": "239175",
+      "name": "Sigma Minerals Ltd.",
+      "score": 0.8569,
       "weight": 1.0,
       "borderline": false,
-      "listed": true,
-      "city": "Coimbatore",
-      "revenue_cr": 4556.73,
-      "ebitda_margin": 0.1666,
-      "revenue_growth": 0.1733,
-      "ev_basis": "market",
-      "market_ev_cr": 12217.64,
-      "market_cap_cr": 11369.98,
-      "book_ev_cr": 4890.57,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 357.4767,
+      "ebitda_margin": 0.195,
+      "revenue_growth": 0.0672,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 219.2606,
       "multiples": {
-        "EV/EBITDA": 16.0981,
-        "EV/Revenue": 2.6812,
-        "EV/EBIT": 23.1263
+        "EV/EBITDA": 3.146,
+        "EV/Revenue": 0.6134,
+        "EV/EBIT": 3.4477
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1595,
-        "margin": 0.1253,
+        "scale": 0.1113,
+        "margin": 0.0956,
         "customer": 0.15,
-        "export": 0.03
+        "export": 0.1
       },
       "selected_because": [
-        "same NAICS subsector 333",
-        "similar EBITDA margin",
-        "same customer type (B2B)"
+        "same NAICS subsector 190",
+        "same customer type (B2B)",
+        "same export profile"
       ],
       "differences": [
-        "revenue ₹4557 Cr vs ₹5874 Cr"
+        "revenue ₹357 Cr vs ₹795 Cr"
       ]
     },
     {
-      "duns": "INA00100000",
-      "name": "Shakti Engine Governors",
-      "score": 0.861,
+      "duns": "102015",
+      "name": "ASI Industries Ltd.",
+      "score": 0.8499,
       "weight": 1.0,
-      "borderline": false,
+      "borderline": true,
       "listed": true,
-      "city": "Bengaluru",
-      "revenue_cr": 8588.67,
-      "ebitda_margin": 0.1521,
-      "revenue_growth": 0.1379,
-      "ev_basis": "market",
-      "market_ev_cr": 19229.28,
-      "market_cap_cr": 18916.76,
-      "book_ev_cr": 8407.38,
+      "city": "IN-19",
+      "revenue_cr": 154.7656,
+      "ebitda_margin": 0.1573,
+      "revenue_growth": 0.0696,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 272.8812,
       "multiples": {
-        "EV/EBITDA": 14.7183,
-        "EV/Revenue": 2.2389,
-        "EV/EBIT": 22.8485
+        "EV/EBITDA": 11.2095,
+        "EV/Revenue": 1.7632,
+        "EV/EBIT": 13.9087
       },
       "components": {
         "industry": 0.4,
-        "scale": 0.1449,
-        "margin": 0.1361,
+        "scale": 0.076,
+        "margin": 0.1239,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹155 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "285476",
+      "name": "BGR Mining & Infra Pvt Ltd.",
+      "score": 0.8428,
+      "weight": 0.984,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-20",
+      "revenue_cr": 3865.0813,
+      "ebitda_margin": 0.1687,
+      "revenue_growth": 0.3102,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 2008.9316,
+      "multiples": {
+        "EV/EBITDA": 3.0809,
+        "EV/Revenue": 0.5198,
+        "EV/EBIT": 3.7271
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.0775,
+        "margin": 0.1153,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹3865 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "215277",
+      "name": "De Beers India Pvt Ltd.",
+      "score": 0.8373,
+      "weight": 0.972,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 111.7373,
+      "ebitda_margin": 0.1631,
+      "revenue_growth": null,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 47.2469,
+      "multiples": {
+        "EV/EBITDA": 2.5921,
+        "EV/Revenue": 0.4228,
+        "EV/EBIT": 6.6623
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.0677,
+        "margin": 0.1196,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹112 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "240146",
+      "name": "Peethambra Granites Pvt Ltd.",
+      "score": 0.8319,
+      "weight": 0.96,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 49.3395,
+      "ebitda_margin": 0.0941,
+      "revenue_growth": null,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 89.8454,
+      "multiples": {
+        "EV/EBITDA": 19.3424,
+        "EV/Revenue": 1.821,
+        "EV/EBIT": 38.6881
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.0532,
+        "margin": 0.1287,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "similar EBITDA margin",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹49 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "212764",
+      "name": "Brahmani River Pellet Ltd.",
+      "score": 0.8309,
+      "weight": 0.958,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-20",
+      "revenue_cr": 2466.26,
+      "ebitda_margin": 0.0387,
+      "revenue_growth": -0.0031,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 1475.39,
+      "multiples": {
+        "EV/EBITDA": 15.4669,
+        "EV/Revenue": 0.5982,
+        "EV/EBIT": 129.9903
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.0938,
+        "margin": 0.0871,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹2466 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "221975",
+      "name": "Chowgule & Co Pvt Ltd",
+      "score": 0.789,
+      "weight": 0.864,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 865.0978,
+      "ebitda_margin": 0.0619,
+      "revenue_growth": 0.4968,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 1018.7186,
+      "multiples": {
+        "EV/EBITDA": 19.0213,
+        "EV/Revenue": 1.1776,
+        "EV/EBIT": 34.7547
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1844,
+        "margin": 0.1046,
+        "customer": 0.0,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "comparable revenue scale",
+        "same export profile"
+      ],
+      "differences": [
+        "customer mixed vs B2B"
+      ]
+    },
+    {
+      "duns": "208358",
+      "name": "Hutti Gold Mines Co. Ltd.",
+      "score": 0.7851,
+      "weight": 0.856,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 958.3184,
+      "ebitda_margin": 0.2737,
+      "revenue_growth": null,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 1962.8223,
+      "multiples": {
+        "EV/EBITDA": 7.4842,
+        "EV/Revenue": 2.0482,
+        "EV/EBIT": 8.8964
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1685,
+        "margin": 0.0366,
         "customer": 0.15,
         "export": 0.03
       },
       "selected_because": [
-        "same NAICS subsector 333",
-        "similar EBITDA margin",
+        "same NAICS subsector 190",
+        "comparable revenue scale",
+        "same customer type (B2B)"
+      ],
+      "differences": []
+    },
+    {
+      "duns": "208413",
+      "name": "IREL (India) Ltd.",
+      "score": 0.7587,
+      "weight": 0.797,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 1843.4422,
+      "ebitda_margin": 0.5278,
+      "revenue_growth": -0.1234,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 3546.8211,
+      "multiples": {
+        "EV/EBITDA": 3.6452,
+        "EV/Revenue": 1.924,
+        "EV/EBIT": 3.8971
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1087,
+        "margin": 0.0,
+        "customer": 0.15,
+        "export": 0.1
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
+        "same customer type (B2B)",
+        "same export profile"
+      ],
+      "differences": [
+        "revenue ₹1843 Cr vs ₹795 Cr"
+      ]
+    },
+    {
+      "duns": "208741",
+      "name": "Mineral Exploration and Consultancy Ltd.",
+      "score": 0.7555,
+      "weight": 0.79,
+      "borderline": true,
+      "listed": false,
+      "city": "IN-19",
+      "revenue_cr": 370.5617,
+      "ebitda_margin": 0.2398,
+      "revenue_growth": 0.1727,
+      "ev_basis": "book",
+      "market_ev_cr": null,
+      "market_cap_cr": null,
+      "book_ev_cr": 789.8926,
+      "multiples": {
+        "EV/EBITDA": 8.8908,
+        "EV/Revenue": 2.1316,
+        "EV/EBIT": 10.3033
+      },
+      "components": {
+        "industry": 0.4,
+        "scale": 0.1135,
+        "margin": 0.062,
+        "customer": 0.15,
+        "export": 0.03
+      },
+      "selected_because": [
+        "same NAICS subsector 190",
         "same customer type (B2B)"
       ],
       "differences": [
-        "revenue ₹8589 Cr vs ₹5874 Cr"
+        "revenue ₹371 Cr vs ₹795 Cr"
       ]
     }
   ],
-  "peers_ranked_count": 53,
+  "peers_ranked_count": 6832,
   "rejected": [
     {
-      "duns": "INW00550000",
-      "name": "Metro Wholesale Distributors",
-      "reason": "operating_model mismatch (distributor vs manufacturer)",
-      "operating_model": "distributor",
+      "duns": "100003",
+      "name": "Aegis Logistics Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
       "value_chain": "finished_goods",
       "major_industry": "F"
     },
     {
-      "duns": "INW00560000",
-      "name": "Prime Industrial Traders",
-      "reason": "operating_model mismatch (distributor vs manufacturer)",
-      "operating_model": "distributor",
+      "duns": "100014",
+      "name": "Utique Enterprises Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
       "value_chain": "finished_goods",
       "major_industry": "F"
     },
     {
-      "duns": "INW00570000",
-      "name": "Sterling Steel Billets",
+      "duns": "100020",
+      "name": "Bombay Dyeing And Manufacturing Company Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "D"
+    },
+    {
+      "duns": "100034",
+      "name": "Bajaj Finance Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100040",
+      "name": "Aditya Birla Real Estate Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "C"
+    },
+    {
+      "duns": "100043",
+      "name": "Bata India Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100048",
+      "name": "BEML Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "C"
+    },
+    {
+      "duns": "100052",
+      "name": "Bhansali Engineering Polymers Ltd.",
       "reason": "value_chain mismatch (raw_material vs finished_goods)",
       "operating_model": "manufacturer",
       "value_chain": "raw_material",
       "major_industry": "D"
     },
     {
-      "duns": "INW00580000",
-      "name": "UrbanMart Retail Stores",
+      "duns": "100069",
+      "name": "Quest Capital Markets Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100084",
+      "name": "CESC Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "U"
+    },
+    {
+      "duns": "100092",
+      "name": "CRISIL Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100096",
+      "name": "Dabur India Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100101",
+      "name": "Arvind Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "D"
+    },
+    {
+      "duns": "100104",
+      "name": "Hindustan Petroleum Corporation Ltd.",
+      "reason": "operating_model mismatch (distributor vs manufacturer)",
+      "operating_model": "distributor",
+      "value_chain": "finished_goods",
+      "major_industry": "U"
+    },
+    {
+      "duns": "100106",
+      "name": "IFCI Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100109",
+      "name": "Mangalore Refinery And Petrochemicals Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "U"
+    },
+    {
+      "duns": "100110",
+      "name": "Chennai Petroleum Corporation Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "U"
+    },
+    {
+      "duns": "100111",
+      "name": "Reliance Capital Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100112",
+      "name": "State Bank Of India",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100114",
+      "name": "Titan Company Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100116",
+      "name": "IDBI Bank Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100134",
+      "name": "Nayara Energy Ltd.",
+      "reason": "major_industry mismatch (U vs D)",
+      "operating_model": "manufacturer",
+      "value_chain": "finished_goods",
+      "major_industry": "U"
+    },
+    {
+      "duns": "100139",
+      "name": "Fedders Electric & Engineering Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100141",
+      "name": "Ferro Alloys Corporation Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "raw_material",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100142",
+      "name": "FGP Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "T"
+    },
+    {
+      "duns": "100143",
+      "name": "PH Capital Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100159",
+      "name": "Metroglobal Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "F"
+    },
+    {
+      "duns": "100173",
+      "name": "GFL Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100180",
+      "name": "HDFC Bank Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100183",
+      "name": "HFCL Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "C"
+    },
+    {
+      "duns": "100184",
+      "name": "Himadri Speciality Chemical Ltd.",
+      "reason": "major_industry mismatch (I vs D)",
+      "operating_model": "manufacturer",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100186",
+      "name": "Hindustan Oil Exploration Company Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "U"
+    },
+    {
+      "duns": "100187",
+      "name": "AGI Greenpac Ltd.",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "D"
+    },
+    {
+      "duns": "100193",
+      "name": "HLV Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100202",
+      "name": "India Lease Development Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100206",
+      "name": "Margo Finance Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100209",
+      "name": "Infosys Ltd.",
+      "reason": "operating_model mismatch (service vs manufacturer)",
+      "operating_model": "service",
+      "value_chain": "finished_goods",
+      "major_industry": "I"
+    },
+    {
+      "duns": "100213",
+      "name": "International Travel House Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "T"
+    },
+    {
+      "duns": "100226",
+      "name": "Consolidated Finvest & Holdings Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100247",
+      "name": "Kotak Mahindra Bank Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100251",
+      "name": "Trent Ltd.",
       "reason": "operating_model mismatch (retailer vs manufacturer)",
       "operating_model": "retailer",
       "value_chain": "finished_goods",
       "major_industry": "G"
     },
     {
-      "duns": "INW00590000",
-      "name": "Insight Engineering Consulting",
-      "reason": "operating_model mismatch (service vs manufacturer)",
-      "operating_model": "service",
+      "duns": "100253",
+      "name": "LIC Housing Finance Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100262",
+      "name": "Hybrid Financial Services Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100266",
+      "name": "Maharashtra Scooters Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100267",
+      "name": "Majestic Auto Ltd.",
+      "reason": "major_industry mismatch (T vs D)",
+      "operating_model": "manufacturer",
+      "value_chain": "finished_goods",
+      "major_industry": "T"
+    },
+    {
+      "duns": "100270",
+      "name": "Baroda Rayon Corporation Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "C"
+    },
+    {
+      "duns": "100271",
+      "name": "Max Financial Services Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
+    },
+    {
+      "duns": "100285",
+      "name": "SpiceJet Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
+      "value_chain": "finished_goods",
+      "major_industry": "T"
+    },
+    {
+      "duns": "100300",
+      "name": "Grasim Industries Ltd.",
+      "reason": "operating_model mismatch (unknown vs manufacturer)",
+      "operating_model": "unknown",
       "value_chain": "finished_goods",
       "major_industry": "I"
+    },
+    {
+      "duns": "100302",
+      "name": "Piramal Enterprises Ltd. - (Amalgamated)",
+      "reason": "operating_model mismatch (retailer vs manufacturer)",
+      "operating_model": "retailer",
+      "value_chain": "finished_goods",
+      "major_industry": "N"
     }
   ],
-  "rejected_total": 5,
+  "rejected_total": 6786,
   "valuation": {
     "headline_method": "EV/EBITDA",
     "methods": [
       {
         "method": "EV/EBITDA",
-        "target_driver": 785.01,
-        "ev_basis": "market",
-        "n_peers": 11,
-        "n_multiples": 10,
-        "effective_n": 10.0,
+        "target_driver": 97.3552,
+        "ev_basis": "sector-calibrated",
+        "n_peers": 15,
+        "n_multiples": 14,
+        "effective_n": 13.18,
         "n_outliers_dropped": 1,
-        "range_basis": "positioned at margin P27 (band P7–P47)",
-        "multiple_p25": 14.9482,
-        "multiple_median": 16.1421,
-        "multiple_p75": 16.8661,
-        "ev_low_cr": 11734.5207,
-        "ev_mid_cr": 12671.7466,
-        "ev_high_cr": 13240.0255,
-        "equity_low_cr": 10404.1407,
-        "equity_mid_cr": 11341.3666,
-        "equity_high_cr": 11909.6455
+        "range_basis": "positioned at margin P40 (band P20–P60)",
+        "multiple_p25": 7.2842,
+        "multiple_median": 8.1621,
+        "multiple_p75": 18.9211,
+        "ev_low_cr": 709.1523,
+        "ev_mid_cr": 794.6242,
+        "ev_high_cr": 1842.0719,
+        "equity_low_cr": null,
+        "equity_mid_cr": null,
+        "equity_high_cr": null
       },
       {
         "method": "EV/Revenue",
-        "target_driver": 5874.35,
-        "ev_basis": "market",
-        "n_peers": 11,
-        "n_multiples": 11,
-        "effective_n": 11.0,
-        "n_outliers_dropped": 0,
-        "range_basis": "positioned at margin P27 (band P7–P47)",
-        "multiple_p25": 1.7185,
-        "multiple_median": 2.3935,
-        "multiple_p75": 2.8716,
-        "ev_low_cr": 10095.0836,
-        "ev_mid_cr": 14059.9763,
-        "ev_high_cr": 16868.7717,
-        "equity_low_cr": 8764.7036,
-        "equity_mid_cr": 12729.5963,
-        "equity_high_cr": 15538.3917
+        "target_driver": 794.9198,
+        "ev_basis": "sector-calibrated",
+        "n_peers": 15,
+        "n_multiples": 14,
+        "effective_n": 13.18,
+        "n_outliers_dropped": 1,
+        "range_basis": "positioned at margin P40 (band P20–P60)",
+        "multiple_p25": 1.4528,
+        "multiple_median": 1.7541,
+        "multiple_p75": 3.812,
+        "ev_low_cr": 1154.8342,
+        "ev_mid_cr": 1394.3373,
+        "ev_high_cr": 3030.2735,
+        "equity_low_cr": null,
+        "equity_mid_cr": null,
+        "equity_high_cr": null
       },
       {
         "method": "EV/EBIT",
-        "target_driver": 445.95,
-        "ev_basis": "market",
-        "n_peers": 11,
-        "n_multiples": 11,
-        "effective_n": 11.0,
-        "n_outliers_dropped": 0,
-        "range_basis": "positioned at margin P27 (band P7–P47)",
-        "multiple_p25": 20.4841,
-        "multiple_median": 22.2518,
-        "multiple_p75": 23.077,
-        "ev_low_cr": 9134.881,
-        "ev_mid_cr": 9923.1753,
-        "ev_high_cr": 10291.187,
-        "equity_low_cr": 7804.501,
-        "equity_mid_cr": 8592.7953,
-        "equity_high_cr": 8960.807
+        "target_driver": 82.2875,
+        "ev_basis": "sector-calibrated",
+        "n_peers": 15,
+        "n_multiples": 13,
+        "effective_n": 12.22,
+        "n_outliers_dropped": 2,
+        "range_basis": "positioned at margin P40 (band P20–P60)",
+        "multiple_p25": 6.6104,
+        "multiple_median": 8.8865,
+        "multiple_p75": 14.6006,
+        "ev_low_cr": 543.9556,
+        "ev_mid_cr": 731.2467,
+        "ev_high_cr": 1201.4455,
+        "equity_low_cr": null,
+        "equity_mid_cr": null,
+        "equity_high_cr": null
       }
     ],
-    "net_debt_cr": 1330.38,
+    "net_debt_cr": null,
     "discount": 0.0,
     "discount_reason": "no DLOM — target is listed/public (liquid equity)",
-    "equity_low_cr": 10404.1407,
-    "equity_mid_cr": 11341.3666,
-    "equity_high_cr": 11909.6455,
+    "equity_low_cr": null,
+    "equity_mid_cr": null,
+    "equity_high_cr": null,
     "peers_used": [
       {
-        "duns": "INA00040000",
-        "name": "Bharat Turbine Controls",
-        "score": 0.9661,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Chennai",
-        "revenue_cr": 6739.01,
-        "ebitda_margin": 0.1205,
-        "revenue_growth": 0.1032,
-        "ev_basis": "market",
-        "market_ev_cr": 10928.46,
-        "market_cap_cr": 11311.89,
-        "book_ev_cr": 7137.53,
-        "multiples": {
-          "EV/EBITDA": 13.4627,
-          "EV/Revenue": 1.6217,
-          "EV/EBIT": 21.7955
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1759,
-          "margin": 0.1402,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INC00480000",
-        "name": "Mather Platt Fluid",
-        "score": 0.9502,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Ghaziabad",
-        "revenue_cr": 6545.91,
-        "ebitda_margin": 0.174,
-        "revenue_growth": 0.2228,
-        "ev_basis": "market",
-        "market_ev_cr": 22150.64,
-        "market_cap_cr": 21684.45,
-        "book_ev_cr": 8187.5,
-        "multiples": {
-          "EV/EBITDA": 19.4466,
-          "EV/Revenue": 3.3839,
-          "EV/EBIT": 27.2024
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1805,
-          "margin": 0.1197,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INA00060000",
-        "name": "Greaves Governor Systems",
-        "score": 0.9481,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Hyderabad",
-        "revenue_cr": 5376.17,
-        "ebitda_margin": 0.1811,
-        "revenue_growth": 0.2647,
-        "ev_basis": "market",
-        "market_ev_cr": 16414.42,
-        "market_cap_cr": 15754.71,
-        "book_ev_cr": 6622.13,
-        "multiples": {
-          "EV/EBITDA": 16.858,
-          "EV/Revenue": 3.0532,
-          "EV/EBIT": 20.4727
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1837,
-          "margin": 0.1144,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INC00460000",
-        "name": "Darling Pumps Machinery",
-        "score": 0.9472,
+        "duns": "293984",
+        "name": "Jindal Coke Ltd.",
+        "score": 0.8962,
         "weight": 1.0,
         "borderline": false,
         "listed": false,
-        "city": "Ahmedabad",
-        "revenue_cr": 8225.79,
-        "ebitda_margin": 0.1304,
-        "revenue_growth": 0.2534,
+        "city": "IN-20",
+        "revenue_cr": 1871.3256,
+        "ebitda_margin": 0.1071,
+        "revenue_growth": 0.1897,
         "ev_basis": "book",
         "market_ev_cr": null,
         "market_cap_cr": null,
-        "book_ev_cr": 8245.1,
+        "book_ev_cr": 643.3136,
         "multiples": {
-          "EV/EBITDA": 7.6855,
-          "EV/Revenue": 1.0023,
-          "EV/EBIT": 11.1108
+          "EV/EBITDA": 3.2096,
+          "EV/Revenue": 0.3438,
+          "EV/EBIT": 3.7966
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1496,
-          "margin": 0.1476,
+          "scale": 0.1078,
+          "margin": 0.1384,
           "customer": 0.15,
           "export": 0.1
         },
         "selected_because": [
-          "same NAICS subsector 333",
+          "same NAICS subsector 190",
           "similar EBITDA margin",
           "same customer type (B2B)",
           "same export profile"
         ],
         "differences": [
-          "revenue ₹8226 Cr vs ₹5874 Cr"
+          "revenue ₹1871 Cr vs ₹795 Cr"
         ]
       },
       {
-        "duns": "INA00170000",
-        "name": "Deccan Engine Controls",
-        "score": 0.943,
+        "duns": "208645",
+        "name": "MSPL Ltd.",
+        "score": 0.8935,
         "weight": 1.0,
         "borderline": false,
-        "listed": true,
-        "city": "Pune",
-        "revenue_cr": 7340.48,
-        "ebitda_margin": 0.1611,
-        "revenue_growth": 0.1694,
-        "ev_basis": "market",
-        "market_ev_cr": 19052.53,
-        "market_cap_cr": 18975.29,
-        "book_ev_cr": 8342.82,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 1339.9901,
+        "ebitda_margin": 0.0719,
+        "revenue_growth": -0.0875,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 5507.0276,
         "multiples": {
-          "EV/EBITDA": 16.11,
-          "EV/Revenue": 2.5955,
-          "EV/EBIT": 24.9317
+          "EV/EBITDA": 57.1378,
+          "EV/Revenue": 4.1098,
+          "EV/EBIT": 364.0264
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1636,
-          "margin": 0.1294,
+          "scale": 0.1314,
+          "margin": 0.1121,
           "customer": 0.15,
           "export": 0.1
         },
         "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)",
-          "same export profile"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INC00440000",
-        "name": "Texmo Pumps Machinery",
-        "score": 0.9224,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Ghaziabad",
-        "revenue_cr": 5841.7,
-        "ebitda_margin": 0.1249,
-        "revenue_growth": 0.0856,
-        "ev_basis": "market",
-        "market_ev_cr": 11897.56,
-        "market_cap_cr": 11361.44,
-        "book_ev_cr": 6647.54,
-        "multiples": {
-          "EV/EBITDA": 16.3027,
-          "EV/Revenue": 2.0367,
-          "EV/EBIT": 22.9918
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1989,
-          "margin": 0.1435,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INC00450000",
-        "name": "Aqua Pump Industries",
-        "score": 0.918,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Vadodara",
-        "revenue_cr": 7927.91,
-        "ebitda_margin": 0.1815,
-        "revenue_growth": 0.0929,
-        "ev_basis": "market",
-        "market_ev_cr": 28425.47,
-        "market_cap_cr": 27041.94,
-        "book_ev_cr": 11742.06,
-        "multiples": {
-          "EV/EBITDA": 19.7542,
-          "EV/Revenue": 3.5855,
-          "EV/EBIT": 24.6494
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1539,
-          "margin": 0.1141,
-          "customer": 0.15,
-          "export": 0.1
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
+          "same NAICS subsector 190",
           "similar EBITDA margin",
           "same customer type (B2B)",
           "same export profile"
         ],
         "differences": [
-          "revenue ₹7928 Cr vs ₹5874 Cr"
+          "revenue ₹1340 Cr vs ₹795 Cr"
         ]
       },
       {
-        "duns": "INA00030000",
-        "name": "Cummins Governor Controls",
-        "score": 0.8943,
+        "duns": "288306",
+        "name": "VPR Mining Infrastructure Pvt Ltd.",
+        "score": 0.8842,
         "weight": 1.0,
         "borderline": false,
         "listed": false,
-        "city": "Coimbatore",
-        "revenue_cr": 4757.0,
-        "ebitda_margin": 0.1348,
-        "revenue_growth": 0.1653,
+        "city": "IN-20",
+        "revenue_cr": 1864.1273,
+        "ebitda_margin": 0.1542,
+        "revenue_growth": 0.0345,
         "ev_basis": "book",
         "market_ev_cr": null,
         "market_cap_cr": null,
-        "book_ev_cr": 4977.72,
+        "book_ev_cr": 967.6309,
         "multiples": {
-          "EV/EBITDA": 7.7613,
-          "EV/Revenue": 1.0464,
-          "EV/EBIT": 12.1568
+          "EV/EBITDA": 3.3653,
+          "EV/Revenue": 0.5191,
+          "EV/EBIT": 5.0091
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1652,
-          "margin": 0.1491,
+          "scale": 0.108,
+          "margin": 0.1262,
           "customer": 0.15,
-          "export": 0.03
+          "export": 0.1
         },
         "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
+          "same NAICS subsector 190",
           "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INA00180000",
-        "name": "Elgi Governor Controls",
-        "score": 0.8873,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Coimbatore",
-        "revenue_cr": 5987.79,
-        "ebitda_margin": 0.1854,
-        "revenue_growth": 0.0599,
-        "ev_basis": "market",
-        "market_ev_cr": 18926.79,
-        "market_cap_cr": 17943.66,
-        "book_ev_cr": 8849.1,
-        "multiples": {
-          "EV/EBITDA": 17.0462,
-          "EV/Revenue": 3.1609,
-          "EV/EBIT": 24.7915
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1962,
-          "margin": 0.1111,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INC00380000",
-        "name": "KSB Pumps India",
-        "score": 0.8828,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": true,
-        "city": "Coimbatore",
-        "revenue_cr": 5356.16,
-        "ebitda_margin": 0.174,
-        "revenue_growth": -0.0394,
-        "ev_basis": "market",
-        "market_ev_cr": 17185.89,
-        "market_cap_cr": 17006.15,
-        "book_ev_cr": 7076.61,
-        "multiples": {
-          "EV/EBITDA": 18.437,
-          "EV/Revenue": 3.2086,
-          "EV/EBIT": 26.8765
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1831,
-          "margin": 0.1197,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INA00090000",
-        "name": "BHEL Turbine Controls",
-        "score": 0.8826,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": false,
-        "city": "Hyderabad",
-        "revenue_cr": 4741.28,
-        "ebitda_margin": 0.1497,
-        "revenue_growth": 0.123,
-        "ev_basis": "book",
-        "market_ev_cr": null,
-        "market_cap_cr": null,
-        "book_ev_cr": 7204.36,
-        "multiples": {
-          "EV/EBITDA": 10.147,
-          "EV/Revenue": 1.5195,
-          "EV/EBIT": 15.8711
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1647,
-          "margin": 0.1379,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "comparable revenue scale",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
-        ],
-        "differences": []
-      },
-      {
-        "duns": "INA00070000",
-        "name": "Triveni Turbine Controls",
-        "score": 0.8807,
-        "weight": 1.0,
-        "borderline": false,
-        "listed": false,
-        "city": "Bengaluru",
-        "revenue_cr": 7953.51,
-        "ebitda_margin": 0.1298,
-        "revenue_growth": 0.009,
-        "ev_basis": "book",
-        "market_ev_cr": null,
-        "market_cap_cr": null,
-        "book_ev_cr": 10766.36,
-        "multiples": {
-          "EV/EBITDA": 10.4271,
-          "EV/Revenue": 1.3537,
-          "EV/EBIT": 17.8006
-        },
-        "components": {
-          "industry": 0.4,
-          "scale": 0.1535,
-          "margin": 0.1472,
-          "customer": 0.15,
-          "export": 0.03
-        },
-        "selected_because": [
-          "same NAICS subsector 333",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
+          "same customer type (B2B)",
+          "same export profile"
         ],
         "differences": [
-          "revenue ₹7954 Cr vs ₹5874 Cr"
+          "revenue ₹1864 Cr vs ₹795 Cr"
         ]
       },
       {
-        "duns": "INA00150000",
-        "name": "Sanghvi Engine Equipment",
-        "score": 0.8687,
+        "duns": "221569",
+        "name": "Universal MEP Projects & Engineering Services Ltd.",
+        "score": 0.8694,
         "weight": 1.0,
         "borderline": false,
-        "listed": true,
-        "city": "Chennai",
-        "revenue_cr": 4950.85,
-        "ebitda_margin": 0.1764,
-        "revenue_growth": 0.1598,
-        "ev_basis": "market",
-        "market_ev_cr": 14762.5,
-        "market_cap_cr": 13688.07,
-        "book_ev_cr": 7191.29,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 2839.9222,
+        "ebitda_margin": 0.0977,
+        "revenue_growth": -0.0099,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 752.1716,
         "multiples": {
-          "EV/EBITDA": 16.9066,
-          "EV/Revenue": 2.9818,
-          "EV/EBIT": 20.5214
+          "EV/EBITDA": 2.7116,
+          "EV/Revenue": 0.2649,
+          "EV/EBIT": 2.7371
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1708,
-          "margin": 0.1179,
+          "scale": 0.088,
+          "margin": 0.1314,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹2840 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "226306",
+        "name": "AMPL Resources Pvt Ltd.",
+        "score": 0.8619,
+        "weight": 1.0,
+        "borderline": false,
+        "listed": false,
+        "city": "IN-20",
+        "revenue_cr": 952.7922,
+        "ebitda_margin": 0.1725,
+        "revenue_growth": null,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 644.8805,
+        "multiples": {
+          "EV/EBITDA": 3.9247,
+          "EV/Revenue": 0.6768,
+          "EV/EBIT": 5.257
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1694,
+          "margin": 0.1125,
           "customer": 0.15,
           "export": 0.03
         },
         "selected_because": [
-          "same NAICS subsector 333",
+          "same NAICS subsector 190",
           "comparable revenue scale",
           "similar EBITDA margin",
           "same customer type (B2B)"
@@ -1249,193 +1454,489 @@
         "differences": []
       },
       {
-        "duns": "INA00120000",
-        "name": "Apex Engine Controls",
-        "score": 0.8648,
+        "duns": "239175",
+        "name": "Sigma Minerals Ltd.",
+        "score": 0.8569,
         "weight": 1.0,
         "borderline": false,
-        "listed": true,
-        "city": "Coimbatore",
-        "revenue_cr": 4556.73,
-        "ebitda_margin": 0.1666,
-        "revenue_growth": 0.1733,
-        "ev_basis": "market",
-        "market_ev_cr": 12217.64,
-        "market_cap_cr": 11369.98,
-        "book_ev_cr": 4890.57,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 357.4767,
+        "ebitda_margin": 0.195,
+        "revenue_growth": 0.0672,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 219.2606,
         "multiples": {
-          "EV/EBITDA": 16.0981,
-          "EV/Revenue": 2.6812,
-          "EV/EBIT": 23.1263
+          "EV/EBITDA": 3.146,
+          "EV/Revenue": 0.6134,
+          "EV/EBIT": 3.4477
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1595,
-          "margin": 0.1253,
+          "scale": 0.1113,
+          "margin": 0.0956,
           "customer": 0.15,
-          "export": 0.03
+          "export": 0.1
         },
         "selected_because": [
-          "same NAICS subsector 333",
-          "similar EBITDA margin",
-          "same customer type (B2B)"
+          "same NAICS subsector 190",
+          "same customer type (B2B)",
+          "same export profile"
         ],
         "differences": [
-          "revenue ₹4557 Cr vs ₹5874 Cr"
+          "revenue ₹357 Cr vs ₹795 Cr"
         ]
       },
       {
-        "duns": "INA00100000",
-        "name": "Shakti Engine Governors",
-        "score": 0.861,
+        "duns": "102015",
+        "name": "ASI Industries Ltd.",
+        "score": 0.8499,
         "weight": 1.0,
-        "borderline": false,
+        "borderline": true,
         "listed": true,
-        "city": "Bengaluru",
-        "revenue_cr": 8588.67,
-        "ebitda_margin": 0.1521,
-        "revenue_growth": 0.1379,
-        "ev_basis": "market",
-        "market_ev_cr": 19229.28,
-        "market_cap_cr": 18916.76,
-        "book_ev_cr": 8407.38,
+        "city": "IN-19",
+        "revenue_cr": 154.7656,
+        "ebitda_margin": 0.1573,
+        "revenue_growth": 0.0696,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 272.8812,
         "multiples": {
-          "EV/EBITDA": 14.7183,
-          "EV/Revenue": 2.2389,
-          "EV/EBIT": 22.8485
+          "EV/EBITDA": 11.2095,
+          "EV/Revenue": 1.7632,
+          "EV/EBIT": 13.9087
         },
         "components": {
           "industry": 0.4,
-          "scale": 0.1449,
-          "margin": 0.1361,
+          "scale": 0.076,
+          "margin": 0.1239,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹155 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "285476",
+        "name": "BGR Mining & Infra Pvt Ltd.",
+        "score": 0.8428,
+        "weight": 0.984,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-20",
+        "revenue_cr": 3865.0813,
+        "ebitda_margin": 0.1687,
+        "revenue_growth": 0.3102,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 2008.9316,
+        "multiples": {
+          "EV/EBITDA": 3.0809,
+          "EV/Revenue": 0.5198,
+          "EV/EBIT": 3.7271
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.0775,
+          "margin": 0.1153,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹3865 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "215277",
+        "name": "De Beers India Pvt Ltd.",
+        "score": 0.8373,
+        "weight": 0.972,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 111.7373,
+        "ebitda_margin": 0.1631,
+        "revenue_growth": null,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 47.2469,
+        "multiples": {
+          "EV/EBITDA": 2.5921,
+          "EV/Revenue": 0.4228,
+          "EV/EBIT": 6.6623
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.0677,
+          "margin": 0.1196,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹112 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "240146",
+        "name": "Peethambra Granites Pvt Ltd.",
+        "score": 0.8319,
+        "weight": 0.96,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 49.3395,
+        "ebitda_margin": 0.0941,
+        "revenue_growth": null,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 89.8454,
+        "multiples": {
+          "EV/EBITDA": 19.3424,
+          "EV/Revenue": 1.821,
+          "EV/EBIT": 38.6881
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.0532,
+          "margin": 0.1287,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "similar EBITDA margin",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹49 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "212764",
+        "name": "Brahmani River Pellet Ltd.",
+        "score": 0.8309,
+        "weight": 0.958,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-20",
+        "revenue_cr": 2466.26,
+        "ebitda_margin": 0.0387,
+        "revenue_growth": -0.0031,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 1475.39,
+        "multiples": {
+          "EV/EBITDA": 15.4669,
+          "EV/Revenue": 0.5982,
+          "EV/EBIT": 129.9903
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.0938,
+          "margin": 0.0871,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹2466 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "221975",
+        "name": "Chowgule & Co Pvt Ltd",
+        "score": 0.789,
+        "weight": 0.864,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 865.0978,
+        "ebitda_margin": 0.0619,
+        "revenue_growth": 0.4968,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 1018.7186,
+        "multiples": {
+          "EV/EBITDA": 19.0213,
+          "EV/Revenue": 1.1776,
+          "EV/EBIT": 34.7547
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1844,
+          "margin": 0.1046,
+          "customer": 0.0,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "comparable revenue scale",
+          "same export profile"
+        ],
+        "differences": [
+          "customer mixed vs B2B"
+        ]
+      },
+      {
+        "duns": "208358",
+        "name": "Hutti Gold Mines Co. Ltd.",
+        "score": 0.7851,
+        "weight": 0.856,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 958.3184,
+        "ebitda_margin": 0.2737,
+        "revenue_growth": null,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 1962.8223,
+        "multiples": {
+          "EV/EBITDA": 7.4842,
+          "EV/Revenue": 2.0482,
+          "EV/EBIT": 8.8964
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1685,
+          "margin": 0.0366,
           "customer": 0.15,
           "export": 0.03
         },
         "selected_because": [
-          "same NAICS subsector 333",
-          "similar EBITDA margin",
+          "same NAICS subsector 190",
+          "comparable revenue scale",
+          "same customer type (B2B)"
+        ],
+        "differences": []
+      },
+      {
+        "duns": "208413",
+        "name": "IREL (India) Ltd.",
+        "score": 0.7587,
+        "weight": 0.797,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 1843.4422,
+        "ebitda_margin": 0.5278,
+        "revenue_growth": -0.1234,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 3546.8211,
+        "multiples": {
+          "EV/EBITDA": 3.6452,
+          "EV/Revenue": 1.924,
+          "EV/EBIT": 3.8971
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1087,
+          "margin": 0.0,
+          "customer": 0.15,
+          "export": 0.1
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
+          "same customer type (B2B)",
+          "same export profile"
+        ],
+        "differences": [
+          "revenue ₹1843 Cr vs ₹795 Cr"
+        ]
+      },
+      {
+        "duns": "208741",
+        "name": "Mineral Exploration and Consultancy Ltd.",
+        "score": 0.7555,
+        "weight": 0.79,
+        "borderline": true,
+        "listed": false,
+        "city": "IN-19",
+        "revenue_cr": 370.5617,
+        "ebitda_margin": 0.2398,
+        "revenue_growth": 0.1727,
+        "ev_basis": "book",
+        "market_ev_cr": null,
+        "market_cap_cr": null,
+        "book_ev_cr": 789.8926,
+        "multiples": {
+          "EV/EBITDA": 8.8908,
+          "EV/Revenue": 2.1316,
+          "EV/EBIT": 10.3033
+        },
+        "components": {
+          "industry": 0.4,
+          "scale": 0.1135,
+          "margin": 0.062,
+          "customer": 0.15,
+          "export": 0.03
+        },
+        "selected_because": [
+          "same NAICS subsector 190",
           "same customer type (B2B)"
         ],
         "differences": [
-          "revenue ₹8589 Cr vs ₹5874 Cr"
+          "revenue ₹371 Cr vs ₹795 Cr"
         ]
       }
     ],
-    "ev_basis": "Primary basis: market enterprise value (market cap + net debt) of 11 LISTED comparables. Book capital-employed proxy (4 unlisted comps) is used only as a per-method fallback when fewer than 3 listed comps exist for a metric. Peer multiples are similarity-weighted (borderline comps count less).",
-    "quality_percentile": 0.267,
-    "positioning": "target EBITDA margin 13.4% ranks at the 27th percentile of the peer set → central multiple taken at peer P27 (not the flat median).",
-    "market_cross_check": {
-      "own_market_cap_cr": 10259.19,
-      "own_ev_ebitda": 14.76,
-      "comps_mid_equity_cr": 11341.3666,
-      "delta_pct": 10.5,
-      "within_25pct": true
-    },
-    "effective_peer_count": 15.0,
-    "n_borderline": 0,
+    "ev_basis": "Primary basis: market enterprise value (market cap + net debt) of 0 LISTED comparables. Book capital-employed proxy (15 unlisted comps) is used only as a per-method fallback when fewer than 3 listed comps exist for a metric. Peer multiples are similarity-weighted (borderline comps count less). Multiples are sector-calibrated — peer book distributions re-levelled to published trading anchors (sector 'mining' trading anchors: ev/ebitda 9.0x · ev/sales 1.9x · ev/ebit 11.2x, size factor ×1.0 (jul-2026 vintage, calibrated to observed nse sector points)); replace the anchor table with a live market feed for exact levels.",
+    "quality_percentile": 0.4,
+    "positioning": "target EBITDA margin 12.2% ranks at the 40th percentile of the peer set → central multiple taken at peer P40 (not the flat median).",
+    "market_cross_check": null,
+    "effective_peer_count": 14.18,
+    "n_borderline": 9,
     "comparability_adjustment": {
       "applied": false,
       "direction": "none",
       "pct": 0.0,
-      "target_revenue_cr": 5874.35,
-      "peer_revenue_min_cr": 4556.73,
-      "peer_revenue_max_cr": 8588.67,
+      "target_revenue_cr": 794.9198,
+      "peer_revenue_min_cr": 49.34,
+      "peer_revenue_max_cr": 3865.08,
       "reason": "target size within the peer scale band — no adjustment"
     },
-    "transaction_analysis": {
-      "basis": "derived: trading-comps equity × control premium (no precedent-transaction database in the current data source)",
-      "control_premium_low": 0.2,
-      "control_premium_mid": 0.25,
-      "control_premium_high": 0.3,
-      "acquisition_equity_low_cr": 12484.97,
-      "acquisition_equity_mid_cr": 14176.71,
-      "acquisition_equity_high_cr": 15482.54,
-      "caveat": "Indicative only — what a CONTROL buyer might pay relative to the minority trading value above. Replace with observed precedent-transaction multiples when a deal database is integrated."
-    },
-    "notes": [],
-    "warnings": []
+    "transaction_analysis": null,
+    "equity_requires": [
+      "borrowings",
+      "cash"
+    ],
+    "notes": [
+      "multiples are SECTOR-CALIBRATED — peer book distributions re-levelled to published trading anchors (sector 'MINING' trading anchors: EV/EBITDA 9.0x · EV/Sales 1.9x · EV/EBIT 11.2x, size factor ×1.0 (Jul-2026 vintage, calibrated to observed NSE sector points)); replace the anchor table with a live market feed for exact levels",
+      "data-source caveat: Borrowings, cash and current liabilities are not in the source extract: net debt is treated as 0 with a warning, and capital employed is approximated by segment capital-employed where reported, else Net Worth.",
+      "data-source caveat: Market prices are not in the source extract: no trading multiples — the valuation runs on the disclosed book basis until a market-price feed is added."
+    ],
+    "warnings": [
+      "equity value withheld — borrowings & cash not in the data source and nothing is assumed. The enterprise-value range is reported; supply the missing figures (chat / enrichment) to bridge EV → equity."
+    ]
   },
   "confidence": {
-    "score": 0.805,
-    "label": "HIGH",
+    "score": 0.594,
+    "label": "MEDIUM",
     "breakdown": {
-      "profile": 0.19,
-      "peer_coverage": 0.2,
+      "profile": 0.16,
+      "peer_coverage": 0.189,
       "ebitda_positive": 0.1,
       "methods": 0.1,
-      "triangulation": 0.1,
-      "comp_tightness": 0.115
+      "triangulation": 0.0,
+      "comp_tightness": 0.045
     }
   },
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-19T16:01:42.623+00:00",
+      "ts": "2026-07-20T03:16:08.231+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
-      "detail": "pipeline start for query 'Woodward'",
+      "detail": "pipeline start for query '20 Microns Ltd.'",
       "data": {
         "methodology_version": "2.0.0",
-        "data_source": "Synthetic mock universe (59 companies, real D&B schema)"
+        "data_source": "Accord real extract (via realdata.db)"
       }
     },
     {
       "seq": 2,
-      "ts": "2026-07-19T16:01:42.623+00:00",
+      "ts": "2026-07-20T03:16:08.231+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
-      "detail": "search name='Woodward' country=IN",
+      "detail": "search name='20 Microns Ltd.'",
       "data": null
     },
     {
       "seq": 3,
-      "ts": "2026-07-19T16:01:42.623+00:00",
+      "ts": "2026-07-20T03:16:08.275+00:00",
       "stage": "resolve",
-      "level": "DECISION",
-      "code": "TARGET_RESOLVED",
-      "detail": "'Woodward' -> Woodward India Controls (DUNS INA00010000, confidence 8)",
+      "level": "INFO",
+      "code": "MATCH_CANDIDATES",
+      "detail": "2 candidates; selected highest confidence",
       "data": {
-        "query": "Woodward",
-        "duns": "INA00010000",
-        "confidence": 8
+        "candidates": 2,
+        "selected_confidence": 10
       }
     },
     {
       "seq": 4,
-      "ts": "2026-07-19T16:01:42.623+00:00",
-      "stage": "dnb",
-      "level": "INFO",
-      "code": "DNB_COMPANY_INFORMATION",
-      "detail": "duns=INA00010000 found=True",
-      "data": null
+      "ts": "2026-07-20T03:16:08.275+00:00",
+      "stage": "resolve",
+      "level": "DECISION",
+      "code": "TARGET_RESOLVED",
+      "detail": "'20 Microns Ltd.' -> 20 Microns Ltd. (DUNS 207635, confidence 10)",
+      "data": {
+        "query": "20 Microns Ltd.",
+        "duns": "207635",
+        "confidence": 10
+      }
     },
     {
       "seq": 5,
-      "ts": "2026-07-19T16:01:42.623+00:00",
+      "ts": "2026-07-20T03:16:08.275+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_FINANCIALS",
-      "detail": "duns=INA00010000 found=True",
+      "code": "DNB_COMPANY_INFORMATION",
+      "detail": "duns=207635 found=True",
       "data": null
     },
     {
       "seq": 6,
-      "ts": "2026-07-19T16:01:42.623+00:00",
+      "ts": "2026-07-20T03:16:08.275+00:00",
       "stage": "dnb",
       "level": "INFO",
-      "code": "DNB_COMPANY_MANAGEMENT",
-      "detail": "duns=INA00010000 found=True",
+      "code": "DNB_COMPANY_FINANCIALS",
+      "detail": "duns=207635 found=True",
       "data": null
     },
     {
       "seq": 7,
-      "ts": "2026-07-19T16:01:42.623+00:00",
+      "ts": "2026-07-20T03:16:08.275+00:00",
+      "stage": "dnb",
+      "level": "INFO",
+      "code": "DNB_COMPANY_MANAGEMENT",
+      "detail": "duns=207635 found=True",
+      "data": null
+    },
+    {
+      "seq": 8,
+      "ts": "2026-07-20T03:16:08.275+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
-      "detail": "Woodward India Controls: manufacturer/finished_goods/B2B (conf 0.95)",
+      "detail": "20 Microns Ltd.: manufacturer/finished_goods/B2B (conf 0.8)",
       "data": {
         "operating_model": "manufacturer",
         "value_chain": "finished_goods",
@@ -1443,180 +1944,549 @@
       }
     },
     {
-      "seq": 8,
-      "ts": "2026-07-19T16:01:42.623+00:00",
-      "stage": "validate",
-      "level": "INFO",
-      "code": "DATA_QUALITY_GRADE",
-      "detail": "data-quality grade A (score 1.0), valuable=True",
-      "data": {
-        "grade": "A",
-        "score": 1.0,
-        "valuable": true,
-        "missing": []
-      }
-    },
-    {
       "seq": 9,
-      "ts": "2026-07-19T16:01:42.626+00:00",
-      "stage": "universe",
-      "level": "INFO",
-      "code": "UNIVERSE_LOADED",
-      "detail": "loaded 59 candidate companies (audit-muted bulk build; per-company provenance available via lineage)",
+      "ts": "2026-07-20T03:16:08.275+00:00",
+      "stage": "validate",
+      "level": "WARN",
+      "code": "DATA_QUALITY_FAIL",
+      "detail": "debt: borrowings absent from source (net debt assumes 0)",
       "data": {
-        "count": 59,
-        "cache_key": "mock:59:seed0"
+        "field": "debt",
+        "level": "MEDIUM"
       }
     },
     {
       "seq": 10,
-      "ts": "2026-07-19T16:01:42.626+00:00",
-      "stage": "discover",
-      "level": "DECISION",
-      "code": "PEER_REJECTED",
-      "detail": "reject Metro Wholesale Distributors: operating_model mismatch (distributor vs manufacturer)",
+      "ts": "2026-07-20T03:16:08.275+00:00",
+      "stage": "validate",
+      "level": "WARN",
+      "code": "DATA_QUALITY_FAIL",
+      "detail": "cash: cash absent from source (net debt assumes 0)",
       "data": {
-        "duns": "INW00550000",
-        "reason": "operating_model mismatch (distributor vs manufacturer)"
+        "field": "cash",
+        "level": "LOW"
       }
     },
     {
       "seq": 11,
-      "ts": "2026-07-19T16:01:42.626+00:00",
-      "stage": "discover",
-      "level": "DECISION",
-      "code": "PEER_REJECTED",
-      "detail": "reject Prime Industrial Traders: operating_model mismatch (distributor vs manufacturer)",
+      "ts": "2026-07-20T03:16:08.275+00:00",
+      "stage": "validate",
+      "level": "INFO",
+      "code": "DATA_QUALITY_GRADE",
+      "detail": "data-quality grade A (score 0.93), valuable=True",
       "data": {
-        "duns": "INW00560000",
-        "reason": "operating_model mismatch (distributor vs manufacturer)"
+        "grade": "A",
+        "score": 0.93,
+        "valuable": true,
+        "missing": [
+          "debt",
+          "cash"
+        ]
       }
     },
     {
       "seq": 12,
-      "ts": "2026-07-19T16:01:42.626+00:00",
-      "stage": "discover",
-      "level": "DECISION",
-      "code": "PEER_REJECTED",
-      "detail": "reject Sterling Steel Billets: value_chain mismatch (raw_material vs finished_goods)",
+      "ts": "2026-07-20T03:16:09.091+00:00",
+      "stage": "universe",
+      "level": "INFO",
+      "code": "UNIVERSE_LOADED",
+      "detail": "loaded 13619 candidate companies (audit-muted bulk build; per-company provenance available via lineage)",
       "data": {
-        "duns": "INW00570000",
-        "reason": "value_chain mismatch (raw_material vs finished_goods)"
+        "count": 13619,
+        "cache_key": "real:C:\\Users\\Chandana\\OneDrive\\Desktop\\qwertyuiop\\valuation.project.full.pipeline\\realdata.db:2026-07-16T17:09:22+00:00"
       }
     },
     {
       "seq": 13,
-      "ts": "2026-07-19T16:01:42.626+00:00",
+      "ts": "2026-07-20T03:16:09.095+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
-      "detail": "reject UrbanMart Retail Stores: operating_model mismatch (retailer vs manufacturer)",
+      "detail": "reject Aegis Logistics Ltd.: operating_model mismatch (retailer vs manufacturer)",
       "data": {
-        "duns": "INW00580000",
+        "duns": "100003",
         "reason": "operating_model mismatch (retailer vs manufacturer)"
       }
     },
     {
       "seq": 14,
-      "ts": "2026-07-19T16:01:42.626+00:00",
+      "ts": "2026-07-20T03:16:09.095+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
-      "detail": "reject Insight Engineering Consulting: operating_model mismatch (service vs manufacturer)",
+      "detail": "reject Utique Enterprises Ltd.: operating_model mismatch (unknown vs manufacturer)",
       "data": {
-        "duns": "INW00590000",
-        "reason": "operating_model mismatch (service vs manufacturer)"
+        "duns": "100014",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
       }
     },
     {
       "seq": 15,
-      "ts": "2026-07-19T16:01:42.626+00:00",
+      "ts": "2026-07-20T03:16:09.095+00:00",
       "stage": "discover",
-      "level": "INFO",
-      "code": "PEERS_RANKED",
-      "detail": "53 peers passed the mismatch filter and were ranked; 5 rejected",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Bombay Dyeing And Manufacturing Company Ltd.: operating_model mismatch (retailer vs manufacturer)",
       "data": {
-        "ranked": 53,
-        "rejected": 5
+        "duns": "100020",
+        "reason": "operating_model mismatch (retailer vs manufacturer)"
       }
     },
     {
       "seq": 16,
-      "ts": "2026-07-19T16:01:42.626+00:00",
-      "stage": "value",
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
       "level": "DECISION",
-      "code": "QUALITY_POSITIONED",
-      "detail": "target EBITDA margin 13.4% ranks at the 27th percentile of the peer set → central multiple taken at peer P27 (not the flat median).",
+      "code": "PEER_REJECTED",
+      "detail": "reject Bajaj Finance Ltd.: operating_model mismatch (retailer vs manufacturer)",
       "data": {
-        "q_rank": 0.267,
-        "mid_q": 0.267,
-        "window": 0.2
+        "duns": "100034",
+        "reason": "operating_model mismatch (retailer vs manufacturer)"
       }
     },
     {
       "seq": 17,
-      "ts": "2026-07-19T16:01:42.626+00:00",
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Aditya Birla Real Estate Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100040",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 18,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Bata India Ltd.: operating_model mismatch (retailer vs manufacturer)",
+      "data": {
+        "duns": "100043",
+        "reason": "operating_model mismatch (retailer vs manufacturer)"
+      }
+    },
+    {
+      "seq": 19,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject BEML Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100048",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 20,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Bhansali Engineering Polymers Ltd.: value_chain mismatch (raw_material vs finished_goods)",
+      "data": {
+        "duns": "100052",
+        "reason": "value_chain mismatch (raw_material vs finished_goods)"
+      }
+    },
+    {
+      "seq": 21,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Quest Capital Markets Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100069",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 22,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject CESC Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100084",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 23,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject CRISIL Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100092",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 24,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Dabur India Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100096",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 25,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Arvind Ltd.: operating_model mismatch (retailer vs manufacturer)",
+      "data": {
+        "duns": "100101",
+        "reason": "operating_model mismatch (retailer vs manufacturer)"
+      }
+    },
+    {
+      "seq": 26,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Hindustan Petroleum Corporation Ltd.: operating_model mismatch (distributor vs manufacturer)",
+      "data": {
+        "duns": "100104",
+        "reason": "operating_model mismatch (distributor vs manufacturer)"
+      }
+    },
+    {
+      "seq": 27,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject IFCI Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100106",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 28,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Mangalore Refinery And Petrochemicals Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100109",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 29,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Chennai Petroleum Corporation Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100110",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 30,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Reliance Capital Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100111",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 31,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject State Bank Of India: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100112",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 32,
+      "ts": "2026-07-20T03:16:09.095+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEER_REJECTED",
+      "detail": "reject Titan Company Ltd.: operating_model mismatch (unknown vs manufacturer)",
+      "data": {
+        "duns": "100114",
+        "reason": "operating_model mismatch (unknown vs manufacturer)"
+      }
+    },
+    {
+      "seq": 33,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "discover",
+      "level": "DECISION",
+      "code": "PEERS_REJECTED_SUMMARY",
+      "detail": "6786 candidates rejected in total (first 20 detailed above); by check: major_industry 314, operating_model 6284, value_chain 188",
+      "data": {
+        "total": 6786,
+        "by_check": {
+          "operating_model": 6284,
+          "value_chain": 188,
+          "major_industry": 314
+        }
+      }
+    },
+    {
+      "seq": 34,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "discover",
+      "level": "INFO",
+      "code": "PEERS_RANKED",
+      "detail": "6832 peers passed the mismatch filter and were ranked; 6786 rejected",
+      "data": {
+        "ranked": 6832,
+        "rejected": 6786
+      }
+    },
+    {
+      "seq": 35,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "QUALITY_POSITIONED",
+      "detail": "target EBITDA margin 12.2% ranks at the 40th percentile of the peer set → central multiple taken at peer P40 (not the flat median).",
+      "data": {
+        "q_rank": 0.4,
+        "mid_q": 0.4,
+        "window": 0.2
+      }
+    },
+    {
+      "seq": 36,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "WARN",
+      "code": "NET_DEBT_UNKNOWN",
+      "detail": "borrowings/cash absent from source; equity WITHHELD (no zero-assumption) — EV range reported instead",
+      "data": {
+        "debt_known": false,
+        "cash_known": false,
+        "equity_requires": [
+          "borrowings",
+          "cash"
+        ]
+      }
+    },
+    {
+      "seq": 37,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
       "detail": "applied no DLOM — target is listed/public (liquid equity)",
       "data": {
         "discount": 0.0,
-        "revenue_cr": 5874.35,
+        "revenue_cr": 794.9198,
         "listed": true
       }
     },
     {
-      "seq": 18,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 38,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "PEERS_WEIGHTED",
+      "detail": "9/15 peers are borderline (similarity < 0.85); multiples similarity-weighted — effective peer count 14.18 of 15",
+      "data": {
+        "n_borderline": 9,
+        "n_used": 15,
+        "effective_peer_count": 14.18
+      }
+    },
+    {
+      "seq": 39,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "FALLBACK_BOOK_EV",
+      "detail": "EV/EBITDA: <3 listed comps; falling back to book capital-employed multiples",
+      "data": {
+        "method": "EV/EBITDA",
+        "n_market": 0
+      }
+    },
+    {
+      "seq": 40,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "SECTOR_CALIBRATED",
+      "detail": "EV/EBITDA: book multiples re-levelled ×2.32 so the peer median meets the sector trading anchor 9.0x (book median was 3.87x)",
+      "data": {
+        "method": "EV/EBITDA",
+        "anchor": 9.0,
+        "book_median": 3.874,
+        "factor": 2.323
+      }
+    },
+    {
+      "seq": 41,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "POSITION_SHRUNK",
+      "detail": "EV/EBITDA: non-market basis — margin position P40 shrunk halfway to median → P45",
+      "data": {
+        "method": "EV/EBITDA",
+        "raw_q": 0.4,
+        "shrunk_q": 0.45
+      }
+    },
+    {
+      "seq": 42,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
-      "detail": "EV/EBITDA: positioned 16.14x on 10 market multiples (effective 10.0, 1 outliers dropped)",
+      "detail": "EV/EBITDA: positioned 8.16x on 14 sector-calibrated multiples (effective 13.18, 1 outliers dropped)",
       "data": {
         "method": "EV/EBITDA",
-        "multiple": 16.1421,
-        "ev_basis": "market",
-        "effective_n": 10.0,
-        "n_multiples": 10,
+        "multiple": 8.1621,
+        "ev_basis": "sector-calibrated",
+        "effective_n": 13.18,
+        "n_multiples": 14,
         "n_outliers_dropped": 1
       }
     },
     {
-      "seq": 19,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 43,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "value",
-      "level": "INFO",
-      "code": "METHOD_COMPUTED",
-      "detail": "EV/Revenue: positioned 2.39x on 11 market multiples (effective 11.0, 0 outliers dropped)",
+      "level": "DECISION",
+      "code": "FALLBACK_BOOK_EV",
+      "detail": "EV/Revenue: <3 listed comps; falling back to book capital-employed multiples",
       "data": {
         "method": "EV/Revenue",
-        "multiple": 2.3935,
-        "ev_basis": "market",
-        "effective_n": 11.0,
-        "n_multiples": 11,
-        "n_outliers_dropped": 0
+        "n_market": 0
       }
     },
     {
-      "seq": 20,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 44,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "SECTOR_CALIBRATED",
+      "detail": "EV/Revenue: book multiples re-levelled ×2.89 so the peer median meets the sector trading anchor 1.9x (book median was 0.66x)",
+      "data": {
+        "method": "EV/Revenue",
+        "anchor": 1.9,
+        "book_median": 0.656,
+        "factor": 2.895
+      }
+    },
+    {
+      "seq": 45,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "POSITION_SHRUNK",
+      "detail": "EV/Revenue: non-market basis — margin position P40 shrunk halfway to median → P45",
+      "data": {
+        "method": "EV/Revenue",
+        "raw_q": 0.4,
+        "shrunk_q": 0.45
+      }
+    },
+    {
+      "seq": 46,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
-      "detail": "EV/EBIT: positioned 22.25x on 11 market multiples (effective 11.0, 0 outliers dropped)",
+      "detail": "EV/Revenue: positioned 1.75x on 14 sector-calibrated multiples (effective 13.18, 1 outliers dropped)",
       "data": {
-        "method": "EV/EBIT",
-        "multiple": 22.2518,
-        "ev_basis": "market",
-        "effective_n": 11.0,
-        "n_multiples": 11,
-        "n_outliers_dropped": 0
+        "method": "EV/Revenue",
+        "multiple": 1.7541,
+        "ev_basis": "sector-calibrated",
+        "effective_n": 13.18,
+        "n_multiples": 14,
+        "n_outliers_dropped": 1
       }
     },
     {
-      "seq": 21,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 47,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "FALLBACK_BOOK_EV",
+      "detail": "EV/EBIT: <3 listed comps; falling back to book capital-employed multiples",
+      "data": {
+        "method": "EV/EBIT",
+        "n_market": 0
+      }
+    },
+    {
+      "seq": 48,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "DECISION",
+      "code": "SECTOR_CALIBRATED",
+      "detail": "EV/EBIT: book multiples re-levelled ×1.76 so the peer median meets the sector trading anchor 11.25x (book median was 6.41x)",
+      "data": {
+        "method": "EV/EBIT",
+        "anchor": 11.25,
+        "book_median": 6.41,
+        "factor": 1.755
+      }
+    },
+    {
+      "seq": 49,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "POSITION_SHRUNK",
+      "detail": "EV/EBIT: non-market basis — margin position P40 shrunk halfway to median → P45",
+      "data": {
+        "method": "EV/EBIT",
+        "raw_q": 0.4,
+        "shrunk_q": 0.45
+      }
+    },
+    {
+      "seq": 50,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "value",
+      "level": "INFO",
+      "code": "METHOD_COMPUTED",
+      "detail": "EV/EBIT: positioned 8.89x on 13 sector-calibrated multiples (effective 12.22, 2 outliers dropped)",
+      "data": {
+        "method": "EV/EBIT",
+        "multiple": 8.8865,
+        "ev_basis": "sector-calibrated",
+        "effective_n": 12.22,
+        "n_multiples": 13,
+        "n_outliers_dropped": 2
+      }
+    },
+    {
+      "seq": 51,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -1626,37 +2496,8 @@
       }
     },
     {
-      "seq": 22,
-      "ts": "2026-07-19T16:01:42.627+00:00",
-      "stage": "value",
-      "level": "INFO",
-      "code": "TRANSACTION_VIEW",
-      "detail": "indicative acquisition range ₹12,485–14,177–15,483 Cr (control premium 20–30% over comps equity)",
-      "data": {
-        "premium_band": [
-          0.2,
-          0.3
-        ]
-      }
-    },
-    {
-      "seq": 23,
-      "ts": "2026-07-19T16:01:42.627+00:00",
-      "stage": "value",
-      "level": "INFO",
-      "code": "MARKET_CROSSCHECK",
-      "detail": "comps mid equity ₹11341 Cr vs own market cap ₹10259 Cr (+10.5%)",
-      "data": {
-        "own_market_cap_cr": 10259.19,
-        "own_ev_ebitda": 14.76,
-        "comps_mid_equity_cr": 11341.3666,
-        "delta_pct": 10.5,
-        "within_25pct": true
-      }
-    },
-    {
-      "seq": 24,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 52,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -1667,28 +2508,65 @@
       }
     },
     {
-      "seq": 25,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 53,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
-      "detail": "HIGH (0.805) — triangulation 0.1, comp-tightness 0.115",
+      "detail": "MEDIUM (0.594) — triangulation 0.0, comp-tightness 0.045",
       "data": {
-        "score": 0.805,
-        "label": "HIGH",
+        "score": 0.594,
+        "label": "MEDIUM",
         "breakdown": {
-          "profile": 0.19,
-          "peer_coverage": 0.2,
+          "profile": 0.16,
+          "peer_coverage": 0.189,
           "ebitda_positive": 0.1,
           "methods": 0.1,
-          "triangulation": 0.1,
-          "comp_tightness": 0.115
+          "triangulation": 0.0,
+          "comp_tightness": 0.045
         }
       }
     },
     {
-      "seq": 26,
-      "ts": "2026-07-19T16:01:42.627+00:00",
+      "seq": 54,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "run",
+      "level": "WARN",
+      "code": "SOURCE_CAVEAT",
+      "detail": "Borrowings, cash and current liabilities are not in the source extract: net debt is treated as 0 with a warning, and capital employed is approximated by segment capital-employed where reported, else Net Worth.",
+      "data": null
+    },
+    {
+      "seq": 55,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "run",
+      "level": "WARN",
+      "code": "SOURCE_CAVEAT",
+      "detail": "Market prices are not in the source extract: no trading multiples — the valuation runs on the disclosed book basis until a market-price feed is added.",
+      "data": null
+    },
+    {
+      "seq": 56,
+      "ts": "2026-07-20T03:16:09.186+00:00",
+      "stage": "run",
+      "level": "INFO",
+      "code": "SOURCE_LINEAGE",
+      "detail": "per-field source lineage attached to result (file + row for every key figure)",
+      "data": {
+        "fields": [
+          "identity/industry/description",
+          "revenue/EBITDA/interest/depreciation/PBT/PAT",
+          "net worth",
+          "total assets/net block/inventories",
+          "forex inflow (export flag)",
+          "prior-year revenue",
+          "P&L reconciliation"
+        ]
+      }
+    },
+    {
+      "seq": 57,
+      "ts": "2026-07-20T03:16:09.186+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",
@@ -1699,26 +2577,76 @@
     }
   ],
   "validation": {
-    "n_targets": 32,
-    "margin_multiple_corr": 0.487,
-    "positioned": {
-      "n": 32,
-      "mean_abs_pct": 8.3,
-      "median_abs_pct": 7.5,
-      "max_abs_pct": 26.1,
-      "within_15pct": 28,
-      "within_25pct": 31
-    },
-    "flat_median": {
-      "n": 32,
-      "mean_abs_pct": 10.5,
-      "median_abs_pct": 8.3,
-      "max_abs_pct": 36.9,
-      "within_15pct": 23,
-      "within_25pct": 31
-    },
-    "positioning_wins": 24,
-    "verdict": "PASS",
+    "kind": "observed_market_validation",
+    "as_of": "2026-07-17",
+    "basis": "engine EV mid vs the company's own observed NSE market cap; EV~equity proxy disclosed (no borrowings/cash in source)",
+    "n": 6,
+    "rows": [
+      {
+        "company": "20 Microns Ltd.",
+        "engine_ev_low_cr": 709.2,
+        "engine_ev_mid_cr": 794.6,
+        "engine_ev_high_cr": 1842.1,
+        "actual_mcap_cr": 714.0,
+        "delta_pct": 11.3,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Aarti Industries Ltd.",
+        "engine_ev_low_cr": 14771.9,
+        "engine_ev_mid_cr": 16510.6,
+        "engine_ev_high_cr": 20618.5,
+        "actual_mcap_cr": 17485.0,
+        "delta_pct": -5.6,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Kirloskar Brothers Ltd.",
+        "engine_ev_low_cr": 3119.8,
+        "engine_ev_mid_cr": 5546.0,
+        "engine_ev_high_cr": 7114.7,
+        "actual_mcap_cr": 13926.0,
+        "delta_pct": -60.2,
+        "in_range": false,
+        "status": "ok"
+      },
+      {
+        "company": "Mahindra EPC Irrigation Ltd.",
+        "engine_ev_low_cr": 201.9,
+        "engine_ev_mid_cr": 293.4,
+        "engine_ev_high_cr": 409.1,
+        "actual_mcap_cr": 336.0,
+        "delta_pct": -12.7,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Shakti Pumps (India) Ltd.",
+        "engine_ev_low_cr": 8016.6,
+        "engine_ev_mid_cr": 10976.8,
+        "engine_ev_high_cr": 13009.1,
+        "actual_mcap_cr": 6798.0,
+        "delta_pct": 61.5,
+        "in_range": false,
+        "status": "ok"
+      },
+      {
+        "company": "Roto Pumps Ltd.",
+        "engine_ev_low_cr": 809.7,
+        "engine_ev_mid_cr": 1097.1,
+        "engine_ev_high_cr": 1663.7,
+        "actual_mcap_cr": 1226.0,
+        "delta_pct": -10.5,
+        "in_range": true,
+        "status": "ok"
+      }
+    ],
+    "median_abs_pct": 12.0,
+    "mean_abs_pct": 27.0,
+    "n_in_range": 4,
+    "note": "Two known idiosyncratic outliers are retained deliberately; the ranges disagree with them honestly rather than being widened to swallow them.",
     "verdict_ok": true
   }
 }

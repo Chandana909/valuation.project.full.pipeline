@@ -38,12 +38,25 @@ def get(path):
         return e.code, json.load(e)
 
 
-def get_raw(path):
+def get_raw(path, _retries=2):
     try:
-        with urllib.request.urlopen(BASE + path, timeout=180) as r:
+        req = urllib.request.Request(BASE + path,
+                                     headers={"Connection": "close"})
+        with urllib.request.urlopen(req, timeout=180) as r:
             return r.status, r.read().decode("utf-8")
     except urllib.error.HTTPError as e:
         return e.code, e.read().decode("utf-8")
+    except (ConnectionResetError, ConnectionAbortedError):
+        # Windows urllib<->uvicorn reset quirk on large bodies (server logs 200
+        # and curl retrieves the full body) — fall back to curl
+        if _retries:
+            return get_raw(path, _retries - 1)
+        import subprocess
+        out = subprocess.run(["curl", "-s", "-w", "\n%{http_code}", BASE + path],
+                             capture_output=True, text=True, timeout=180,
+                             encoding="utf-8")
+        body, _, code = out.stdout.rpartition("\n")
+        return int(code or 0), body
 
 
 def post(path, body=None):
@@ -92,16 +105,15 @@ def main():
           and len(f.get("limitations", [])) >= 4,
           f"{n_controls} controls")
     st, v = get("/api/v1/validation")
-    check("validation backtest: positioning beats naive",
-          st == 200 and v.get("verdict_ok") is True
-          and v["positioned"]["mean_abs_pct"] < v["flat_median"]["mean_abs_pct"],
-          f"MAE {v.get('positioned', {}).get('mean_abs_pct')}% vs "
-          f"{v.get('flat_median', {}).get('mean_abs_pct')}% · corr "
-          f"{v.get('margin_multiple_corr')}")
+    check("observed-market validation: median error within gate",
+          st == 200 and v.get("kind") == "observed_market_validation"
+          and v.get("verdict_ok") is True,
+          f"median {v.get('median_abs_pct')}% · in-range "
+          f"{v.get('n_in_range')}/{v.get('n')} · as of {v.get('as_of')}")
 
     # ---- search + valuation -------------------------------------------------
     print("\n-- valuation --")
-    name = "20 Microns Ltd." if real else "Woodward"
+    name = "20 Microns Ltd."
     q = urllib.parse.quote(name)
     st, sg = get(f"/api/v1/companies/suggest?q={urllib.parse.quote(name[:7])}")
     check("suggest returns the company", st == 200
@@ -114,14 +126,30 @@ def main():
           and all(k in r for k in ("target", "peers", "rejected", "confidence",
                                    "audit_trail", "data_quality", "target_lineage")),
           f"status={r['meta']['status']}")
-    check("range low < mid < high",
-          (val.get("equity_low_cr") or 0) < (val.get("equity_mid_cr") or 0)
-          < (val.get("equity_high_cr") or 1),
-          f"{val.get('equity_low_cr')} < {val.get('equity_mid_cr')} < "
-          f"{val.get('equity_high_cr')}")
-    check("adjustment + transactions blocks present",
-          val.get("comparability_adjustment") is not None
-          and val.get("transaction_analysis") is not None, "")
+    hm0 = next((m for m in val.get("methods", [])
+                if m["method"] == val.get("headline_method")), {})
+    check("EV range low < mid < high",
+          (hm0.get("ev_low_cr") or 0) < (hm0.get("ev_mid_cr") or 0)
+          < (hm0.get("ev_high_cr") or 1),
+          f"{hm0.get('ev_low_cr')} < {hm0.get('ev_mid_cr')} < {hm0.get('ev_high_cr')}")
+    check("NO-ASSUMPTION rule: equity withheld, requirements listed",
+          val.get("equity_mid_cr") is None
+          and set(val.get("equity_requires") or []) == {"borrowings", "cash"},
+          f"equity_requires={val.get('equity_requires')}")
+    cl = {c["key"]: c["status"] for c in r.get("parameter_checklist", [])}
+    check("parameter checklist: debt/cash missing, revenue available",
+          cl.get("debt_cr") == "missing" and cl.get("revenue_cr") == "available",
+          f"{sum(1 for s in cl.values() if s == 'missing')} missing")
+    check("comparability block present", val.get("comparability_adjustment") is not None, "")
+    # enrichment: supplying debt/cash unlocks equity + transactions view
+    st_e, er = post("/api/v1/valuations/enrich",
+                    {"name": name, "debt_cr": 180, "cash_cr": 25})
+    ev_ = er.get("valuation") or {}
+    check("enrich: equity + transactions appear once net debt known",
+          st_e == 200 and ev_.get("equity_mid_cr") is not None
+          and ev_.get("transaction_analysis") is not None
+          and ev_.get("net_debt_cr") == 155.0,
+          f"equity mid {ev_.get('equity_mid_cr')} · net debt {ev_.get('net_debt_cr')}")
     if real:
         hm = next((m for m in val["methods"]
                    if m["method"] == val["headline_method"]), {})
@@ -136,11 +164,11 @@ def main():
 
     # determinism: same input -> same numbers
     st2, r2 = get(f"/api/v1/valuations?name={q}")
-    v2 = r2.get("valuation") or {}
+    hm2 = next((m for m in (r2.get("valuation") or {}).get("methods", [])
+                if m["method"] == (r2.get("valuation") or {}).get("headline_method")), {})
     check("deterministic: identical numbers on re-run",
-          val.get("equity_mid_cr") == v2.get("equity_mid_cr")
-          and val.get("equity_low_cr") == v2.get("equity_low_cr"),
-          f"mid {val.get('equity_mid_cr')} == {v2.get('equity_mid_cr')}")
+          hm0.get("ev_mid_cr") == hm2.get("ev_mid_cr"),
+          f"EV mid {hm0.get('ev_mid_cr')} == {hm2.get('ev_mid_cr')}")
 
     # error mapping
     st, _ = get("/api/v1/valuations?name=zzz-no-such-company-xyz")
@@ -168,11 +196,13 @@ def main():
           and bad.get("error"), bad.get("error", ""))
     answers = ["Audit Test Fabricators",
                "manufactures sheet-metal fabrications for industrial equipment makers",
-               "engineering", "no", "60", "48", "8.5", "2.2", "40", "10", "3", "yes"]
+               "engineering", "no", "60", "48", "8.5", "2.2", "40", "10", "3", "yes",
+               "skip", "skip"]
     done = None
     for a in answers:
         st, done = post(f"/api/v1/intake/{sid}/answer", {"value": a})
-    check("12-question graph completes", done.get("done") is True,
+    check("question graph completes (14 nodes incl. optional deal)",
+          done.get("done") is True,
           f"{done.get('progress', {}).get('pct')}%")
     st, fresh = post("/api/v1/intake/start")
     sid2 = fresh.get("session_id")

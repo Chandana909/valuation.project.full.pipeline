@@ -133,7 +133,29 @@ GRAPH = [
      "help": "Exporters and domestic-only companies face different demand and "
              "currency dynamics; the export flag is a 10% similarity dimension.",
      "validate": _v_yesno},
+    {"id": "txn_ev_cr",
+     "prompt": "Optional — do you know a recent comparable ACQUISITION in this "
+               "sector? Enterprise value paid, in ₹ Crore (type 'skip' if none)",
+     "help": "An OBSERVED deal beats any derived premium: if you know a real "
+             "transaction, its EV/EBITDA becomes the comparable-transactions "
+             "method instead of the derived 20-30% control-premium view.",
+     "validate": _v_number(lo=0.01, hi=5_000_000), "optional": True},
+    {"id": "txn_ebitda_cr",
+     "prompt": "That acquired company's EBITDA, in ₹ Crore? (type 'skip' if unknown)",
+     "help": "EV ÷ EBITDA gives the observed transaction multiple, applied to "
+             "your company's EBITDA. Both figures are needed; either skipped "
+             "falls back to the derived view.",
+     "validate": _v_number(lo=0.01, hi=1_000_000), "optional": True},
 ]
+
+
+def txn_multiple_from(answers):
+    """Observed transaction multiple from the two optional intake answers, or
+    None — nothing is derived or assumed here."""
+    ev, eb = answers.get("txn_ev_cr"), answers.get("txn_ebitda_cr")
+    if ev and eb and eb > 0:
+        return round(ev / eb, 4)
+    return None
 _BY_ID = {n["id"]: n for n in GRAPH}
 
 

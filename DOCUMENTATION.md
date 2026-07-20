@@ -129,10 +129,38 @@ WAL journal mode + ANALYZE.
 **Valuation-grade universe:** revenue > 0 AND EBITDA present AND net worth > 0 AND
 12-month period → **13,619 companies** (of 42,951 loaded). Latest + prior year kept.
 
-**Honest gaps in the source (disclosed on every result):** no market prices, no
-borrowings, no cash, no current liabilities. Consequences: multiples are
-book-based **re-levelled by sector anchors** (§6); net debt assumed 0 with a
-`NET_DEBT_UNKNOWN` warning.
+**Honest gaps — missing data, exact formula impact, and the NO-ASSUMPTION policy**
+
+Since v2.2 the engine **never assumes a number**. A missing figure produces a
+withheld output + an entry in the essential-parameter checklist (✗ NOT
+AVAILABLE, fillable in chat) — never a silent zero.
+
+| Missing field | Needed in | Formula affected | Behaviour (no fallback) |
+|---|---|---|---|
+| Borrowings / debt | EV → equity bridge | `equity = (EV − net debt) × (1 − DLOM)` | **Equity WITHHELD** (`equity_requires: ["borrowings","cash"]`); the EV range is reported; the chat/enrichment popup collects the figures and the bridge completes with user-provided lineage |
+| Cash & equivalents | EV → equity bridge | `net debt = debt − cash` | same as above |
+| Market cap / share prices (peers) | peer multiple pools | `market EV = mcap + net debt` | the market pool is empty → the **book pool re-levelled to sector trading anchors** prices the multiples (disclosed `sector-calibrated` basis, `SECTOR_CALIBRATED` audit). **Missing market cap never filters a peer out** — see below |
+| Segment capital employed (peer) | book EV base | `book EV ≈ capital employed` | Net Worth is the disclosed proxy (a floor, not an invention — it is an actual reported figure) |
+| Depreciation | EV/EBIT method | `EBIT = EBITDA − depreciation` | method skipped (`METHOD_SKIPPED_*`), checklist ✗, fillable in chat |
+| Prior-year revenue | growth context | `growth = Δrev / prior` | growth = n/a, checklist ✗, fillable in chat |
+| PAT / PBDT | not in any valuation formula | recon check only: `EBITDA + OI − Interest ≈ PBDT` | zero valuation impact; recon result shown in lineage |
+
+**How missing market cap is handled while filtering peers (exact answer):**
+market data is **not a filter dimension anywhere**. Stage-B knock-outs use
+operating model / value chain / major industry; stage-C similarity uses
+industry, scale, margin, customer, export — none touch prices. A peer without
+a market cap is *never rejected for lacking one*. Market data appears only at
+**filter #13 (multiple eligibility)**: a method uses observed market-EV
+multiples when ≥ 3 listed comps have them; on this extract none do, so every
+method prices on the sector-calibrated book pool — uniformly, for all peers,
+listed or not. The `listed` flag itself comes from the CIN prefix, not from
+price data, so DLOM decisions are unaffected.
+
+**Target-side data-quality gate (case-study behaviour):** a target with zero
+revenue or negative net worth grades **D / `valuable = False`** and the run
+stops honestly at `INSUFFICIENT_DATA` — with the UI/API immediately offering
+the guided intake so a human can supply real figures. Non-operating or shell
+entities cannot produce arbitrary valuations.
 
 ---
 

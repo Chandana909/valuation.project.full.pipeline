@@ -7,10 +7,12 @@ response schema**; going live is a one-method swap.
 
 ## Two data sources — real and mock
 
-| | source | companies | valuation basis |
-|---|---|---|---|
-| **real** | 9 uploaded Excel extracts → `python etl.py` → `realdata.db` (SQLite) | **13,619** valuation-grade, plausibility-screened (of 42,951) | book basis (extract has no market prices / borrowings / cash — caveats disclosed on every result) |
-| **mock** | synthetic 59-company universe generated in code | 59 | market trading multiples (used for methodology validation/backtests) |
+| source | companies | valuation basis |
+|---|---|---|
+| 9 uploaded Excel extracts → `python etl.py` → `realdata.db` (SQLite) | **13,619** valuation-grade, plausibility-screened (of 42,951) | sector-calibrated book multiples; **equity withheld (never assumed) until borrowings/cash are supplied** via chat/enrichment |
+
+**The synthetic mock universe has been removed** — real data is the only path.
+Validation now runs against OBSERVED NSE market caps (`python validate.py`).
 
 The core calculation is identical for both: `RealDnBClient` and `MockDnBClient` emit the
 same D&B-schema envelopes, so the engine never knows which database it's on. The ETL

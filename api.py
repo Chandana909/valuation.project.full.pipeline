@@ -6,7 +6,7 @@ Layering (each layer only talks to the one below it):
     HTTP (this file, FastAPI)  ->  orchestrator (run.py)  ->  core/ (stdlib)
                                      |                          ^
                                      v                          |
-                              clients (realdata/ | mock_api/) --+   [same D&B envelopes]
+                              clients (realdata/ | intake) ----+   [same D&B envelopes]
 
 The deterministic core is untouched: this file is a delivery layer only. It adds
 what an API consumer needs — versioned routes, OpenAPI docs (/docs), proper HTTP
@@ -20,17 +20,16 @@ Endpoints
               GET /api/v1/companies/suggest    autocomplete  ?q=&limit=
               GET /api/v1/valuations           full valuation JSON  ?name=
               GET /api/v1/valuations/report    self-contained HTML report  ?name=
-              GET /api/v1/validation           methodology backtest (mock universe)
-              GET /api/v1/robustness           5-seed robustness sweep (cached)
+              GET /api/v1/validation           observed-market validation
               GET /api/v1/database/status      ETL report of realdata.db
   legacy      /api/health /api/status /api/companies /api/suggest /api/value
-              /api/robustness                  (consumed by ui/index.html — kept 1:1)
+              (consumed by ui/index.html — kept 1:1)
 
 Status mapping (v1): ok / no_valuation -> 200, no_match -> 404,
 insufficient_data -> 422. The legacy /api/value always returns 200 with the
 structured result, which is what the UI expects.
 
-Config (env): PORT (8733) · DATA_SOURCE (real|mock; default auto — real when
+Config (env): PORT (8733) · GROQ_API_KEY (optional LLM chat) · (real data only; when
 realdata.db exists) · CORS_ORIGINS (comma-separated; default *).
 
 Run:  python api.py            (or: uvicorn api:app --host 0.0.0.0 --port 8733)
@@ -54,7 +53,8 @@ from pydantic import BaseModel
 
 from run import (run_pipeline, run_pipeline_custom, run_pipeline_enriched,
                  make_client, get_universe, METHODOLOGY_VERSION, ENGINE_NAME)
-from intake import IntakeSession, build_company, intake_lineage
+from intake import (IntakeSession, build_company, intake_lineage,
+                    txn_multiple_from)
 from dashboard import render_dashboard
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -63,8 +63,8 @@ DB_PATH = os.path.join(BASE, "realdata.db")
 PORT = int(os.environ.get("PORT", "8733"))
 API_VERSION = "1"
 
-DATA_SOURCE = os.environ.get("DATA_SOURCE") or (
-    "real" if os.path.exists(DB_PATH) else "mock")
+# Real data only — the synthetic mock universe has been removed from the product.
+DATA_SOURCE = "real"
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -78,7 +78,7 @@ log = logging.getLogger("valuation.api")
 
 _lock = threading.RLock()
 _state = {"client": None, "warm": False, "companies": None,
-          "validation": None, "robustness": None}
+          "validation": None}
 
 
 def _client():
@@ -102,38 +102,19 @@ def _warm():
 def _companies():
     with _lock:
         if _state["companies"] is None:
-            client = _client()
-            if DATA_SOURCE == "real":
-                _state["companies"] = {"count": len(client.universe_duns()),
-                                       "companies": []}
-            else:
-                names = []
-                for duns in client.universe_duns():
-                    org = client.request("company_information", {"duns": duns})
-                    nm = org.get("data", {}).get("organization", {}).get("primaryName")
-                    if nm:
-                        names.append(nm)
-                _state["companies"] = {"count": len(names),
-                                       "companies": sorted(names)}
+            _state["companies"] = {"count": len(_client().universe_duns()),
+                                   "companies": []}
         return _state["companies"]
 
 
 def _validation():
-    """Methodology backtest — always runs on the MOCK universe (it has the
-    synthetic market caps needed for a calibration target). Cached."""
+    """Observed-market validation: engine output vs real NSE market caps
+    (pinned observation set, dated & sourced). Cached; first call ~15s."""
     with _lock:
         if _state["validation"] is None:
-            from validate import backtest_summary
-            _state["validation"] = backtest_summary()
+            from validate import real_validation_summary
+            _state["validation"] = real_validation_summary(client=_client())
         return _state["validation"]
-
-
-def _robustness():
-    with _lock:
-        if _state["robustness"] is None:
-            from validate import seed_robustness
-            _state["robustness"] = seed_robustness(n_seeds=5)
-        return _state["robustness"]
 
 
 def _suggest(q, limit):
@@ -195,7 +176,7 @@ app = FastAPI(
 
 _cors = [o.strip() for o in os.environ.get("CORS_ORIGINS", "*").split(",")]
 app.add_middleware(CORSMiddleware, allow_origins=_cors,
-                   allow_methods=["GET"], allow_headers=["*"])
+                   allow_methods=["GET", "POST"], allow_headers=["*"])
 
 
 def _err(code, message):
@@ -373,7 +354,8 @@ def intake_value(sid: str):
     company = build_company(s.answers, _client())
     with _lock:
         result, _ctx = run_pipeline_custom(company, client=_client(),
-                                           lineage=intake_lineage(s.answers))
+                                           lineage=intake_lineage(s.answers),
+                                           txn_multiple=txn_multiple_from(s.answers))
     if result.get("valuation"):
         try:
             result["validation"] = _validation()
@@ -484,24 +466,36 @@ def v1_filters():
 
 @app.get("/api/v1/validation", tags=["methodology"])
 def v1_validation():
-    """Anti-overfitting backtest: every listed mock company valued from its
-    peers vs its own market cap; positioning must beat the naive median."""
+    """Observed-market validation: the engine's output for a pinned set of
+    listed database companies vs their real NSE market caps (dated, sourced,
+    outliers retained). Nothing simulated."""
     return _validation()
 
 
-@app.get("/api/v1/robustness", tags=["methodology"])
-def v1_robustness():
-    """Backtest re-run on 5 freshly seeded universes (slow first call, cached)."""
-    return _robustness()
+class ChatBody(BaseModel):
+    messages: list
+    state: dict = {}
+
+
+@app.post("/api/v1/chat", tags=["intake"])
+def v1_chat(body: ChatBody):
+    """OPTIONAL LLM conversational agent (Groq llama-3.3-70b) that extracts
+    valuation parameters from free text — active only when GROQ_API_KEY is set;
+    otherwise 503 and the deterministic guided intake remains the path. The
+    LLM only EXTRACTS; every figure still passes the same validation and the
+    valuation math never touches an LLM."""
+    if not os.environ.get("GROQ_API_KEY", "").strip():
+        return _err(503, "GROQ_API_KEY not configured — use the deterministic "
+                         "guided intake (/api/v1/intake/*)")
+    from core.chat_agent import run_chat_agent
+    reply, state, ready = run_chat_agent(body.messages, body.state, DB_PATH)
+    return {"reply": reply, "state": state, "valuation_ready": ready}
 
 
 @app.get("/api/v1/database/status", tags=["system"])
 def v1_db_status():
     """ETL provenance of realdata.db: row counts, join coverage, P&L
     reconciliation rate, source-file hashes, build timestamp and age."""
-    if DATA_SOURCE != "real":
-        return {"data_source": "mock",
-                "detail": "synthetic in-code universe; no database"}
     con = sqlite3.connect(DB_PATH)
     row = con.execute("SELECT value FROM meta WHERE key='etl_report'").fetchone()
     con.close()
@@ -551,11 +545,6 @@ def value(name: str = ""):
     except Exception as e:                             # never crash the UI
         log.exception("valuation failed for %r", name)
         return JSONResponse({"error": str(e)}, status_code=500)
-
-
-@app.get("/api/robustness", include_in_schema=False)
-def robustness():
-    return _robustness()
 
 
 if __name__ == "__main__":

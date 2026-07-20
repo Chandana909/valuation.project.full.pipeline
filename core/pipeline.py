@@ -86,7 +86,7 @@ class DataQuality:
 class Valuation:
     headline_method: str
     methods: List[Dict[str, Any]]
-    net_debt_cr: float
+    net_debt_cr: Optional[float]           # None = unknown, equity withheld
     discount: float
     discount_reason: str
     equity_low_cr: Optional[float]
@@ -101,6 +101,7 @@ class Valuation:
     n_borderline: int = 0                           # peers below the strong-match line
     comparability_adjustment: Optional[Dict[str, Any]] = None  # scale-mismatch penalty
     transaction_analysis: Optional[Dict[str, Any]] = None      # indicative M&A view
+    equity_requires: List[str] = field(default_factory=list)   # figures needed for equity
     notes: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
@@ -696,7 +697,8 @@ _METHOD_SPEC = [
 _POSITION_SHRINK_NONMARKET = 0.5
 
 
-def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation:
+def compute_valuation(target: Company, peers, top_n=15, audit=None,
+                      txn_multiple=None) -> Valuation:
     used = peers[:top_n]
     notes = []
     warnings = []
@@ -785,18 +787,31 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             audit.decision("value", "COMPARABILITY_ADJUSTMENT",
                            comp_adj["reason"], comp_adj)
 
-    # Net debt bridges enterprise value to equity value.
-    net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
-    if not (target.debt_known and target.cash_known):
+    # Net debt bridges enterprise value to equity value. NO-ASSUMPTION RULE:
+    # if borrowings or cash are unknown, the engine does NOT assume 0 and does
+    # NOT publish an equity number — it reports the enterprise-value range and
+    # lists exactly which figures are required (fillable via the chat /
+    # enrichment popup). Nothing is ever imputed.
+    net_debt_known = bool(target.debt_known and target.cash_known)
+    if net_debt_known:
+        net_debt = round((target.debt_cr or 0.0) - (target.cash_cr or 0.0), 4)
+        equity_requires = []
+    else:
+        net_debt = None
+        equity_requires = ([] if target.debt_known else ["borrowings"]) + \
+                          ([] if target.cash_known else ["cash"])
         warnings.append(
-            "net debt unknown (borrowings/cash absent from the data source): equity "
-            "assumes net debt = 0 — supply borrowings & cash to refine the bridge")
+            "equity value withheld — " + " & ".join(equity_requires) + " not in the "
+            "data source and nothing is assumed. The enterprise-value range is "
+            "reported; supply the missing figures (chat / enrichment) to bridge "
+            "EV → equity.")
         if audit is not None:
             audit.warn("value", "NET_DEBT_UNKNOWN",
-                       "borrowings/cash absent from source; EV→equity bridge assumes "
-                       "net debt = 0",
+                       "borrowings/cash absent from source; equity WITHHELD "
+                       "(no zero-assumption) — EV range reported instead",
                        {"debt_known": target.debt_known,
-                        "cash_known": target.cash_known})
+                        "cash_known": target.cash_known,
+                        "equity_requires": equity_requires})
     # DLOM — Discount for Lack of Marketability — applies ONLY to a PRIVATE target,
     # because it is priced off *listed* peers whose equity is liquid. A listed target
     # is itself liquid, so no DLOM. For private targets the DLOM is size-scaled.
@@ -976,6 +991,8 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
 
         def equity(mult):
             ev_x = mult * tdriver
+            if not net_debt_known:
+                return None, round(ev_x, 4)          # equity withheld, EV reported
             return round((ev_x - net_debt) * (1.0 - discount), 4), round(ev_x, 4)
 
         eq_low, ev_low = equity(p_low)
@@ -1048,7 +1065,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
             peers_used=peers_used_out, ev_basis=ev_basis,
             quality_percentile=round(q_rank, 3), positioning=positioning,
             effective_peer_count=effective_peer_count, n_borderline=n_borderline,
-            comparability_adjustment=comp_adj,
+            comparability_adjustment=comp_adj, equity_requires=equity_requires,
             notes=notes, warnings=warnings,
         )
 
@@ -1062,25 +1079,56 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
     # indicative acquisition range = comps equity × (1 + premium band), clearly
     # labelled as derived. When a transaction database is added, replace this
     # with observed deal multiples (the block's shape stays the same).
-    transaction_analysis = {
-        "basis": "derived: trading-comps equity × control premium (no precedent-"
-                 "transaction database in the current data source)",
-        "control_premium_low": 0.20, "control_premium_mid": 0.25,
-        "control_premium_high": 0.30,
-        "acquisition_equity_low_cr": round(h["equity_low_cr"] * 1.20, 2),
-        "acquisition_equity_mid_cr": round(h["equity_mid_cr"] * 1.25, 2),
-        "acquisition_equity_high_cr": round(h["equity_high_cr"] * 1.30, 2),
-        "caveat": "Indicative only — what a CONTROL buyer might pay relative to the "
-                  "minority trading value above. Replace with observed precedent-"
-                  "transaction multiples when a deal database is integrated.",
-    }
-    if audit is not None:
-        audit.info("value", "TRANSACTION_VIEW",
-                   f"indicative acquisition range ₹{transaction_analysis['acquisition_equity_low_cr']:,.0f}"
-                   f"–{transaction_analysis['acquisition_equity_mid_cr']:,.0f}"
-                   f"–{transaction_analysis['acquisition_equity_high_cr']:,.0f} Cr "
-                   f"(control premium 20–30% over comps equity)",
-                   {"premium_band": [0.20, 0.30]})
+    if txn_multiple and (target.ebitda_cr or 0) > 0:
+        # OBSERVED comparable transaction (user-provided, optional intake): the
+        # deal's EV/EBITDA is applied directly — an observed multiple always
+        # outranks the derived control-premium view. ±10% band for deal noise.
+        ev_acq = txn_multiple * target.ebitda_cr
+        transaction_analysis = {
+            "basis": "observed comparable transaction (user-provided EV/EBITDA "
+                     "applied to the target's EBITDA)",
+            "txn_multiple": round(float(txn_multiple), 2),
+            "acquisition_ev_low_cr": round(ev_acq * 0.90, 2),
+            "acquisition_ev_mid_cr": round(ev_acq, 2),
+            "acquisition_ev_high_cr": round(ev_acq * 1.10, 2),
+            "caveat": "Based on ONE user-reported transaction — verify the deal's "
+                      "terms and comparability; a transactions database would "
+                      "replace this with a multiple distribution.",
+        }
+        if net_debt_known:
+            transaction_analysis["acquisition_equity_mid_cr"] = round(
+                ev_acq - net_debt, 2)
+        if audit is not None:
+            audit.decision("value", "TRANSACTION_OBSERVED",
+                           f"user-provided comparable transaction at "
+                           f"{txn_multiple:.1f}x EV/EBITDA → acquisition EV "
+                           f"₹{ev_acq:,.0f} Cr (outranks the derived premium view)",
+                           {"txn_multiple": txn_multiple})
+    elif h["equity_mid_cr"] is not None:
+        transaction_analysis = {
+            "basis": "derived: trading-comps equity × control premium (no precedent-"
+                     "transaction database in the current data source)",
+            "control_premium_low": 0.20, "control_premium_mid": 0.25,
+            "control_premium_high": 0.30,
+            "acquisition_equity_low_cr": round(h["equity_low_cr"] * 1.20, 2),
+            "acquisition_equity_mid_cr": round(h["equity_mid_cr"] * 1.25, 2),
+            "acquisition_equity_high_cr": round(h["equity_high_cr"] * 1.30, 2),
+            "caveat": "Indicative only — what a CONTROL buyer might pay relative to "
+                      "the minority trading value above. Replace with observed "
+                      "precedent-transaction multiples when a deal database is "
+                      "integrated.",
+        }
+        if audit is not None:
+            audit.info("value", "TRANSACTION_VIEW",
+                       f"indicative acquisition range "
+                       f"₹{transaction_analysis['acquisition_equity_low_cr']:,.0f}"
+                       f"–{transaction_analysis['acquisition_equity_mid_cr']:,.0f}"
+                       f"–{transaction_analysis['acquisition_equity_high_cr']:,.0f} Cr "
+                       f"(control premium 20–30% over comps equity)",
+                       {"premium_band": [0.20, 0.30]})
+    else:
+        # equity withheld -> no acquisition view is fabricated either
+        transaction_analysis = None
 
     # Market cross-check — the strongest accuracy signal available. When the target
     # is itself listed we can compare our comps-derived equity to its OWN observed
@@ -1113,6 +1161,7 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None) -> Valuation
         effective_peer_count=effective_peer_count, n_borderline=n_borderline,
         comparability_adjustment=comp_adj,
         transaction_analysis=transaction_analysis,
+        equity_requires=equity_requires,
         notes=notes, warnings=warnings,
     )
 
