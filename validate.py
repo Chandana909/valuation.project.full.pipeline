@@ -33,14 +33,23 @@ except Exception:
 
 # Observed NSE market caps, pulled 2026-07-17 (screener.in / stockanalysis.com /
 # NSE quotes — URLs in PRODUCTION_REVIEW.md and the commit message of record).
-AS_OF = "2026-07-17"
+AS_OF = "2026-07-17/20"
 OBSERVED = {
+    # round 1 (2026-07-17)
     "20 Microns Ltd.":              714.0,
     "Aarti Industries Ltd.":     17485.0,
     "Kirloskar Brothers Ltd.":   13926.0,   # known outlier: ~38.8x re-rating
     "Mahindra EPC Irrigation Ltd.": 336.0,
     "Shakti Pumps (India) Ltd.":  6798.0,   # known outlier: policy-risk discount
     "Roto Pumps Ltd.":            1226.0,
+    # round 2 (2026-07-20) — 7 more sectors/sizes
+    "Gabriel India Ltd.":        19199.0,   # known outlier: ~60x restructuring re-rating
+    "Fiem Industries Ltd.":       5726.0,
+    "Aarti Drugs Ltd.":           3854.0,
+    "Apollo Pipes Ltd.":          2263.0,   # known limit: category mixes packaging & pipes
+    "Vadilal Industries Ltd.":    3949.0,
+    "The Anup Engineering Ltd.":  4486.0,
+    "Jash Engineering Ltd.":      3206.0,
 }
 
 _CACHE = {}

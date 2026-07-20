@@ -960,8 +960,12 @@ def compute_valuation(target: Company, peers, top_n=15, audit=None,
         # toward the median on non-market bases (see _POSITION_SHRINK_NONMARKET)
         if method_basis != "market":
             m_mid_q = 0.5 + _POSITION_SHRINK_NONMARKET * (mid_q - 0.5)
-            m_low_q = _clamp(m_mid_q - window, 0.05, 0.95)
-            m_high_q = _clamp(m_mid_q + window, 0.05, 0.95)
+            # calibrated bases always use the WIDE band: observed within-sector
+            # dispersion (2026 spot checks: 12x-60x inside one group) far exceeds
+            # what a +/-20pt band can honestly cover
+            w2 = max(window, 0.30)
+            m_low_q = _clamp(m_mid_q - w2, 0.05, 0.95)
+            m_high_q = _clamp(m_mid_q + w2, 0.05, 0.95)
             shrunk = True
         else:
             m_mid_q, m_low_q, m_high_q = mid_q, low_q, high_q

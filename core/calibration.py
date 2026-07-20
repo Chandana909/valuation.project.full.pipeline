@@ -38,21 +38,22 @@ untouched.
 #   MACH    — Kirloskar 38.8x · Roto 21.9x · Mahindra EPC 15.6x · Shakti 12.1x
 #             → sector median ≈ 18x                        (anchor set 18.0)
 #   CHEM    — Aarti Industries: ≈ 17x                      (anchor set 16.0)
-# Unobserved sectors are scaled ~1.25-1.35x from the Jan-2025 base, consistent
+# Second observation round (10 more NSE points, 2026-07-20) refined AUTO/MACH/
+# FOOD/POLYPAPER. Unobserved sectors are scaled ~1.25-1.35x from the Jan-2025 base, consistent
 # with the broad 2025-26 Indian mid/small-cap re-rating those points evidence.
 # THIS TABLE IS THE CALIBRATION SURFACE: refresh it on a schedule (or replace
 # with a derived monthly vintage from a price feed) — see PRODUCTION_REVIEW 1.7.
 SECTOR_ANCHORS = {
-    "AUTO":      (14.0, 1.8),   # auto components / OEM ancillaries
+    "AUTO":      (15.0, 1.9),   # auto components (obs: Fiem 18x; Gabriel 60x excl. as restructuring outlier)
     "PHARMA":    (17.0, 3.6),
     "CHEM":      (16.0, 2.6),   # observed (Aarti)
     "METAL":     (9.0,  1.3),
     "TEXTILE":   (9.5,  1.1),
     "BUILDMAT":  (14.0, 2.0),
-    "MACH":      (18.0, 2.5),   # observed (pumps/engineering cluster)
+    "MACH":      (20.0, 2.7),   # observed 6-pt median ~24x (12.1-38.8x); 20x set conservatively
     "ELEC":      (17.0, 2.0),
-    "FOOD":      (14.0, 1.6),
-    "POLYPAPER": (10.0, 1.2),
+    "FOOD":      (16.0, 1.8),   # obs: Vadilal ~23x (consumer-brand premium)
+    "POLYPAPER": (13.0, 1.5),   # category mixes packaging (~9x) & pipes (obs Apollo 26x)
     "MINING":    (9.0,  1.9),   # observed (20 Microns)
     "ENERGY":    (8.5,  1.3),
     "CONSTR":    (11.0, 1.6),

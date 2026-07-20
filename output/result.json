@@ -3,7 +3,7 @@
     "engine": "dnb-msme-comparable-valuation",
     "methodology_version": "2.0.0",
     "dnb_schema_version": "dnbhoovers-2024",
-    "run_timestamp": "2026-07-20T03:16:09+00:00",
+    "run_timestamp": "2026-07-20T03:20:54+00:00",
     "data_source": "Accord real extract (via realdata.db)",
     "currency": "INR",
     "reporting_units": "Crore",
@@ -1214,12 +1214,12 @@
         "effective_n": 13.18,
         "n_outliers_dropped": 1,
         "range_basis": "positioned at margin P40 (band P20–P60)",
-        "multiple_p25": 7.2842,
+        "multiple_p25": 6.7364,
         "multiple_median": 8.1621,
-        "multiple_p75": 18.9211,
-        "ev_low_cr": 709.1523,
+        "multiple_p75": 25.9607,
+        "ev_low_cr": 655.8216,
         "ev_mid_cr": 794.6242,
-        "ev_high_cr": 1842.0719,
+        "ev_high_cr": 2527.408,
         "equity_low_cr": null,
         "equity_mid_cr": null,
         "equity_high_cr": null
@@ -1233,12 +1233,12 @@
         "effective_n": 13.18,
         "n_outliers_dropped": 1,
         "range_basis": "positioned at margin P40 (band P20–P60)",
-        "multiple_p25": 1.4528,
+        "multiple_p25": 1.106,
         "multiple_median": 1.7541,
-        "multiple_p75": 3.812,
-        "ev_low_cr": 1154.8342,
+        "multiple_p75": 5.208,
+        "ev_low_cr": 879.1491,
         "ev_mid_cr": 1394.3373,
-        "ev_high_cr": 3030.2735,
+        "ev_high_cr": 4139.98,
         "equity_low_cr": null,
         "equity_mid_cr": null,
         "equity_high_cr": null
@@ -1252,12 +1252,12 @@
         "effective_n": 12.22,
         "n_outliers_dropped": 2,
         "range_basis": "positioned at margin P40 (band P20–P60)",
-        "multiple_p25": 6.6104,
+        "multiple_p25": 6.2156,
         "multiple_median": 8.8865,
-        "multiple_p75": 14.6006,
-        "ev_low_cr": 543.9556,
+        "multiple_p75": 19.2375,
+        "ev_low_cr": 511.4648,
         "ev_mid_cr": 731.2467,
-        "ev_high_cr": 1201.4455,
+        "ev_high_cr": 1583.0043,
         "equity_low_cr": null,
         "equity_mid_cr": null,
         "equity_high_cr": null
@@ -1859,7 +1859,7 @@
   "audit_trail": [
     {
       "seq": 1,
-      "ts": "2026-07-20T03:16:08.231+00:00",
+      "ts": "2026-07-20T03:20:53.704+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "START",
@@ -1871,7 +1871,7 @@
     },
     {
       "seq": 2,
-      "ts": "2026-07-20T03:16:08.231+00:00",
+      "ts": "2026-07-20T03:20:53.704+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_SEARCH",
@@ -1880,7 +1880,7 @@
     },
     {
       "seq": 3,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "resolve",
       "level": "INFO",
       "code": "MATCH_CANDIDATES",
@@ -1892,7 +1892,7 @@
     },
     {
       "seq": 4,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "resolve",
       "level": "DECISION",
       "code": "TARGET_RESOLVED",
@@ -1905,7 +1905,7 @@
     },
     {
       "seq": 5,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_INFORMATION",
@@ -1914,7 +1914,7 @@
     },
     {
       "seq": 6,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_FINANCIALS",
@@ -1923,7 +1923,7 @@
     },
     {
       "seq": 7,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "dnb",
       "level": "INFO",
       "code": "DNB_COMPANY_MANAGEMENT",
@@ -1932,7 +1932,7 @@
     },
     {
       "seq": 8,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "profile",
       "level": "DECISION",
       "code": "TARGET_PROFILED",
@@ -1945,7 +1945,7 @@
     },
     {
       "seq": 9,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "validate",
       "level": "WARN",
       "code": "DATA_QUALITY_FAIL",
@@ -1957,7 +1957,7 @@
     },
     {
       "seq": 10,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "validate",
       "level": "WARN",
       "code": "DATA_QUALITY_FAIL",
@@ -1969,7 +1969,7 @@
     },
     {
       "seq": 11,
-      "ts": "2026-07-20T03:16:08.275+00:00",
+      "ts": "2026-07-20T03:20:53.758+00:00",
       "stage": "validate",
       "level": "INFO",
       "code": "DATA_QUALITY_GRADE",
@@ -1986,7 +1986,7 @@
     },
     {
       "seq": 12,
-      "ts": "2026-07-20T03:16:09.091+00:00",
+      "ts": "2026-07-20T03:20:54.756+00:00",
       "stage": "universe",
       "level": "INFO",
       "code": "UNIVERSE_LOADED",
@@ -1998,7 +1998,7 @@
     },
     {
       "seq": 13,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.763+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2010,7 +2010,7 @@
     },
     {
       "seq": 14,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.763+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2022,7 +2022,7 @@
     },
     {
       "seq": 15,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.763+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2034,7 +2034,7 @@
     },
     {
       "seq": 16,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.763+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2046,7 +2046,7 @@
     },
     {
       "seq": 17,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.763+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2058,7 +2058,7 @@
     },
     {
       "seq": 18,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2070,7 +2070,7 @@
     },
     {
       "seq": 19,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2082,7 +2082,7 @@
     },
     {
       "seq": 20,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2094,7 +2094,7 @@
     },
     {
       "seq": 21,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2106,7 +2106,7 @@
     },
     {
       "seq": 22,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2118,7 +2118,7 @@
     },
     {
       "seq": 23,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2130,7 +2130,7 @@
     },
     {
       "seq": 24,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2142,7 +2142,7 @@
     },
     {
       "seq": 25,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2154,7 +2154,7 @@
     },
     {
       "seq": 26,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2166,7 +2166,7 @@
     },
     {
       "seq": 27,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2178,7 +2178,7 @@
     },
     {
       "seq": 28,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2190,7 +2190,7 @@
     },
     {
       "seq": 29,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2202,7 +2202,7 @@
     },
     {
       "seq": 30,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2214,7 +2214,7 @@
     },
     {
       "seq": 31,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2226,7 +2226,7 @@
     },
     {
       "seq": 32,
-      "ts": "2026-07-20T03:16:09.095+00:00",
+      "ts": "2026-07-20T03:20:54.764+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEER_REJECTED",
@@ -2238,7 +2238,7 @@
     },
     {
       "seq": 33,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "discover",
       "level": "DECISION",
       "code": "PEERS_REJECTED_SUMMARY",
@@ -2254,7 +2254,7 @@
     },
     {
       "seq": 34,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "discover",
       "level": "INFO",
       "code": "PEERS_RANKED",
@@ -2266,7 +2266,7 @@
     },
     {
       "seq": 35,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "QUALITY_POSITIONED",
@@ -2279,7 +2279,7 @@
     },
     {
       "seq": 36,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "WARN",
       "code": "NET_DEBT_UNKNOWN",
@@ -2295,7 +2295,7 @@
     },
     {
       "seq": 37,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "DISCOUNT_APPLIED",
@@ -2308,7 +2308,7 @@
     },
     {
       "seq": 38,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "PEERS_WEIGHTED",
@@ -2321,7 +2321,7 @@
     },
     {
       "seq": 39,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "FALLBACK_BOOK_EV",
@@ -2333,7 +2333,7 @@
     },
     {
       "seq": 40,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "SECTOR_CALIBRATED",
@@ -2347,7 +2347,7 @@
     },
     {
       "seq": 41,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "POSITION_SHRUNK",
@@ -2360,7 +2360,7 @@
     },
     {
       "seq": 42,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2376,7 +2376,7 @@
     },
     {
       "seq": 43,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "FALLBACK_BOOK_EV",
@@ -2388,7 +2388,7 @@
     },
     {
       "seq": 44,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "SECTOR_CALIBRATED",
@@ -2402,7 +2402,7 @@
     },
     {
       "seq": 45,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "POSITION_SHRUNK",
@@ -2415,7 +2415,7 @@
     },
     {
       "seq": 46,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2431,7 +2431,7 @@
     },
     {
       "seq": 47,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "FALLBACK_BOOK_EV",
@@ -2443,7 +2443,7 @@
     },
     {
       "seq": 48,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "SECTOR_CALIBRATED",
@@ -2457,7 +2457,7 @@
     },
     {
       "seq": 49,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.876+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "POSITION_SHRUNK",
@@ -2470,7 +2470,7 @@
     },
     {
       "seq": 50,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "METHOD_COMPUTED",
@@ -2486,7 +2486,7 @@
     },
     {
       "seq": 51,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "value",
       "level": "DECISION",
       "code": "HEADLINE_SELECTED",
@@ -2497,7 +2497,7 @@
     },
     {
       "seq": 52,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "value",
       "level": "INFO",
       "code": "VALUATION_DONE",
@@ -2509,7 +2509,7 @@
     },
     {
       "seq": 53,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "confidence",
       "level": "INFO",
       "code": "CONFIDENCE_SCORED",
@@ -2529,7 +2529,7 @@
     },
     {
       "seq": 54,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "run",
       "level": "WARN",
       "code": "SOURCE_CAVEAT",
@@ -2538,7 +2538,7 @@
     },
     {
       "seq": 55,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "run",
       "level": "WARN",
       "code": "SOURCE_CAVEAT",
@@ -2547,7 +2547,7 @@
     },
     {
       "seq": 56,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "SOURCE_LINEAGE",
@@ -2566,7 +2566,7 @@
     },
     {
       "seq": 57,
-      "ts": "2026-07-20T03:16:09.186+00:00",
+      "ts": "2026-07-20T03:20:54.877+00:00",
       "stage": "run",
       "level": "INFO",
       "code": "COMPLETE",
@@ -2578,15 +2578,15 @@
   ],
   "validation": {
     "kind": "observed_market_validation",
-    "as_of": "2026-07-17",
+    "as_of": "2026-07-17/20",
     "basis": "engine EV mid vs the company's own observed NSE market cap; EV~equity proxy disclosed (no borrowings/cash in source)",
-    "n": 6,
+    "n": 13,
     "rows": [
       {
         "company": "20 Microns Ltd.",
-        "engine_ev_low_cr": 709.2,
+        "engine_ev_low_cr": 655.8,
         "engine_ev_mid_cr": 794.6,
-        "engine_ev_high_cr": 1842.1,
+        "engine_ev_high_cr": 2527.4,
         "actual_mcap_cr": 714.0,
         "delta_pct": 11.3,
         "in_range": true,
@@ -2594,9 +2594,9 @@
       },
       {
         "company": "Aarti Industries Ltd.",
-        "engine_ev_low_cr": 14771.9,
+        "engine_ev_low_cr": 11659.9,
         "engine_ev_mid_cr": 16510.6,
-        "engine_ev_high_cr": 20618.5,
+        "engine_ev_high_cr": 21457.7,
         "actual_mcap_cr": 17485.0,
         "delta_pct": -5.6,
         "in_range": true,
@@ -2604,48 +2604,118 @@
       },
       {
         "company": "Kirloskar Brothers Ltd.",
-        "engine_ev_low_cr": 3119.8,
-        "engine_ev_mid_cr": 5546.0,
-        "engine_ev_high_cr": 7114.7,
+        "engine_ev_low_cr": 2875.5,
+        "engine_ev_mid_cr": 6162.2,
+        "engine_ev_high_cr": 9026.6,
         "actual_mcap_cr": 13926.0,
-        "delta_pct": -60.2,
+        "delta_pct": -55.8,
         "in_range": false,
         "status": "ok"
       },
       {
         "company": "Mahindra EPC Irrigation Ltd.",
-        "engine_ev_low_cr": 201.9,
-        "engine_ev_mid_cr": 293.4,
-        "engine_ev_high_cr": 409.1,
+        "engine_ev_low_cr": 136.4,
+        "engine_ev_mid_cr": 326.0,
+        "engine_ev_high_cr": 541.2,
         "actual_mcap_cr": 336.0,
-        "delta_pct": -12.7,
+        "delta_pct": -3.0,
         "in_range": true,
         "status": "ok"
       },
       {
         "company": "Shakti Pumps (India) Ltd.",
-        "engine_ev_low_cr": 8016.6,
-        "engine_ev_mid_cr": 10976.8,
-        "engine_ev_high_cr": 13009.1,
+        "engine_ev_low_cr": 7233.4,
+        "engine_ev_mid_cr": 12196.5,
+        "engine_ev_high_cr": 17776.5,
         "actual_mcap_cr": 6798.0,
-        "delta_pct": 61.5,
+        "delta_pct": 79.4,
         "in_range": false,
         "status": "ok"
       },
       {
         "company": "Roto Pumps Ltd.",
-        "engine_ev_low_cr": 809.7,
-        "engine_ev_mid_cr": 1097.1,
-        "engine_ev_high_cr": 1663.7,
+        "engine_ev_low_cr": 861.2,
+        "engine_ev_mid_cr": 1219.0,
+        "engine_ev_high_cr": 2368.7,
         "actual_mcap_cr": 1226.0,
-        "delta_pct": -10.5,
+        "delta_pct": -0.6,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Gabriel India Ltd.",
+        "engine_ev_low_cr": 3108.1,
+        "engine_ev_mid_cr": 4360.2,
+        "engine_ev_high_cr": 5752.9,
+        "actual_mcap_cr": 19199.0,
+        "delta_pct": -77.3,
+        "in_range": false,
+        "status": "ok"
+      },
+      {
+        "company": "Fiem Industries Ltd.",
+        "engine_ev_low_cr": 4370.7,
+        "engine_ev_mid_cr": 4691.3,
+        "engine_ev_high_cr": 6382.7,
+        "actual_mcap_cr": 5726.0,
+        "delta_pct": -18.1,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Aarti Drugs Ltd.",
+        "engine_ev_low_cr": 2046.4,
+        "engine_ev_mid_cr": 3938.1,
+        "engine_ev_high_cr": 6581.5,
+        "actual_mcap_cr": 3854.0,
+        "delta_pct": 2.2,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Apollo Pipes Ltd.",
+        "engine_ev_low_cr": 552.2,
+        "engine_ev_mid_cr": 906.4,
+        "engine_ev_high_cr": 1312.2,
+        "actual_mcap_cr": 2263.0,
+        "delta_pct": -59.9,
+        "in_range": false,
+        "status": "ok"
+      },
+      {
+        "company": "Vadilal Industries Ltd.",
+        "engine_ev_low_cr": 2416.0,
+        "engine_ev_mid_cr": 3051.0,
+        "engine_ev_high_cr": 5238.0,
+        "actual_mcap_cr": 3949.0,
+        "delta_pct": -22.7,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "The Anup Engineering Ltd.",
+        "engine_ev_low_cr": 2899.8,
+        "engine_ev_mid_cr": 3615.7,
+        "engine_ev_high_cr": 5521.4,
+        "actual_mcap_cr": 4486.0,
+        "delta_pct": -19.4,
+        "in_range": true,
+        "status": "ok"
+      },
+      {
+        "company": "Jash Engineering Ltd.",
+        "engine_ev_low_cr": 1456.8,
+        "engine_ev_mid_cr": 2107.6,
+        "engine_ev_high_cr": 3796.4,
+        "actual_mcap_cr": 3206.0,
+        "delta_pct": -34.3,
         "in_range": true,
         "status": "ok"
       }
     ],
-    "median_abs_pct": 12.0,
-    "mean_abs_pct": 27.0,
-    "n_in_range": 4,
+    "median_abs_pct": 19.4,
+    "mean_abs_pct": 30.0,
+    "n_in_range": 9,
     "note": "Two known idiosyncratic outliers are retained deliberately; the ranges disagree with them honestly rather than being widened to swallow them.",
     "verdict_ok": true
   }
